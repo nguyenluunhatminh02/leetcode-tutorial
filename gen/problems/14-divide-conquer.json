@@ -1,0 +1,107 @@
+{
+  "desc": "Chia để trị: tách bài toán con, giải đệ quy, gộp kết quả. Kết hợp với merge sort và binary search.",
+  "problems": [
+    {
+      "no": "108", "title": "Convert Sorted Array to Binary Search Tree", "cat": "Divide & Conquer", "diff": "Easy", "done": true,
+      "statement": "Dựng BST cân bằng (chiều cao nhỏ nhất) từ mảng đã sắp.",
+      "examples": "nums=[-10,-3,0,5,9] → [0,-3,9,-10,null,5]",
+      "keyIdea": "Phần tử giữa làm gốc, trái/phải là hai nửa — chia để trị đệ quy.",
+      "thinking": {
+        "forward": "Quy nạp tiến: mảng con đã sắp — phần tử giữa luôn là gốc cân bằng; hai nửa trái/phải giữ nguyên tính sắp xếp.",
+        "reverse": "Quy nạp ngược: muốn cây con của đoạn (lo,hi), cần gốc là phần tử giữa và hai cây con từ hai đoạn nhỏ hơn."
+      },
+      "note": "Chú giải: Chọn mid = (lo+hi)//2 bảo đảm chiều cao O(log n); cây không nhất thiết đầy đủ nhưng luôn cân bằng về chiều cao tối thiểu.",
+      "approaches": [
+        {"name": "Đệ quy phẩn giữa", "time": "O(n)", "space": "O(log n)", "done": true,
+         "idea": "root = nums[mid]; left = build(lo,mid-1); right = build(mid+1,hi).",
+         "code": "def sorted_array_to_bst(nums):\n    def go(lo, hi):\n        if lo > hi: return None\n        mid = (lo + hi) // 2\n        n = TreeNode(nums[mid])\n        n.left = go(lo, mid-1)\n        n.right = go(mid+1, hi)\n        return n\n    return go(0, len(nums)-1)",
+         "static": [
+           "Với nums=[-10,-3,0,5,9], giữa mảng là 0 → gốc cây.",
+           "Nửa trái [-10,-3]: giữa là -3, trái -10, phải rỗng.",
+           "Nửa phải [5,9]: giữa là 5, phải 9.",
+           "Gốc 0 nối trái -3 và phải 5 — cây cân bằng chiều cao 2.",
+           "Điều kiện dừng lo>hi trả None; độ sâu đệ quy bằng chiều cao log(n)."
+         ]}
+      ]
+    },
+    {
+      "no": "148", "title": "Sort List", "cat": "Divide & Conquer", "diff": "Medium", "done": true,
+      "statement": "Sắp xếp danh sách liên kết trong O(n·log n) thời gian, O(1) bộ nhớ (không tạo mảng).",
+      "examples": "head=[4,2,1,3] → [1,2,3,4]",
+      "keyIdea": "Merge sort trên danh sách: chẻ đôi bằng slow/fast, sort hai nửa, merge.",
+      "thinking": {
+        "forward": "Quy nạp tiến: hai danh sách đã sắp gộp được trong O(n) bằng cách so đỉnh — chia nhỏ tới khi list còn 1 phần tử là đã sắp.",
+        "reverse": "Quy nạp ngược: muốn sắp list n phần tử, sắp hai nửa rồi gộp; gộp đúng nhờ bất biến hai đầu vào luôn có thứ tự."
+      },
+      "note": "Chú giải: Chẻ bằng slow/fast không cần biết trước độ dài; cắt mid.next=None để tách nửa — bộ nhớ O(1) ngoài stack đệ quy log(n).",
+      "approaches": [
+        {"name": "Top-down merge sort", "time": "O(n·log n)", "space": "O(log n) stack", "done": true,
+         "idea": "Tìm mid bằng thỏ/rùa; sortList(mid.next), sortList(head); merge hai list sắp xong (bài 21).",
+         "code": "def sort_list(head):\n    if not head or not head.next: return head\n    slow = fast = head\n    while fast.next and fast.next.next:\n        slow = slow.next; fast = fast.next.next\n    mid = slow.next; slow.next = None\n    a, b = sort_list(head), sort_list(mid)\n    dummy = tail = ListNode()\n    while a and b:\n        if a.val < b.val: tail.next, a = a, a.next\n        else: tail.next, b = b, b.next\n        tail = tail.next\n    tail.next = a or b\n    return dummy.next",
+         "static": [
+           "Với head=[4,2,1,3], dùng con trỏ chậm/nhanh chẻ danh sách làm đôi: [4,2] và [1,3].",
+           "Gọi đệ quy sắp từng nửa: [4,2]→[2,4], [1,3]→[1,3].",
+           "Merge hai nửa đã sắp bằng cách so giá trị đầu từng list.",
+           "Đặt 1→2→3→4 qua dummy head, trả dummy.next.",
+           "Chi phí O(n·log n); stack đệ quy sâu log(n)."
+         ]}
+      ]
+    },
+    {
+      "no": "427", "title": "Construct Quad Tree", "cat": "Divide & Conquer", "diff": "Medium", "done": true,
+      "statement": "Chuyển lưới 2^n×2^n thành cây tứ phân: ô thuần nhất là leaf, ngược lại chia 4 góc đệ quy.",
+      "examples": "grid 2x2 → leaf node true hoặc node 4 con",
+      "keyIdea": "Nếu toàn lưới đồng nhất → leaf; ngược lại chia 4 và gọi đệ quy từng góc.",
+      "thinking": {
+        "forward": "Quy nạp tiến: vùng đồng nhất thì kết thúc ngay; ngược lại chia tư — mỗi góc là bài toán con cùng bản chất kích thước nửa.",
+        "reverse": "Quy nạp ngược: node 4 con chỉ hợp lệ khi từng góc con đã được phân hoạch xong — cây dừng ở các lá đồng nhất."
+      },
+      "note": "Chú giải: Quét 'same' mỗi lần chia có thể O(n²·log n) trong trường hợp xấu; có thể tối ưu bằng prefix sum nhưng ví dụ nhỏ không cần.",
+      "approaches": [
+        {"name": "Đệ quy kiểm tra đồng nhất", "time": "O(n²)", "space": "O(n)", "done": true,
+         "idea": "Quét vùng: nếu tất cả bằng val → leaf; ngược lại cắt đôi và build 4 con.",
+         "code": "def construct(grid):\n    def build(r, c, size):\n        v = grid[r][c]\n        same = all(grid[i][j] == v for i in range(r, r+size) for j in range(c, c+size))\n        node = Node(v, same)\n        if same: return node\n        s = size // 2\n        node.topLeft = build(r, c, s)\n        node.topRight = build(r, c+s, s)\n        node.bottomLeft = build(r+s, c, s)\n        node.bottomRight = build(r+s, c+s, s)\n        return node\n    return build(0, 0, len(grid))",
+         "static": [
+           "Với lưới 4×4 toàn 1 ở góc trái trên, build(0,0,4) thấy không đồng nhất → chia 4 ô con.",
+           "Góc con (0,0,2) toàn 1 → leaf với isLeaf=true; góc (0,2,2) toàn 0 → leaf ngược lại.",
+           "Ba góc còn lại (phải trên, trái dưới, phải dưới) thuần nhất → leaf tương ứng.",
+           "Gộp 4 con vào node cha có isLeaf=false, val lấy từ ô đầu góc.",
+           "Điều kiện dừng: mọi ô trong vùng cùng giá trị → leaf ngay không chia tiếp."
+         ]}
+      ]
+    },
+    {
+      "no": "23", "title": "Merge k Sorted Lists", "cat": "Divide & Conquer", "diff": "Hard", "done": true,
+      "statement": "Gộp k danh sách liên kết đã sắp thành một, giữ thứ tự.",
+      "examples": "lists=[[1,4,5],[1,3,4],[2,6]] → [1,1,2,3,4,4,5,6]",
+      "keyIdea": "Chia đôi gộp từng cặp (giống merge sort) hoặc dùng heap chọn đỉnh nhỏ nhất O(k·log k) mỗi bước.",
+      "thinking": {
+        "forward": "Quy nạp tiến: gộp hai list sắp sẵn trong O(len); gộp cặp chia để trị giảm số list đi một nửa mỗi vòng.",
+        "reverse": "Quy nạp ngược: kết quả gộp k list = gộp kết quả của nửa trái và nửa phải — quy về bài toán merge2 quen thuộc."
+      },
+      "note": "Chú giải: Heap giữ một đỉnh mỗi list nên bộ nhớ O(k); cách gộp cặp dùng ít bộ nhớ hơn nhưng vẫn O(n·log k).",
+      "approaches": [
+        {"name": "Gộp cặp chia để trị", "time": "O(n·log k)", "space": "O(1) extra + stack", "done": true,
+         "idea": "Ghép từng cặp 2 list tới khi còn 1 — mỗi phần tử bị so k lần log.",
+         "code": "def merge_k_lists(lists):\n    def merge2(a, b):\n        dummy = tail = ListNode()\n        while a and b:\n            if a.val < b.val: tail.next, a = a, a.next\n            else: tail.next, b = b, b.next\n            tail = tail.next\n        tail.next = a or b\n        return dummy.next\n    if not lists: return None\n    while len(lists) > 1:\n        nxt = []\n        for i in range(0, len(lists), 2):\n            a = lists[i]\n            b = lists[i+1] if i+1 < len(lists) else None\n            nxt.append(merge2(a, b))\n        lists = nxt\n    return lists[0]",
+         "static": [
+           "Với [[1,4,5],[1,3,4],[2,6]], gộp cặp đầu tiên [1,4,5] và [1,3,4].",
+           "merge2 so đỉnh hai list liên tục → [1,1,3,4,4,5].",
+           "Cặp còn lại gộp [2,6] với None → giữ nguyên [2,6].",
+           "Vòng sau gộp [1,1,3,4,4,5] và [2,6] → kết quả [1,1,2,3,4,4,5,6].",
+           "Mỗi phần tử bị so log(k) lần → O(n·log k)."
+         ]},
+        {"name": "Heap (min-heap các đỉnh)", "time": "O(n·log k)", "space": "O(k)", "done": true,
+         "idea": "Đẩy đỉnh từng list vào heap (val, idx, node); pop nhỏ nhất nối vào kết quả, đẩy next của nó.",
+         "code": "import heapq\ndef merge_k_lists(lists):\n    heap = []\n    for i, l in enumerate(lists):\n        if l: heapq.heappush(heap, (l.val, i, l))\n    dummy = tail = ListNode()\n    while heap:\n        v, i, node = heapq.heappop(heap)\n        tail.next = node; tail = tail.next\n        if node.next: heapq.heappush(heap, (node.next.val, i, node.next))\n    return dummy.next",
+         "static": [
+           "Đẩy đỉnh của từng list vào min-heap: (1,0,[1,4,5]), (1,1,[1,3,4]), (2,2,[2,6]).",
+           "Pop giá trị nhỏ nhất 1 (list 0), nối vào kết quả, đẩy tiếp 4 của list 0 vào heap.",
+           "Tiếp tục pop 1 (list 1), nối rồi đẩy 3 của list 1.",
+           "Lặp tới khi heap rỗng: chuỗi pop 1,1,2,3,4,4,5,6.",
+           "Heap luôn giữ tối đa k phần tử → bộ nhớ O(k), thời gian O(n·log k)."
+         ]}
+      ]
+    }
+  ]
+}

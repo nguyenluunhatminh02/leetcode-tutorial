@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Top Interview 150 — Học theo nhóm</title>
+<style>
+:root{
+  --bg:#0d1017; --panel:#141926; --panel2:#1a2130; --ink:#eaf0f8; --mut:#8f9ab2;
+  --line:#242c3e; --acc:#7aa2ff; --acc2:#38d3f0; --ok:#3ddc97; --warn:#ffb454; --bad:#ff6b81;
+  --inksoft:#c9d2e3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);background-image:radial-gradient(#1d2434 1px,transparent 1px);background-size:26px 26px;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+a{color:var(--acc)}
+a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 90px}
+.hero{padding:10px 0 20px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.chip{display:inline-block;padding:3px 12px;border-radius:999px;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);background:var(--panel);margin:2px 6px 0 0}
+.hero h1{font-size:27px;margin:10px 0 8px;text-wrap:balance}
+.hero p{color:var(--mut);margin:6px 0 0;max-width:850px}
+
+/* ---------- index / toc ---------- */
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0 28px}
+.grp{text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 12px;display:flex;gap:10px;align-items:center;transition:border-color .15s}
+.grp:hover{border-color:var(--acc)}
+.grp .ic{font-size:20px}
+.grp b{font-size:14px}
+.grp small{display:block;color:var(--mut);font-size:11.5px}
+
+/* ---------- problem ---------- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;margin:30px 0;scroll-margin-top:16px}
+.sec-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-top h2{margin:0;font-size:21px;text-wrap:balance}
+.tag{font-size:12px;letter-spacing:.04em;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.tag.easy{color:#a7f3d0;border-color:#14532d;background:#052e16}
+.tag.medium{color:#fde68a;border-color:#78350f;background:#2c1a05}
+.tag.hard{color:#fecaca;border-color:#7f1d1d;background:#2a0a0a}
+.stmt{color:var(--inksoft);margin:12px 0 4px;line-height:1.7}
+.ex{color:var(--mut);font-size:14px}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b0e16;border:1px solid var(--line);border-radius:6px;padding:1px 5px;color:var(--acc2)}
+.idea{background:#101a2e;border-left:3px solid var(--acc2);border-radius:0 12px 12px 0;padding:11px 15px;margin:13px 0;font-size:14.5px;color:var(--inksoft)}
+
+/* ---------- solution ---------- */
+.sol{border-top:1px dashed var(--line);margin-top:22px;padding-top:18px}
+.sol h4{font-size:16px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-wrap:balance}
+.sol h5{font-size:14.5px;margin:14px 0 6px;color:var(--acc2)}
+.meta{font-size:13px;color:var(--mut)}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-size:12.5px;margin-right:8px;margin-bottom:4px}
+.pill b{color:var(--acc)}
+pre.code{background:#0b0e16;border:1px solid var(--line);border-radius:13px;padding:14px 16px;overflow-x:auto;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:9px 0}
+pre.code .k{color:#c792ea} pre.code .f{color:#82aaff} pre.code .n{color:#f78c6c}
+pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code .o{color:#89ddff}
+.steps-desc{color:var(--mut);font-size:14px;margin:8px 0}
+
+/* ---------- static steps ---------- */
+.steps{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.step-line{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:13.5px;color:var(--inksoft)}
+.step-line .sno{color:var(--acc2);font-weight:700;font-variant-numeric:tabular-nums;min-width:22px}
+
+/* ---------- interactive player ---------- */
+.run{border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:13px 15px;margin:11px 0}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:5px 11px;font-size:14px;transition:.12s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.sp{font-size:13px;color:var(--mut);margin-right:6px;font-variant-numeric:tabular-nums}
+.rng{flex:1;min-width:130px;accent-color:var(--acc)}
+.note{font-size:14px;color:var(--inksoft);margin:0 0 9px;min-height:21px}
+.note.fin{color:var(--ok)}
+.cells-wrap{position:relative;padding:13px 4px 4px;min-height:56px}
+.cells{display:flex;gap:7px;flex-wrap:wrap}
+.cell{position:relative;width:42px;height:40px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.cell.dead{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.05) 6px 12px);border-style:dashed;color:#5b6377}
+.cell.keep{background:#153a2b;border-color:#2f7d5a;color:#d1fae5}
+.cell.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.cell.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.cell.sw{background:#4c1120;border-color:var(--bad)}
+.cell.act{background:#33250a;border-color:var(--warn)}
+.ci{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:10px;color:#5b6377;font-variant-numeric:tabular-nums}
+/* ---------- player v2: mat / node (ll/tree) / stack / hash / set / aux ---------- */
+.run:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+/* mat */
+.cells.mat{flex-direction:column;gap:6px;flex-wrap:nowrap;width:max-content}
+.mrow{display:flex;gap:6px}
+.cell.mcell{width:38px;height:34px;font-size:13px;border-radius:6px}
+.cell.tail{border-style:dashed;color:#7d8aa5}
+.cell.colored{background:#12402c;border-color:var(--ok)}
+/* stack */
+.cells.stack{flex-direction:column-reverse;align-items:center;gap:6px;width:78px;border:1.5px solid #39415c;border-top:none;border-radius:0 0 10px 10px;padding:10px 8px 7px;background:#0f1522;min-height:66px}
+.cell.scol{width:56px;height:34px;font-size:13px;border-radius:6px}
+.cell.top{border-color:var(--warn)}
+.topb{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--warn);margin-top:3px;text-transform:uppercase}
+.stack-row{display:flex;gap:12px;align-items:stretch}
+.stack-ptrs{display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:6px;padding:10px 0 7px}
+.sph{min-height:40px;display:flex;align-items:center}
+.ptr-tag{font-size:10.5px;font-weight:700;color:var(--acc2);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:1px 6px;white-space:nowrap}
+/* ll + tree: node dùng chung */
+.cells.tree,.cells.ll{display:block}
+.tbox{position:relative;overflow-x:auto;padding:14px 0 20px}
+.tgrid{position:relative;display:grid;margin:0 auto}
+.tgrid svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+.llrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node{position:relative;min-width:46px;height:40px;padding:0 8px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.node.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.node.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.node.sw{background:#4c1120;border-color:var(--bad)}
+.node.act{background:#33250a;border-color:var(--warn)}
+.node.tnd{width:44px;height:44px;min-width:44px;border-radius:50%;justify-self:center;align-self:center}
+.nid{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:9.5px;color:#5b6377;font-variant-numeric:tabular-nums}
+.nstate{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9px;background:#1b2740;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--acc2);white-space:nowrap;z-index:2}
+.arrow{color:var(--mut);font-size:16px;font-weight:700;padding:0 2px;align-self:center}
+/* hash */
+.cells.hash{flex-direction:column;gap:5px;width:max-content}
+.hpair{display:flex;align-items:center;gap:8px;border:1px solid #2a3550;border-radius:8px;background:#101828;padding:2px 4px;transition:background .18s,border-color .18s}
+.hpair.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.hpair.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.hpair.sw{background:#4c1120;border-color:var(--bad)}
+.hk{min-width:42px;text-align:center;font-weight:700;color:var(--acc);font-size:12.5px;background:#16203a;border-radius:6px;padding:2px 6px}
+.hv{font-weight:600;font-size:13.5px;padding:2px 7px;font-variant-numeric:tabular-nums;min-width:24px;color:var(--inksoft)}
+/* set */
+.cells.set{gap:6px;flex-wrap:wrap}
+.sbadge{border:1px solid #3a4560;border-radius:999px;background:#101828;padding:4px 13px;font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums}
+.sbadge.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.sbadge.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.sbadge.sw{background:#4c1120;border-color:var(--bad)}
+/* aux */
+.aux{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap}
+.alabel{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.acells{display:flex;gap:5px}
+.acell{min-width:30px;height:26px;border:1px solid #3a4560;border-radius:6px;background:#121a2a;display:grid;place-items:center;font-size:12.5px;font-weight:600;padding:0 7px;font-variant-numeric:tabular-nums;transition:background .18s,border-color .18s}
+.acell.rd{background:#4a2c10;border-color:var(--warn)}
+.acell.wr{background:#1a2f5c;border-color:var(--acc)}
+.acell.sw{background:#4c1120;border-color:var(--bad)}
+.note .result{color:var(--acc2);font-weight:700}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+.ptrs{position:absolute;inset:0;pointer-events:none}
+.ptr{position:absolute;top:1px;font-size:11px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:5px;padding:1px 6px;white-space:nowrap}
+@media (max-width:640px){.wrap{padding:14px 10px 70px}section.card{padding:16px 12px}.cell{width:36px;height:34px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* code pane + dòng đang chạy */
+pre.code.pane{position:relative;margin:8px 0;border-left:3px solid var(--acc2);font-size:12.5px;max-height:180px;overflow-y:auto}
+pre.code .curline{background:rgba(122,162,255,.14);box-shadow:inset 3px 0 0 var(--acc);border-radius:3px}
+pre.code.pane .curline{background:rgba(122,162,255,.16)}
+/* region (khung vùng hoạt động) */
+.region{position:absolute;border:2px dashed var(--acc2);border-radius:8px;pointer-events:none;opacity:.55;transition:all .15s;z-index:2}
+
+/* badge đọc/ghi trên node cây */
+.nst{position:absolute;top:-9px;right:-12px;font-size:9px;font-weight:700;background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:0 4px;color:var(--acc2);z-index:4;display:none}
+.node.rd .nst{display:block;border-color:var(--warn);color:var(--warn);background:#33250a}
+.node.wr .nst{display:block;border-color:var(--acc);color:var(--acc);background:#0b1e2b}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="chip">Top Interview 150</span>
+    <span class="chip" id="grpChip"></span>
+    <span class="chip">Python · tiếng Việt</span>
+  </div>
+  <h1 id="grpTitle"></h1>
+  <p id="grpDesc"></p>
+</header>
+<nav class="toc" id="toc"></nav>
+<main id="content"></main>
+<footer id="foot"></footer>
+</div>
+
+<script>
+"use strict";
+/*
+ * traces150.js — trace animation cho các bài ngoài 6 bài gốc (Top Interview 150).
+ * Nguyên tắc như traces.js: mỗi hàm nhận input, trả mảng step {note, cells, array, read, write, swap, ptr, ptrNames, end}.
+ * Bước 1 làm quen với 4 thuật toán kinh điển.
+ */
+'use strict';
+
+function at150(arr, i) { return { target: [i], value: arr[i] }; }
+
+/* ============ 121 Best Time to Buy and Sell Stock ============ */
+function trace_stock(input) {
+  const { prices } = input;
+  const steps = [];
+  let buy = prices[0], profit = 0;
+  const push = (note, patch, end) => {
+    const cells = prices.map((v, idx) => ({ value: v, keep: idx === 0 ? false : false }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: buy = prices[0] = ${buy}, max profit = 0. Duyệt từ ngày 1.`, { ptr: { buy: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] < buy) {
+      buy = prices[i];
+      push(`prices[${i}] = ${prices[i]} < buy ${prices[i - 1] > prices[i] ? '(giảm so với trước)' : ''} → cập nhật buy = ${prices[i]} (mua rẻ hơn, bỏ qua mức lời cũ chưa tốt hơn).`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    } else {
+      const p = prices[i] - buy;
+      const better = p > profit;
+      profit = Math.max(profit, p);
+      push(`prices[${i}] = ${prices[i]} ≥ buy ${buy} → lời nếu bán ở đây = ${p}. ${better ? 'Cập nhật max profit = ' + p + '!' : 'Chưa hơn max profit hiện tại (' + profit + ').'}`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    }
+  }
+  push(`Xong: max profit = ${profit} (mua ở ${buy}, các ngày sau là nơi bán tối ưu).`, {}, true);
+  return steps;
+}
+
+/* ============ 122 Best Time to Buy and Sell Stock II ============ */
+function trace_stock_ii(input) {
+  const { prices } = input;
+  const steps = [];
+  let profit = 0, last = prices[0];
+  const push = (note, patch, end) => {
+    const cells = prices.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: profit = 0, last = prices[0] = ${last}.`, { ptr: { last: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] > last) {
+      profit += prices[i] - last;
+      push(`prices[${i}] = ${prices[i]} > ${last} → gom ${prices[i] - last} (bán ngay lập tức). profit = ${profit}.`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    } else {
+      push(`prices[${i}] = ${prices[i]} ≤ ${last} → không giao dịch (chờ giá lên).`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    }
+    last = prices[i];
+  }
+  push(`Xong: tổng lợi nhuận ${profit} — cộng dồn MỌI bước tăng liên tiếp.`, {}, true);
+  return steps;
+}
+
+/* ============ 15 3Sum ============ */
+function trace_3sum(input) {
+  const { nums } = input;
+  const a = nums.slice().sort((x, y) => x - y);
+  const res = [];
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = a.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: a.slice() }, patch, end ? { end: true, answer: res.length + ' bộ ba' } : {}));
+  };
+  push('Sắp xếp mảng để dùng hai con trỏ.', {});
+  for (let i = 0; i < a.length - 2; i++) {
+    if (i > 0 && a[i] === a[i - 1]) { push(`a[${i}] = ${a[i]} trùng a[${i - 1}] → bỏ qua để tránh bộ ba trùng.`, { ptr: { i }, ptrNames: ['i'] }); continue; }
+    let lo = i + 1, hi = a.length - 1;
+    push(`Cố định a[${i}] = ${a[i]}; lo = ${lo}, hi = ${hi}. Tìm cặp (lo, hi) sao cho tổng = 0.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+    while (lo < hi) {
+      const s = a[i] + a[lo] + a[hi];
+      if (s === 0) {
+        res.push([a[i], a[lo], a[hi]]);
+        push(`tổng ${a[i]} + ${a[lo]} + ${a[hi]} = 0 → ghi nhận bộ ba.`, { read: [at150(a, i), at150(a, lo), at150(a, hi)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+        const x = a[lo], y = a[hi];
+        while (lo < hi && a[lo] === x) lo++;
+        while (lo < hi && a[hi] === y) hi--;
+        push(`Nhảy qua các giá trị trùng (lo → ${lo}, hi → ${hi}) để không lặp bộ ba.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else if (s < 0) {
+        lo++;
+        push(`tổng = ${s} < 0 → tăng lo lên ${lo} (cần tổng lớn hơn).`, { read: [at150(a, lo - 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else {
+        hi--;
+        push(`tổng = ${s} > 0 → giảm hi xuống ${hi} (cần tổng nhỏ hơn).`, { read: [at150(a, hi + 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      }
+    }
+  }
+  push(`Xong: ${res.length} bộ ba`, {}, true);
+  return steps;
+}
+
+/* ============ 11 Container With Most Water ============ */
+function trace_container(input) {
+  const { height } = input;
+  const steps = [];
+  let l = 0, r = height.length - 1, best = 0;
+  const push = (note, patch, end) => {
+    const cells = height.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: height.slice() }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Hai con trỏ: l = ${l}, r = ${r}. Diện tích = chiều cao thấp hơn × khoảng cách.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const w = r - l;
+    const area = Math.min(height[l], height[r]) * w;
+    best = Math.max(best, area);
+    const goLeft = height[l] < height[r];
+    push(`Cặp (${l}, ${r}): diện tích = ${Math.min(height[l], height[r])} × ${w} = ${area} → best = ${best}. ${goLeft ? 'Cạnh trái thấp hơn → dịch l++' : 'Cạnh phải thấp hơn → dịch r--'} (giữ cạnh cao hơn để còn triển vọng).`,
+      { read: [at150(height, l), at150(height, r)], ptr: { l: l + (goLeft ? 1 : 0), r: r - (goLeft ? 0 : 1) }, ptrNames: ['l', 'r'] });
+    if (goLeft) l++; else r--;
+  }
+  push(`Xong: thể tích nước tối đa = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 3 Longest Substring Without Repeating Characters ============ */
+function trace_longest_substr(input) {
+  const { s } = input;
+  const steps = [];
+  let l = 0, best = 0;
+  const seen = new Map();
+  const push = (note, patch, end) => {
+    const cells = s.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: s.split('') }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Cửa sổ [l, r): ký tự trong cửa sổ đều là duy nhất. best = 0.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < s.length; r++) {
+    const c = s[r];
+    if (seen.has(c) && seen.get(c) >= l) {
+      const old = l;
+      l = seen.get(c) + 1;
+      push(`Gặp '${c}' đã xuất hiện ở vị trí ${seen.get(c)} (đang trong cửa sổ) → dịch l từ ${old} lên ${l}.`,
+        { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+    seen.set(c, r);
+    best = Math.max(best, r - l + 1);
+    push(`Thêm '${c}' vào cửa sổ [${l}, ${r}]. best = ${best} (đoạn dài nhất không trùng).`,
+      { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+  }
+  push(`Xong: độ dài lớn nhất = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 209 Minimum Size Subarray Sum ============ */
+function trace_min_subarray(input) {
+  const { nums, target } = input;
+  const steps = [];
+  let l = 0, sum = 0, best = Infinity;
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, answer: best === Infinity ? 0 : best } : {}));
+  };
+  push(`Cửa sổ [l, r): sum = tổng trong cửa sổ. Mở rộng r khi sum < ${target}, thu hẹp l khi sum ≥ ${target}.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < nums.length; r++) {
+    sum += nums[r];
+    push(`Thêm nums[${r}] = ${nums[r]} → sum = ${sum}.`, { read: at150(nums, r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    while (sum >= target && l <= r) {
+      const len = r - l + 1;
+      best = Math.min(best, len);
+      const removed = nums[l];
+      push(`sum ${sum} ≥ ${target} → cửa sổ [${l}, ${r}] dài ${len} hợp lệ. best = ${best}. Thu hẹp l (bỏ ${removed}).`,
+        { read: at150(nums, l), ptr: { l: l + 1, r }, ptrNames: ['l', 'r'] });
+      sum -= removed;
+      l++;
+    }
+  }
+  push(`Xong: chiều dài ngắn nhất = ${best === Infinity ? 0 : best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 238 Product of Array Except Self ============ */
+function trace_product_except_self(input) {
+  const { nums } = input;
+  const steps = [];
+  const n = nums.length;
+  const res = new Array(n).fill(1);
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice(), aux: { label: 'ans', values: res.slice() } }, patch, end ? { end: true, answer: res.slice() } : {}));
+  };
+  push('Ý tưởng: ans[i] = tích các phần tử bên trái × tích các phần tử bên phải. Duyệt 2 lần.', { aux: { label: 'ans', values: res.slice() } });
+  let left = 1;
+  for (let i = 0; i < n; i++) {
+    res[i] = left;
+    push(`Lượt trái: ans[${i}] = tích các phần tử nhỏ hơn ${i} = ${left}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    left *= nums[i];
+  }
+  let right = 1;
+  for (let i = n - 1; i >= 0; i--) {
+    res[i] *= right;
+    push(`Lượt phải: ans[${i}] *= tích các phần tử lớn hơn ${i} = ${right} → ${res[i]}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    right *= nums[i];
+  }
+  push(`Xong: ans = ${res.join(', ')}. Mỗi ans[i] = tích mọi phần tử trừ nums[i] — O(1) phụ.`, {}, true);
+  return steps;
+}
+
+/* ============ 125 Valid Palindrome ============ */
+function trace_valid_palindrome(input) {
+  const { s } = input;
+  const text = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = text.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: text.split('') }, patch, end ? { end: true, answer: true } : {}));
+  };
+  push(`Lọc chuỗi: giữ chữ & số, viết thường → '${text}'. Giờ kiểm tra palindrome bằng hai con trỏ.`,
+    { ptr: { l: 0, r: text.length - 1 }, ptrNames: ['l', 'r'] });
+  let l = 0, r = text.length - 1;
+  while (l < r) {
+    if (text[l] !== text[r]) {
+      push(`'${text[l]}' ≠ '${text[r]}' → KHÔNG phải palindrome.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      steps[steps.length - 1].answer = false;
+      return steps;
+    }
+    push(`'${text[l]}' = '${text[r]}' → tiếp tục thu hẹp.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l: l + 1, r: r - 1 }, ptrNames: ['l', 'r'] });
+    l++; r--;
+  }
+  push('Hai con trỏ gặp nhau → chuỗi là palindrome.', {}, true);
+  return steps;
+}
+
+/* ============ 392 Is Subsequence ============ */
+function trace_is_subsequence(input) {
+  const { s, t } = input;
+  const steps = [];
+  let i = 0, j = 0;
+  const push = (note, patch, end) => {
+    const cells = t.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: t.split('') }, patch, end ? { end: true, answer: i === s.length } : {}));
+  };
+  push(`Tìm ${s.length ? "mọi ký tự của '"+s+"'" : 'chuỗi rỗng'} trong '${t}' theo thứ tự. i = con trỏ s, j = con trỏ t.`,
+    { ptr: { i, j }, ptrNames: ['i', 'j'] });
+  while (i < s.length && j < t.length) {
+    if (s[i] === t[j]) {
+      push(`s[${i}] = '${s[i]}' trùng t[${j}] → khớp! i++, j++.`, { read: at150(t.split(''), j), ptr: { i: i + 1, j: j + 1 }, ptrNames: ['i', 'j'] });
+      i++; j++;
+    } else {
+      push(`s[${i}] = '${s[i]}' ≠ t[${j}] = '${t[j]}' → chỉ tăng j (bỏ qua ký tự trong t).`,
+        { read: at150(t.split(''), j), ptr: { i, j: j + 1 }, ptrNames: ['i', 'j'] });
+      j++;
+    }
+  }
+  push(i === s.length ? `Đã khớp toàn bộ '${s}' → subsequence.` : `Hết t trước khi khớp hết → không phải subsequence.`, {}, true);
+  return steps;
+}
+
+/* ============ 167 Two Sum II - Input Array Is Sorted ============ */
+function trace_two_sum_ii(input) {
+  const { numbers, target } = input;
+  const steps = [];
+  let l = 0, r = numbers.length - 1;
+  const push = (note, patch, end) => {
+    const cells = numbers.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: numbers.slice() }, patch, end ? { end: true, answer: [l + 1, r + 1] } : {}));
+  };
+  push(`Mảng đã sắp tăng → bắt đầu l = 0, r = ${r}. Tổng hiện tại: ${numbers[l] + numbers[r]}.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const s = numbers[l] + numbers[r];
+    if (s === target) {
+      push(`Tổng ${numbers[l]} + ${numbers[r]} = ${target} → đáp án 1-indexed: [${l + 1}, ${r + 1}].`,
+        { read: [at150(numbers, l), at150(numbers, r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      return steps;
+    } else if (s < target) {
+      l++;
+      push(`Tổng ${s} < ${target} → tăng l lên ${l} (cần tổng lớn hơn; mảng tăng nên chỉ còn hướng này).`,
+        { read: [at150(numbers, l - 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    } else {
+      r--;
+      push(`Tổng ${s} > ${target} → giảm r xuống ${r}.`,
+        { read: [at150(numbers, r + 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+  }
+  push('Không tìm thấy cặp.', {}, true);
+  return steps;
+}
+
+/* ============ EXPORT ============ */
+const TRACES150 = {
+  '125-valid-palindrome': { fn: trace_valid_palindrome, input: { s: 'A man, a plan, a canal: Panama' } },
+  '392-is-subsequence': { fn: trace_is_subsequence, input: { s: 'abc', t: 'ahbgdc' } },
+  '167-two-sum-ii-input-array-is-sorted': { fn: trace_two_sum_ii, input: { numbers: [2, 7, 11, 15], target: 9 } },
+  '121-best-time-to-buy-and-sell-stock': { fn: trace_stock, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '122-best-time-to-buy-and-sell-stock-ii': { fn: trace_stock_ii, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '15-3sum': { fn: trace_3sum, input: { nums: [-1, 0, 1, 2, -1, -4] } },
+  '11-container-with-most-water': { fn: trace_container, input: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
+  '3-longest-substring-without-repeating-characters': { fn: trace_longest_substr, input: { s: 'abcabcbb' } },
+  '209-minimum-size-subarray-sum': { fn: trace_min_subarray, input: { nums: [2, 3, 1, 2, 4, 3], target: 7 } },
+  '238-product-of-array-except-self': { fn: trace_product_except_self, input: { nums: [1, 2, 3, 4] } },
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = { TRACES150 };
+globalThis.TRACES150 = TRACES150;
+/* phần dữ liệu DATA được chèn vào đây bởi build script */
+const DATA = {"group":{"title":"Ngăn xếp","count":5,"desc":"Ngăn xếp LIFO dùng để khớp cặp, giữ thứ tự, và tính toán biểu thức hậu tố."},"problems":[{"no":"20","title":"Valid Parentheses","cat":"Stack","diff":"Easy","statement":"Xem chuỗi ngoặc (), [], {} có đúng thứ tự đóng mở không.","examples":"\"()[]{}\" → true · \"([)]\" → false · \"(]\" → false","keyIdea":"Mở thì đẩy vào stack, đóng thì phải khớp với đỉnh stack.","thinking":{"forward":"Quy nạp tiến: duyệt từng ký tự — dấu mở đẩy vào stack; dấu đóng buộc phải khớp đỉnh stack, nếu không thì chuỗi hỏng ngay.","reverse":"Quy nạp ngược: muốn kết luận chuỗi hợp lệ thì khi kết thúc stack phải rỗng và mọi dấu đóng đều có dấu mở tương ứng ở đúng vị trí."},"note":"Chú giải: điểm mấu chốt là dấu đóng gần nhất phải khớp dấu mở gần nhất — đó chính là LIFO. Kiểm tra stack rỗng trước khi pop để tránh lỗi index.","approaches":[{"name":"Stack + map cặp","time":"O(n)","space":"O(n)","idea":"Đẩy dấu mở; gặp dấu đóng, nếu đỉnh không tương ứng hoặc stack rỗng → false; cuối cùng stack rỗng → true.","code":"def is_valid(s):\n    stack = []; m = {')':'(', ']':'[', '}':'{'}\n    for c in s:\n        if c in m:\n            if not stack or stack[-1] != m[c]: return False\n            stack.pop()\n        else:\n            stack.append(c)\n    return not stack","tcex":{"input":{"s":"()[]{}"},"kind":"stack","display":"stack","expected":true,"anim":true},"_pno":"20","steps":[{"note":"stack = []; m = {')':'(', ']':'[', '}':'{'}","line":2,"array":[],"explain":"stack rỗng; m ánh xạ dấu đóng về dấu mở tương ứng."},{"stk":[],"note":"Stack: [] — for c in s:","line":3,"array":[],"stack":[],"explain":"Duyệt từng ký tự c của s."},{"note":"if c in m:","line":4,"array":[],"explain":"c='(' không nằm trong m → là dấu mở."},{"note":"stack.append(c)","line":8,"array":[],"explain":"Đẩy '(' vào stack chờ dấu đóng tương ứng."},{"stk":["("],"note":"Stack: ['('] — for c in s:","line":3,"array":[],"stack":["("],"explain":"Stack ['(']; lấy ký tự kế."},{"note":"if c in m:","line":4,"array":[],"explain":"c=')' nằm trong m → xử lý như dấu đóng."},{"note":"if not stack or stack[-1] != m[c]: return False","line":5,"array":[],"explain":"Stack không rỗng, đỉnh '(' = m[')'] → khớp cặp."},{"note":"stack.pop()","line":6,"array":[],"explain":"Pop '(' — cặp () đóng đúng."},{"stk":[],"note":"Stack: [] — for c in s:","line":3,"array":[],"stack":[],"explain":"Stack rỗng; lấy ký tự kế."},{"note":"if c in m:","line":4,"array":[],"explain":"c='[' là dấu mở."},{"note":"stack.append(c)","line":8,"array":[],"explain":"Push '[' chờ dấu ']'."},{"stk":["["],"note":"Stack: ['['] — for c in s:","line":3,"array":[],"stack":["["],"explain":"Stack ['[']; lấy ký tự kế."},{"note":"if c in m:","line":4,"array":[],"explain":"c=']' nằm trong m → dấu đóng."},{"note":"if not stack or stack[-1] != m[c]: return False","line":5,"array":[],"explain":"Đỉnh '[' khớp m[']'] → cặp [] hợp lệ."},{"note":"stack.pop()","line":6,"array":[],"explain":"Pop '[' — đoạn giữa cân bằng."},{"stk":[],"note":"Stack: [] — for c in s:","line":3,"array":[],"stack":[],"explain":"Stack rỗng; lấy ký tự kế."},{"note":"if c in m:","line":4,"array":[],"explain":"c='{' là dấu mở."},{"note":"stack.append(c)","line":8,"array":[],"explain":"Push '{' chờ dấu '}'."},{"stk":["{"],"note":"Stack: ['{'] — for c in s:","line":3,"array":[],"stack":["{"],"explain":"Stack ['{']; lấy ký tự kế."},{"note":"if c in m:","line":4,"array":[],"explain":"c='}' nằm trong m → dấu đóng."},{"note":"if not stack or stack[-1] != m[c]: return False","line":5,"array":[],"explain":"Đỉnh '{' khớp m['}'] → khớp cặp."},{"note":"stack.pop()","line":6,"array":[],"explain":"Pop '{' — cặp cuối đóng đúng."},{"stk":[],"note":"Stack: [] — for c in s:","line":3,"array":[],"stack":[],"explain":"Stack rỗng — chuỗi đã duyệt xong."},{"note":"return not stack — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":9,"array":[],"end":true,"answer":true,"explain":"Trả not stack = True: toàn bộ ngoặc cân bằng."}],"anim":true},{"name":"Thay cặp liên tiếp","time":"O(n²)","space":"O(n)","idea":"Liên tục xoá các cặp '()','[]','{}' lân cận tới khi không đổi; rỗng → true. Dạy trực giác trước khi dùng stack.","code":"def is_valid(s):\n    prev = None\n    while prev != s:\n        prev = s\n        s = s.replace('()','').replace('[]','').replace('{}','')\n    return s == ''","tcex":{"input":{"s":"([)]"},"kind":"stack","display":"s","expected":false,"anim":true},"_pno":"20","steps":[{"stk":"([)]","note":"Stack: ([)] — prev = None","line":2,"array":[],"stack":"([)]","explain":"Khởi tạo prev=None, s='([)]' — chuỗi ban đầu."},{"note":"while prev != s:","line":3,"array":[],"explain":"Vòng lặp: cứ thay các cặp '()','[]','{}' cho tới khi không thay được nữa."},{"note":"prev = s","line":4,"array":[],"explain":"prev = s (lưu trạng thái trước khi thay)."},{"note":"s = s.replace('()','').replace('[]','').replace('{}','')","line":5,"array":[],"explain":"s = s.replace... — '([)]' không có cặp liên tiếp nào → giữ nguyên."},{"note":"while prev != s:","line":3,"array":[],"explain":"prev == s → vòng dừng (không còn cặp nào để bỏ)."},{"note":"return s == '' — Kết thúc — đáp án: False ✓ (khớp kỳ vọng)","line":6,"array":[],"end":true,"answer":false,"explain":"Kết quả s != '' → chuỗi ngoặc lồng nhau nhưng cặp KHÔNG liền kề → false."}],"anim":true}]},{"no":"71","title":"Simplify Path","cat":"Stack","diff":"Medium","statement":"Rút gọn đường dẫn tuyệt đối POSIX: . giữ nguyên thư mục, .. lui, // như /, theo cú pháp chuẩn.","examples":"\"/home//foo/\" → \"/home/foo\" · \"/../\" → \"/\" · \"/a/./b/../../c/\" → \"/c\"","keyIdea":"Tách theo '/', dùng stack cho các phần tên; '..' pop nếu không rỗng, '.' bỏ qua.","thinking":{"forward":"Quy nạp tiến: mỗi tên thư mục hợp lệ là một phần tử được đẩy lên stack; '..' trả về thư mục cha nên pop phần tử đang nằm trên cùng.","reverse":"Quy nạp ngược: muốn ra đường dẫn chuẩn thì chỉ giữ các tên thư mục thật sự còn tồn tại sau khi đã xử lý hết '..' — thứ tự trong stack chính là thứ tự đường dẫn."},"note":"Chú giải: '.' và chuỗi rỗng (do '//') không tạo thư mục nên bỏ qua; '..' ở gốc '/' không thể lên cao hơn nên chỉ pop khi stack còn phần tử.","approaches":[{"name":"Stack tên thư mục","time":"O(n)","space":"O(n)","idea":"parts = path.split('/'); với mỗi p: rỗng/'.' bỏ, '..' pop, khác push; kết quả '/' + '/'.join(stack).","code":"def simplify_path(path):\n    stack = []\n    for p in path.split('/'):\n        if p == '' or p == '.': continue\n        elif p == '..':\n            if stack: stack.pop()\n        else: stack.append(p)\n    return '/' + '/'.join(stack)","tcex":{"input":{"path":"/a/./b/../../c/"},"kind":"stack","display":"stack","expected":"/c","anim":true},"_pno":"71","steps":[{"note":"stack = []","line":2,"array":[],"explain":"stack rỗng — chỉ chứa tên thư mục thật."},{"stk":[],"note":"Stack: [] — for p in path.split('/'):","line":3,"array":[],"stack":[],"explain":"split('/') tách '/a//b/../../c/' → ['','a','','b','..','..','c','']."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='' (slash mở đầu) → bỏ qua."},{"note":"for p in path.split('/'):","line":3,"array":[],"explain":"Vòng lặp: p kế tiếp = 'a'."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='a' không rỗng, không '.' → xét tiếp."},{"note":"elif p == '..':","line":5,"array":[],"explain":"p='a' không phải '..' → rơi xuống else."},{"note":"else: stack.append(p)","line":7,"array":[],"explain":"Push 'a' — thư mục thật đầu tiên."},{"stk":["a"],"note":"Stack: ['a'] — for p in path.split('/'):","line":3,"array":[],"stack":["a"],"explain":"Stack ['a']; p kế = '' (slash kép '//')."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='' → bỏ qua."},{"note":"for p in path.split('/'):","line":3,"array":[],"explain":"Vòng lặp: p kế = 'b'."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='b' hợp lệ."},{"note":"elif p == '..':","line":5,"array":[],"explain":"Không phải '..'."},{"note":"else: stack.append(p)","line":7,"array":[],"explain":"Push 'b' — đường dẫn /a/b."},{"stk":["a","b"],"note":"Stack: ['a', 'b'] — for p in path.split('/'):","line":3,"array":[],"stack":["a","b"],"explain":"Stack ['a','b']; p kế = '..'."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='..' không rỗng/không '.' → không bỏ."},{"note":"elif p == '..':","line":5,"array":[],"explain":"p='..' → chuẩn bị lên cấp mẹ."},{"note":"if stack: stack.pop()","line":6,"array":[],"explain":"Pop 'b' — thoát khỏi thư mục b."},{"stk":["a"],"note":"Stack: ['a'] — for p in path.split('/'):","line":3,"array":[],"stack":["a"],"explain":"Stack ['a']; p kế = '..' lần nữa."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"Không bỏ."},{"note":"elif p == '..':","line":5,"array":[],"explain":"p='..' → lên tiếp."},{"note":"if stack: stack.pop()","line":6,"array":[],"explain":"Pop 'a' — về gốc /."},{"stk":[],"note":"Stack: [] — for p in path.split('/'):","line":3,"array":[],"stack":[],"explain":"Stack []; p kế = 'c'."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='c' hợp lệ."},{"note":"elif p == '..':","line":5,"array":[],"explain":"Không phải '..'."},{"note":"else: stack.append(p)","line":7,"array":[],"explain":"Push 'c' — thư mục cuối."},{"stk":["c"],"note":"Stack: ['c'] — for p in path.split('/'):","line":3,"array":[],"stack":["c"],"explain":"Stack ['c']; p kế = '' (slash cuối)."},{"note":"if p == '' or p == '.': continue","line":4,"array":[],"explain":"p='' → bỏ qua."},{"note":"for p in path.split('/'):","line":3,"array":[],"explain":"Hết token — thoát vòng lặp."},{"note":"return '/' + '/'.join(stack) — Kết thúc — đáp án: /c ✓ (khớp kỳ vọng)","line":8,"array":[],"end":true,"answer":"/c","explain":"Trả '/' + 'c' = '/c' — đường dẫn chuẩn hoá."}],"anim":true},{"name":"Regex tách token","time":"O(n)","space":"O(n)","idea":"Chỉ lấy các token không rỗng/không '.' bằng regex rồi xử lý cờ '..'.","code":"import re\ndef simplify_path(path):\n    stack = []\n    for p in re.split(r'/+', path.strip('/')):\n        if p in ('', '.'): continue\n        if p == '..':\n            if stack: stack.pop()\n        else: stack.append(p)\n    return '/' + '/'.join(stack)","tcex":{"input":{"path":"/a/./b/../../c/"},"kind":"stack","display":"stack","expected":"/c","anim":true},"_pno":"71","steps":[{"note":"stack = []","line":3,"array":[],"explain":"stack rỗng — giữ tên thư mục thật."},{"stk":[],"note":"Stack: [] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":[],"explain":"regex /+ tách: ['a','b','..','..','c'] — không còn token rỗng."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"p='a' không rỗng, không '.' → xét tiếp."},{"note":"if p == '..':","line":6,"array":[],"explain":"Không phải '..' → rơi xuống else."},{"note":"else: stack.append(p)","line":8,"array":[],"explain":"Push 'a'."},{"stk":["a"],"note":"Stack: ['a'] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":["a"],"explain":"Stack ['a']; p kế = 'b'."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"p='b' hợp lệ."},{"note":"for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"explain":"Vòng lặp p kế tiếp."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"Không rỗng, không '.'."},{"note":"if p == '..':","line":6,"array":[],"explain":"Không phải '..'."},{"note":"else: stack.append(p)","line":8,"array":[],"explain":"Push 'b' — /a/b."},{"stk":["a","b"],"note":"Stack: ['a', 'b'] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":["a","b"],"explain":"Stack ['a','b']; p kế = '..'."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"Không bỏ."},{"note":"if p == '..':","line":6,"array":[],"explain":"Đúng '..' → lên cấp mẹ."},{"note":"if stack: stack.pop()","line":7,"array":[],"explain":"Pop 'b'."},{"stk":["a"],"note":"Stack: ['a'] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":["a"],"explain":"Stack ['a']; p kế = '..'."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"Không bỏ."},{"note":"if p == '..':","line":6,"array":[],"explain":"Đúng '..'."},{"note":"if stack: stack.pop()","line":7,"array":[],"explain":"Pop 'a' — về gốc."},{"stk":[],"note":"Stack: [] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":[],"explain":"Stack []; p kế = 'c'."},{"note":"if p in ('', '.'): continue","line":5,"array":[],"explain":"p='c' hợp lệ."},{"note":"if p == '..':","line":6,"array":[],"explain":"Không phải '..'."},{"note":"else: stack.append(p)","line":8,"array":[],"explain":"Push 'c'."},{"stk":["c"],"note":"Stack: ['c'] — for p in re.split(r'/+', path.strip('/')):","line":4,"array":[],"stack":["c"],"explain":"Stack ['c']; hết token."},{"note":"return '/' + '/'.join(stack) — Kết thúc — đáp án: /c ✓ (khớp kỳ vọng)","line":9,"array":[],"end":true,"answer":"/c","explain":"Trả '/c' — kết quả khớp cách split thường."}],"anim":true}]},{"no":"155","title":"Min Stack","cat":"Stack","diff":"Medium","statement":"Thiết kế stack hỗ trợ push, pop, top và getMin trong O(1).","examples":"push(-2),push(0),push(-3),getMin()→-3,pop(),top()→0,getMin()→-2","keyIdea":"Mỗi phần tử lưu kèm giá trị min tại thời điểm đó (stack song song min).","thinking":{"forward":"Quy nạp tiến: khi push phần tử x, min mới = min(x, min hiện tại) — lưu kèm (x, min) nên mỗi phần tử 'nhớ' min đúng lúc nó được đẩy vào.","reverse":"Quy nạp ngược: muốn getMin O(1) sau mọi pop thì thông tin min phải nằm ngay tại đỉnh stack — không thể quét lại, phải lưu sẵn từng bước."},"note":"Chú giải: với stack cặp, pop chỉ cần xoá phần tử đỉnh (cả x lẫn min tại thời điểm đó); nếu dùng hai stack riêng thì phải đồng bộ cả hai khi pop.","approaches":[{"name":"Stack cặp (val, min)","time":"O(1)","space":"O(n)","idea":"push: min = min(x, min hiện tại); lưu (x, min). getMin chính là min của đỉnh.","code":"class MinStack:\n    def __init__(self):\n        self.st = []\n    def push(self, x):\n        mn = x if not self.st else min(x, self.st[-1][1])\n        self.st.append((x, mn))\n    def pop(self): self.st.pop()\n    def top(self): return self.st[-1][0]\n    def getMin(self): return self.st[-1][1]","static":["Khởi tạo stack rỗng chứa cặp (giá trị, min tại thời điểm đó).","push(-2): stack rỗng nên min = -2; lưu cặp (-2, -2) → st = [(-2, -2)].","push(0): min = min(0, -2) = -2; lưu cặp (0, -2) → st = [(-2, -2), (0, -2)].","push(-3): min = min(-3, -2) = -3; lưu cặp (-3, -3) → st = [(-2, -2), (0, -2), (-3, -3)].","getMin: đọc phần tử min của đỉnh stack = -3.","pop: xoá cặp đỉnh (-3, -3); min hiện tại tự động trở lại -2 nhờ cặp kế.","top: đọc giá trị đỉnh = 0.","getMin: đọc min đỉnh mới = -2."],"_pno":"155","steps":[{"note":"Khởi tạo stack rỗng chứa cặp (giá trị, min tại thời điểm đó)."},{"note":"push(-2): stack rỗng nên min = -2; lưu cặp (-2, -2) → st = [(-2, -2)]."},{"note":"push(0): min = min(0, -2) = -2; lưu cặp (0, -2) → st = [(-2, -2), (0, -2)]."},{"note":"push(-3): min = min(-3, -2) = -3; lưu cặp (-3, -3) → st = [(-2, -2), (0, -2), (-3, -3)]."},{"note":"getMin: đọc phần tử min của đỉnh stack = -3."},{"note":"pop: xoá cặp đỉnh (-3, -3); min hiện tại tự động trở lại -2 nhờ cặp kế."},{"note":"top: đọc giá trị đỉnh = 0."},{"note":"getMin: đọc min đỉnh mới = -2."}],"anim":false},{"name":"Hai stack","time":"O(1)","space":"O(n)","idea":"Stack chính + stack min (đẩy khi ≤ min hiện tại); khi pop, nếu phần tử pop bằng min thì pop luôn stack min.","code":"class MinStack:\n    def __init__(self):\n        self.st = []; self.min = []\n    def push(self, x):\n        self.st.append(x)\n        if not self.min or x <= self.min[-1]: self.min.append(x)\n    def pop(self):\n        if self.st.pop() == self.min[-1]: self.min.pop()\n    def top(self): return self.st[-1]\n    def getMin(self): return self.min[-1]","static":["Khởi tạo hai stack rỗng: st (giá trị) và min (các mốc min).","push(-2): st = [-2]; min rỗng nên min = [-2].","push(0): st = [-2, 0]; 0 > đỉnh min -2 nên không đẩy vào min.","push(-3): st = [-2, 0, -3]; -3 ≤ đỉnh min nên min = [-2, -3].","getMin: đọc đỉnh min = -3 (O(1), không quét stack).","pop: lấy -3 khỏi st; -3 == đỉnh min nên pop luôn min → min = [-2].","top: đọc đỉnh st = 0.","getMin: đọc đỉnh min = -2."],"_pno":"155","steps":[{"note":"Khởi tạo hai stack rỗng: st (giá trị) và min (các mốc min)."},{"note":"push(-2): st = [-2]; min rỗng nên min = [-2]."},{"note":"push(0): st = [-2, 0]; 0 > đỉnh min -2 nên không đẩy vào min."},{"note":"push(-3): st = [-2, 0, -3]; -3 ≤ đỉnh min nên min = [-2, -3]."},{"note":"getMin: đọc đỉnh min = -3 (O(1), không quét stack)."},{"note":"pop: lấy -3 khỏi st; -3 == đỉnh min nên pop luôn min → min = [-2]."},{"note":"top: đọc đỉnh st = 0."},{"note":"getMin: đọc đỉnh min = -2."}],"anim":false},{"name":"Điện toán min tăng dần (biến thể)","time":"O(1)","space":"O(n)","idea":"Khi push min mới, lưu (x cũ, min mới) — cách khác cùng nguyên tắc.","code":"class MinStack:\n    def __init__(self):\n        self.st = []; self.min = None\n    def push(self, x):\n        if self.min is None: self.min = x; self.st.append(x)\n        elif x < self.min:\n            self.st.append(2*x - self.min); self.min = x\n        else: self.st.append(x)\n    def pop(self):\n        v = self.st.pop()\n        if v < self.min:\n            self.min = 2*self.min - v\n    def top(self):\n        v = self.st[-1]\n        return v if v >= self.min else self.min\n    def getMin(self): return self.min","static":["Khởi tạo st rỗng, min = None.","push(-2): min chưa có nên đặt min = -2, st = [-2].","push(0): 0 ≥ -2 nên chỉ đẩy 0 → st = [-2, 0], min = -2.","push(-3): -3 < -2 nên đẩy 2*(-3) - (-2) = -4 (mã hoá mốc cũ), đặt min = -3.","getMin: đọc min = -3.","pop: lấy -4 khỏi st; -4 < min(-3) nên khôi phục min = 2*(-3) - (-4) = -2.","top: đỉnh st = 0 ≥ min nên trả 0.","getMin: đọc min = -2."],"_pno":"155","steps":[{"note":"Khởi tạo st rỗng, min = None."},{"note":"push(-2): min chưa có nên đặt min = -2, st = [-2]."},{"note":"push(0): 0 ≥ -2 nên chỉ đẩy 0 → st = [-2, 0], min = -2."},{"note":"push(-3): -3 < -2 nên đẩy 2*(-3) - (-2) = -4 (mã hoá mốc cũ), đặt min = -3."},{"note":"getMin: đọc min = -3."},{"note":"pop: lấy -4 khỏi st; -4 < min(-3) nên khôi phục min = 2*(-3) - (-4) = -2."},{"note":"top: đỉnh st = 0 ≥ min nên trả 0."},{"note":"getMin: đọc min = -2."}],"anim":false}]},{"no":"150","title":"Evaluate Reverse Polish Notation","cat":"Stack","diff":"Medium","statement":"Tính giá trị biểu thức RPN (toán tử sau toán hạng): + - * / (chia nguyên về 0).","examples":"[\"2\",\"1\",\"+\",\"3\",\"*\"] → 9 · [\"4\",\"13\",\"5\",\"/\",\"+\"] → 6","keyIdea":"Gặp số đẩy stack; gặp toán tử pop hai số, tính, đẩy kết quả.","thinking":{"forward":"Quy nạp tiến: mỗi token số tích luỹ vào stack; khi gặp toán tử, hai toán hạng gần nhất (đỉnh stack) là bộ phận con đã tính xong — thay bằng kết quả.","reverse":"Quy nạp ngược: muốn có đáp án cuối thì trước đó biểu thức con phải rút gọn thành một số duy nhất trên stack — phép toán nào cũng là 'gộp hai đỉnh thành một'."},"note":"Chú giải: chia nguyên về 0 dùng int(a/b) — tránh dùng // vì sai với số âm (vd -1//2 = -1 nhưng cần 0).","approaches":[{"name":"Stack đơn giản","time":"O(n)","space":"O(n)","idea":"Số → int push; toán tử → b = pop(), a = pop(), tính rồi push. Chia dùng int(a/b) về 0.","code":"def eval_rpn(tokens):\n    st = []\n    for t in tokens:\n        if t in '+-*/':\n            b = st.pop(); a = st.pop()\n            if t == '+': st.append(a+b)\n            elif t == '-': st.append(a-b)\n            elif t == '*': st.append(a*b)\n            else: st.append(int(a/b))\n        else:\n            st.append(int(t))\n    return st[0]","tcex":{"input":{"tokens":["2","1","+","3","*"]},"kind":"stack","display":"st","expected":9,"anim":true},"_pno":"150","steps":[{"note":"st = []","line":2,"stack":["2","1","+","3","*"],"explain":"st = [] — stack trung gian cho biểu thức hậu tố."},{"stk":[],"note":"Stack: [] — for t in tokens:","line":3,"stack":[],"explain":"Duyệt token theo thứ tự hậu tố."},{"note":"if t in '+-*/':","line":4,"stack":["2","1","+","3","*"],"explain":"t='2' không phải toán tử."},{"note":"st.append(int(t))","line":11,"stack":["2","1","+","3","*"],"explain":"Push int 2 — toán hạng chờ."},{"stk":[2],"note":"Stack: [2] — for t in tokens:","line":3,"stack":[2],"explain":"Stack [2]; t kế = '1'."},{"note":"if t in '+-*/':","line":4,"stack":["2","1","+","3","*"],"explain":"'1' không phải toán tử."},{"note":"st.append(int(t))","line":11,"stack":["2","1","+","3","*"],"explain":"Push 1."},{"stk":[2,1],"note":"Stack: [2, 1] — for t in tokens:","line":3,"stack":[2,1],"explain":"Stack [2,1]; t kế = '+'."},{"note":"if t in '+-*/':","line":4,"stack":["2","1","+","3","*"],"explain":"'+' là toán tử → xử lý."},{"note":"b = st.pop(); a = st.pop()","line":5,"stack":["2","1","+","3","*"],"explain":"b=1 (pop trước), a=2 (pop sau): a là toán hạng trái."},{"stk":[],"note":"Stack: [] — if t == '+': st.append(a+b)","line":6,"stack":[],"explain":"2+1=3, push lại — kết quả thành toán hạng mới."},{"stk":[3],"note":"Stack: [3] — for t in tokens:","line":3,"stack":[3],"explain":"Stack [3]; t kế = '3'."},{"note":"if t in '+-*/':","line":4,"stack":["2","1","+","3","*"],"explain":"'3' không phải toán tử."},{"note":"st.append(int(t))","line":11,"stack":["2","1","+","3","*"],"explain":"Push 3."},{"stk":[3,3],"note":"Stack: [3, 3] — for t in tokens:","line":3,"stack":[3,3],"explain":"Stack [3,3]; t kế = '*'."},{"note":"if t in '+-*/':","line":4,"stack":["2","1","+","3","*"],"explain":"'*' là toán tử."},{"note":"b = st.pop(); a = st.pop()","line":5,"stack":["2","1","+","3","*"],"explain":"b=3, a=3."},{"stk":[],"note":"Stack: [] — if t == '+': st.append(a+b)","line":6,"stack":[],"explain":"3×3=9, push — kết quả cuối."},{"note":"elif t == '-': st.append(a-b)","line":7,"stack":["2","1","+","3","*"],"explain":"nhánh '-' không chạy (đã vào '+')."},{"note":"elif t == '*': st.append(a*b)","line":8,"stack":["2","1","+","3","*"],"explain":"nhánh '*' không chạy nữa — chỉ cần 1 nhánh."},{"stk":[9],"note":"Stack: [9] — for t in tokens:","line":3,"stack":[9],"explain":"Stack [9]; hết token."},{"note":"return st[0] — Kết thúc — đáp án: 9 ✓ (khớp kỳ vọng)","line":12,"stack":["2","1","+","3","*"],"end":true,"answer":9,"explain":"Trả phần tử duy nhất 9 — đúng giá trị (2+1)×3."}],"anim":true},{"name":"Bảng toán tử (lambda)","time":"O(n)","space":"O(n)","idea":"Map toán tử → hàm; chia nguyên về 0 chú ý số âm.","code":"def eval_rpn(tokens):\n    import operator as op\n    fns = {'+':op.add, '-':op.sub, '*':op.mul}\n    st = []\n    for t in tokens:\n        if t in fns:\n            b = st.pop(); a = st.pop()\n            st.append(fns[t](a, b))\n        elif t == '/':\n            b = st.pop(); a = st.pop()\n            st.append(int(a / b))\n        else:\n            st.append(int(t))\n    return st[0]","tcex":{"input":{"tokens":["4","13","5","/","+"]},"kind":"stack","display":"st","expected":6,"anim":true},"_pno":"150","steps":[{"note":"import operator as op","line":2,"stack":["4","13","5","/","+"],"explain":"Import operator để mượn hàm số học có sẵn."},{"note":"fns = {'+':op.add, '-':op.sub, '*':op.mul}","line":3,"stack":["4","13","5","/","+"],"explain":"fns ánh xạ '+','-','*' sang hàm — bỏ dài if/elif."},{"note":"st = []","line":4,"stack":["4","13","5","/","+"],"explain":"st rỗng."},{"stk":[],"note":"Stack: [] — for t in tokens:","line":5,"stack":[],"explain":"Duyệt token hậu tố."},{"note":"if t in fns:","line":6,"stack":["4","13","5","/","+"],"explain":"t='4' không trong fns."},{"note":"elif t == '/':","line":9,"stack":["4","13","5","/","+"],"explain":"Không phải '/'."},{"note":"st.append(int(t))","line":13,"stack":["4","13","5","/","+"],"explain":"Push 4."},{"stk":[4],"note":"Stack: [4] — for t in tokens:","line":5,"stack":[4],"explain":"Stack [4]; t kế = '13'."},{"note":"if t in fns:","line":6,"stack":["4","13","5","/","+"],"explain":"Không trong fns."},{"note":"elif t == '/':","line":9,"stack":["4","13","5","/","+"],"explain":"Không phải '/'."},{"note":"st.append(int(t))","line":13,"stack":["4","13","5","/","+"],"explain":"Push 13."},{"stk":[4,13],"note":"Stack: [4, 13] — for t in tokens:","line":5,"stack":[4,13],"explain":"Stack [4,13]; t kế = '5'."},{"note":"if t in fns:","line":6,"stack":["4","13","5","/","+"],"explain":"Không trong fns."},{"note":"elif t == '/':","line":9,"stack":["4","13","5","/","+"],"explain":"Không phải '/'."},{"note":"st.append(int(t))","line":13,"stack":["4","13","5","/","+"],"explain":"Push 5."},{"stk":[4,13,5],"note":"Stack: [4, 13, 5] — for t in tokens:","line":5,"stack":[4,13,5],"explain":"Stack [4,13,5]; t kế = '/'."},{"note":"if t in fns:","line":6,"stack":["4","13","5","/","+"],"explain":"Không trong fns (fns không có '/')."},{"note":"elif t == '/':","line":9,"stack":["4","13","5","/","+"],"explain":"Đúng '/' → nhánh chia."},{"note":"b = st.pop(); a = st.pop()","line":10,"stack":["4","13","5","/","+"],"explain":"b=5, a=13: 13/5."},{"stk":[4],"note":"Stack: [4] — st.append(int(a / b))","line":11,"stack":[4],"explain":"13/5=2.6 → int() cắt → 2 (chia về 0)."},{"stk":[4,2],"note":"Stack: [4, 2] — for t in tokens:","line":5,"stack":[4,2],"explain":"Stack [4,2]; t kế = '+'."},{"note":"if t in fns:","line":6,"stack":["4","13","5","/","+"],"explain":"'+' có trong fns."},{"note":"b = st.pop(); a = st.pop()","line":7,"stack":["4","13","5","/","+"],"explain":"b=2, a=4."},{"stk":[],"note":"Stack: [] — st.append(fns[t](a, b))","line":8,"stack":[],"explain":"fns['+'](4,2) = 6 — gọi hàm qua bảng."},{"stk":[6],"note":"Stack: [6] — for t in tokens:","line":5,"stack":[6],"explain":"Stack [6]; hết token."},{"note":"return st[0] — Kết thúc — đáp án: 6 ✓ (khớp kỳ vọng)","line":14,"stack":["4","13","5","/","+"],"end":true,"answer":6,"explain":"Trả 6 — đúng giá trị (4 + 13/5)."}],"anim":true}]},{"no":"224","title":"Basic Calculator","cat":"Stack","diff":"Hard","statement":"Tính biểu thức số nguyên với +, -, ngoặc (), khoảng trắng. Không có phép nhân/chia.","examples":"\"1 + 1\" → 2 · \" 2-1 + 2 \" → 3 · \"(1+(4+5+2)-3)+(6+8)\" → 23","keyIdea":"Duyệt chữ số/kiến trúc dấu; '(' đẩy kết quả và dấu hiện tại vào stack, khôi phục sau ')'.","thinking":{"forward":"Quy nạp tiến: gom dần số hiện tại (num), cộng dồn vào res theo dấu hiện tại; khi gặp '(' thì cất res và dấu — biểu thức trong ngoặc tính độc lập.","reverse":"Quy nạp ngược: muốn biết giá trị ngoài ngoặc thì sau khi ')' phải cộng toàn bộ giá trị trong ngoặc (đã có dấu đi kèm) vào kết quả đã cất trước đó."},"note":"Chú giải: dấu '-' đặt sign = -1; khi gặp ')' thì res trong ngoặc được nhân với sign đã cất. Cách 2 là bản mẫu giảng dạy — không phải code chạy thật.","approaches":[{"name":"Stack + dấu hiện tại","time":"O(n)","space":"O(n)","idea":"Khi gặp '(': push (kết quả, dấu). Gặp ')' pop và cộng sub-expression vào pre. Dấu: +1/-1.","code":"def calculate(s):\n    st = []; res = 0; num = 0; sign = 1\n    for c in s:\n        if c.isdigit():\n            num = num*10 + int(c)\n        elif c == '+': res += sign*num; num = 0; sign = 1\n        elif c == '-': res += sign*num; num = 0; sign = -1\n        elif c == '(':\n            st.append((res, sign))\n            res = 0; sign = 1\n        elif c == ')':\n            res += sign*num; num = 0\n            prev, sgn = st.pop()\n            res = prev + sgn*res\n    return res + sign*num","static":["Khởi tạo res = 0, num = 0, sign = 1, stack rỗng.","Gặp '1': num = 1.","Gặp '+': res += 1*1 = 1; num = 0; sign = 1.","Gặp '1': num = 1.","Gặp ')': res += 1*1 = 2; lấy (prev, sgn) từ stack; res = prev + sgn*2.","Cuối biểu thức: res += sign*num (số cuối cùng) → kết quả 2.","Cấu trúc '(' → ')' lặp lại cho từng cặp ngoặc lồng nhau."],"_pno":"224","steps":[{"note":"Khởi tạo res = 0, num = 0, sign = 1, stack rỗng."},{"note":"Gặp '1': num = 1."},{"note":"Gặp '+': res += 1*1 = 1; num = 0; sign = 1."},{"note":"Gặp '1': num = 1."},{"note":"Gặp ')': res += 1*1 = 2; lấy (prev, sgn) từ stack; res = prev + sgn*2."},{"note":"Cuối biểu thức: res += sign*num (số cuối cùng) → kết quả 2."},{"note":"Cấu trúc '(' → ')' lặp lại cho từng cặp ngoặc lồng nhau."}],"anim":false},{"name":"Thêm toán hạng rõ ràng","time":"O(n)","space":"O(n)","idea":"Biến đổi dấu '-' thành cộng số âm, đẩy cả biểu thức con vào stack với dấu ngoài.","code":"def calculate(s):\n    # đổi - thành +(-x) là gọn nhất cho dấu\n    res = num = 0; sign = 1; st = []; s = s.replace('-', '+-')\n    for ch in s.split('+'):\n        ch = ch.strip()\n        if not ch: continue\n        if ch == '(' or ch == '': continue\n        # minh hoạ: đơn giản hoá bằng cách duyệt trực tiếp ở cách 1","static":["Ý tưởng: thay mọi dấu '-' bằng '+-' để tách biểu thức thành tổng các số (có dấu).","Ví dụ \"2-1 + 2\" → \"2+-1 + 2\" → tách theo '+' được ['2', '-1 ', ' 2'].","Mỗi phần tử là một số nguyên có dấu, cộng dồn lại.","Ngoặc '(' cần lưu res/sign hiện tại để tính độc lập trong ngoặc (xem cách 1).","Đây là bản giảng dạy minh hoạ tư duy — cách 1 là code chạy thật."],"_pno":"224","steps":[{"note":"Ý tưởng: thay mọi dấu '-' bằng '+-' để tách biểu thức thành tổng các số (có dấu)."},{"note":"Ví dụ \"2-1 + 2\" → \"2+-1 + 2\" → tách theo '+' được ['2', '-1 ', ' 2']."},{"note":"Mỗi phần tử là một số nguyên có dấu, cộng dồn lại."},{"note":"Ngoặc '(' cần lưu res/sign hiện tại để tính độc lập trong ngoặc (xem cách 1)."},{"note":"Đây là bản giảng dạy minh hoạ tư duy — cách 1 là code chạy thật."}],"anim":false}]}]};
+
+function el(tag, cls, text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+/* highlight Python giản lược */
+const KW=new Set("def return if elif else for while in not and or None True False break continue pass import from as with class lambda".split(" "));
+function hlpy(code){
+  // token hoá: comment, string, số, keyword, còn lại giữ nguyên
+  let out="",i=0;
+  const seg=code;
+  while(i<seg.length){
+    const rest=seg.slice(i);
+    let m=rest.match(/^#.*/);
+    if(m){out+='<span class="c">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^("""[\s\S]*?"""|'''[\s\S]*?'''|"[^"\n]*"|'[^'\n]*')/);
+    if(m){out+='<span class="s">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^\d+(\.\d+)?/);
+    if(m){out+='<span class="n">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^[A-Za-z_][A-Za-z0-9_]*/);
+    if(m){const w=m[0];out+=KW.has(w)?'<span class="k">'+w+'</span>':esc(w);i+=w.length;continue}
+    out+=esc(rest[0]);i++;
+  }
+  return out;
+}
+
+/* ---------- Player v2 (animation thủ công, đa cấu trúc) ---------- */
+const isNodeTarget=t=>t&&typeof t==="object"&&"node" in t;
+function _pickKind(step){
+  if(step.mat!==undefined)return "mat";
+  if(step.ll!==undefined)return "ll";
+  if(step.tree!==undefined)return "tree";
+  if(step.stack!==undefined)return "stack";
+  if(step.hash!==undefined)return "hash";
+  if(step.set!==undefined)return "set";
+  return "array";
+}
+class Player{
+  constructor(host,steps,cfg){
+    this.host=host;this.steps=steps;this.cfg=cfg||{};this.idx=0;
+    this.ctl=el("div","ctl");
+    this.note=el("p","note","");
+    this.wrap=el("div","cells-wrap");
+    this.box=el("div","cells");this.ptrLayer=el("div","ptrs");
+    this.wrap.appendChild(this.box);this.wrap.appendChild(this.ptrLayer);
+    this.auxBox=el("div","aux");this.auxBox.style.display="none";
+    this.cellEls=[];this.ptrEls=new Map();this.nodeEls=new Map();this.rowEls=[];this.hashEls=[];this.hideCache=new Map();
+    // detect kind ổn định từ step đầu có dữ liệu
+    this.kind=_pickKind(steps[0]);
+    for(const st of steps){const k=_pickKind(st);if(k!=="array"){this.kind=k;break}}
+    this.buildCells();this.buildPtrs();this.buildControls();
+    // code pane: hiển thị code + sáng dòng hiện tại (nếu step có line)
+    this.codePane=null;
+    if(this._hasLines()){this.buildCodePane()}
+    this.stepTo(0);
+    host.innerHTML="";host.appendChild(this.ctl);host.appendChild(this.note);host.appendChild(this.wrap);host.appendChild(this.auxBox);
+    if(this.codePane)host.appendChild(this.codePane);
+  }
+  _hasLines(){for(const s of this.steps){if(s.line!==undefined&&s.line>0)return true}return false}
+  buildCodePane(){
+    const pre=el("pre","code pane");
+    // gắn code nếu cfg.code truyền
+    const code=this.cfg&&this.cfg.code;
+    if(code)pre.innerHTML=hlpy(code);
+    else{pre.textContent="(code đang chạy — bật cfg.code để hiển thị)";pre.style.color="var(--mut)";pre.style.fontSize="12px"}
+    this.codePane=pre;
+    this.lineEls=[];
+    if(code){pre.innerHTML=hlpy(code);this.lineEls=[...pre.querySelectorAll("div,span")]}
+  }
+  renderCode(s){
+    if(!this.codePane)return;
+    // bỏ highlight cũ
+    this.lineEls.forEach(l=>{l.classList&&l.classList.remove("curline")});
+    const ln=s.line;
+    if(!ln)return;
+    // tìm dòng thứ ln trong code pane — cách đơn giản: đánh dấu theo vị trí
+    const pre=this.codePane;
+    // chia theo dòng text
+    const htmlLines=pre.innerHTML.split("\n");
+    // xây bản đồ: dòng thứ k → index thẻ chứa
+    if(!this._lineIdx){this._lineIdx={};const all=pre.querySelectorAll("span,div");let k=0;for(let idx=0;idx<all.length;idx++){const t=all[idx];this._lineIdx[k++]=t}}
+    const elx=this._lineIdx[ln-1]||this._lineIdx[0];
+    if(elx){elx.classList&&elx.classList.add("curline");elx.scrollIntoView&&elx.scrollIntoView({block:"nearest"})}
+  }
+  /* ---------- dựng khung ---------- */
+  buildCells(){
+    const k=this.kind;
+    if(k==="mat"){ // cần đủ số hàng từ mọi step
+      const rows=Math.max(...this.steps.map(s=>s.mat?s.mat.length:0));
+      for(let r=0;r<rows;r++){
+        const rd=el("div","mrow");
+        const cols=Math.max(...this.steps.map(s=>s.mat&&s.mat[r]?s.mat[r].length:0));
+        for(let c=0;c<cols;c++){
+          const d=el("div","cell mcell");
+          d.appendChild(el("span","cv",""));
+          d.appendChild(el("span","ci",r+","+c));
+          rd.appendChild(d);this.cellEls.push(d);
+        }
+        this.box.appendChild(rd);
+      }
+      this.box.classList.add("mat");return;
+    }
+    if(k==="stack"){
+      this.box.classList.add("stack");
+      this.stackRow=el("div","stack-row");
+      this.stackRow.appendChild(this.box);
+      this.stackPtrs=el("div","stack-ptrs");
+      this.stackRow.appendChild(this.stackPtrs);
+      this.wrap.appendChild(this.stackRow);
+      this.topLabel=el("div","topb","top");this.box.appendChild(this.topLabel);
+      return;
+    }
+    if(k==="hash"){this.box.classList.add("hash");return}
+    if(k==="set"){this.box.classList.add("set");return}
+    if(k==="ll"||k==="tree"){
+      this.box.classList.add(k==="tree"?"tree":"ll");
+      this.tbox=el("div","tbox");this.tbox.appendChild(this.box);this.wrap.appendChild(this.tbox);
+      return;
+    }
+    // array: dựng từ step đầu
+    const c0=this.steps[0];
+    const cells=(c0.array||c0.cells||[]);
+    cells.forEach((c,i)=>{
+      const d=el("div","cell");
+      const v=typeof c==="object"?c.value:c;
+      if(c&&c.keep)d.classList.add("keep");
+      if(c&&c.dead)d.classList.add("dead");
+      if(c&&c.zone==="tail")d.classList.add("tail");
+      d.appendChild(el("span","cv",v));
+      d.appendChild(el("span","ci",String(i)));
+      this.box.appendChild(d);this.cellEls.push(d);
+    });
+  }
+  buildPtrs(){
+    const names=new Set();
+    this.steps.forEach(s=>{if(s.ptr)Object.keys(s.ptr).forEach(x=>names.add(x));});
+    names.forEach(n=>{const p=el("span","ptr",n);p.style.display="none";this.ptrLayer.appendChild(p);this.ptrEls.set(n,p)});
+  }
+  buildControls(){
+    const mk=(t,fn,title)=>{const b=el("button","btn",t);b.title=title||"";b.onclick=fn;this.ctl.appendChild(b);return b};
+    mk("⏮",()=>this.stepTo(0),"Về đầu");
+    mk("◀",()=>this.stepTo(this.idx-1),"Lùi 1 bước");
+    mk(">",()=>this.stepTo(this.idx+1),"Tiến 1 bước");
+    mk("⏭",()=>this.stepTo(this.steps.length-1),"Tới kết quả");
+    this.counter=el("span","sp","");this.ctl.appendChild(this.counter);
+    this.range=el("input","rng");this.range.type="range";this.range.min=0;this.range.max=Math.max(0,this.steps.length-1);this.range.value=0;
+    this.range.oninput=()=>this.stepTo(+this.range.value);this.ctl.appendChild(this.range);
+    // keyboard: ← → Home End khi host được focus
+    this._kd=e=>{
+      if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+      if(e.key==="ArrowLeft"){this.stepTo(this.idx-1);e.preventDefault()}
+      else if(e.key==="ArrowRight"){this.stepTo(this.idx+1);e.preventDefault()}
+      else if(e.key==="Home"){this.stepTo(0);e.preventDefault()}
+      else if(e.key==="End"){this.stepTo(this.steps.length-1);e.preventDefault()}
+    };
+    this.host.addEventListener("keydown",this._kd);
+    this.host.tabIndex=0;
+  }
+  /* ---------- highlight helpers ---------- */
+  _markTarget(target,cls){
+    // target: [i] | [r,c] | {node:id} | node-id | string-key (hash)
+    if(!target)return null;
+    let idx=-1,elx=null;
+    if(Array.isArray(target)){
+      if(this.kind==="mat"){const[r,c]=target;const cols=this._matCols();idx=r*cols+c}
+      else idx=target[0];
+    }else if(typeof target==="object"&&target.node!==undefined)idx=target.node;
+    else if(typeof target==="number")idx=target;
+    else if(typeof target==="string"&&this.kind==="hash"){
+      for(let i=0;i<this.hashEls.length;i++){
+        const hk=this.hashEls[i].querySelector(".hk");
+        if(hk&&hk.textContent===target){idx=i;break}
+      }
+    }
+    if(idx<0)return null;
+    const ce=this.cellEls[idx];
+    if(ce)ce.classList.add(cls);
+    const ne=this.nodeEls.get(idx);
+    if(ne)ne.classList.add(cls);
+    return ce||ne||null;
+  }
+  _matCols(){
+    let max=0;
+    for(const s of this.steps)if(s.mat)max=Math.max(max,...s.mat.map(r=>r.length));
+    return max;
+  }
+  /* ---------- render dữ liệu node (ll/tree) ---------- */
+  renderNodes(s){
+    const data=s[this.kind];
+    if(!data||!data.nodes){if(this.box)this.box.innerHTML="";this.nodeEls.clear();return}
+    if(this.kind==="ll"){
+      this._renderLL(data);
+    }else{
+      this._renderTree(data);
+    }
+    this._applyNodeHighlights(s);
+  }
+  _renderLL(data){
+    /* dãy node nằm ngang: node đứng yên, cập nhật giá trị + độ rộng value */
+    if(!this.llRow){this.llRow=el("div","llrow");this.box.appendChild(this.llRow)}
+    this.llRow.innerHTML="";this.nodeEls.clear();
+    let cur=data.head!==undefined?data.head:data.root;
+    const seen=new Set();
+    let guard=0;
+    while(cur!==null&&cur!==undefined&&!seen.has(cur)&&guard++<100){
+      seen.add(cur);
+      const nd=data.nodes[cur];if(!nd)break;
+      const nodeEl=el("div","node");
+      nodeEl.appendChild(el("span","cv",String(nd.value)));
+      nodeEl.appendChild(el("span","nid",String(cur)));
+      this.llRow.appendChild(nodeEl);this.nodeEls.set(cur,nodeEl);
+      const nxt=nd.next;
+      if(nxt!==null&&nxt!==undefined){const a=el("span","arrow","→");this.llRow.appendChild(a)}
+      cur=nxt;
+    }
+  }
+  _renderTree(data){
+    /* cây: BFS → lưới; node ở hàng = depth, cột = thứ tự trái→phải; cạnh vẽ bằng SVG */
+    if(!this.tgrid){
+      this.tgrid=el("div","tgrid");
+      this.box.appendChild(this.tgrid);
+      this.svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      this.svg.style.position="absolute";this.svg.style.top="0";this.svg.style.left="0";this.svg.style.overflow="visible";
+      this.tgrid.appendChild(this.svg);
+    }
+    const depth={},pos={};
+    const bfs=(()=>{
+      const root=data.root;
+      if(root===null||root===undefined||root===-1)return;
+      const layer=[[root,0,0]];
+      depth[root]=0;pos[root]=0;
+      while(layer.length){
+        const item=layer.shift();
+        const id=item[0],d=item[1],p=item[2];
+        const nd=data.nodes[id];if(!nd)continue;
+        const step=(nd.left!==null&&nd.left!==undefined&&nd.left!==-1)?1:0;
+        const child=d+1;
+        if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1){
+          depth[nd.left]=child;pos[nd.left]=p;
+          layer.push([nd.left,child,p]);
+        }
+        if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1){
+          depth[nd.right]=child;pos[nd.right]=p+step;
+          layer.push([nd.right,child,p+step]);
+        }
+      }
+    })();
+    const H=Object.keys(depth).reduce((mx,id)=>Math.max(mx,depth[id]+1),0)||0;
+    const W=Object.keys(pos).reduce((mx,id)=>Math.max(mx,pos[id]+1),0)||0;
+    const L=H>0?90:72,Wd=W>0?88:72;
+    this.tgrid.style.gridTemplateColumns="repeat("+Math.max(1,W)+",88px)";
+    /* tạo/cập nhật node theo id */
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      if(nd.vis===false){const old=this.nodeEls.get(+id);if(old)old.style.display="none";continue}
+      let n=this.nodeEls.get(+id);
+      if(!n){
+        n=el("div","node tnd");
+        n.appendChild(el("span","cv",""));
+        n.appendChild(el("span","nid",""));
+        n.appendChild(el("span","nstate",""));
+        n.appendChild(el("span","nst",""));
+        this.nodeEls.set(+id,n);
+        this.tgrid.insertBefore(n,this.svg);
+      }
+      n.querySelector(".cv").textContent=String(nd.value);
+      // ẩn id BFS — narrative dùng GIÁ TRỊ làm nhận diện, id chỉ gây nhầm
+      n.querySelector(".nid").textContent="";
+      const st=n.querySelector(".nstate");
+      if(nd.state!==undefined&&nd.state!==null&&nd.state!==""){st.textContent=String(nd.state);st.style.display=""}
+      else st.style.display="none";
+      n.style.gridRow=(depth[+id]!==undefined?depth[+id]:0)+1;
+      n.style.gridColumn=(pos[+id]!==undefined?pos[+id]:0)+1;
+      n.style.display="";
+    }
+    /* ẩn node cũ không còn trong dữ liệu */
+    this.nodeEls.forEach((n,id)=>{
+      if(!(id in data.nodes))n.style.display="none";
+    });
+    /* dây nối cha→con (SVG) */
+    const arcs=[];
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      const px=(pos[+id]||0)*Wd+44,py=(depth[+id]||0)*L+44;
+      if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1&&data.nodes[nd.left]){
+        const lx=(pos[nd.left]||0)*Wd+44,ly=(depth[nd.left]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+lx+" "+ly);
+      }
+      if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1&&data.nodes[nd.right]){
+        const rx=(pos[nd.right]||0)*Wd+44,ry=(depth[nd.right]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+rx+" "+ry);
+      }
+    }
+    const tw=Math.max(88,(W-1)*Wd+88),th=Math.max(88,(H-1)*L+88);
+    this.svg.setAttribute("width",tw);
+    this.svg.setAttribute("height",th);
+    this.svg.setAttribute("viewBox","0 0 "+tw+" "+th);
+    this.svg.innerHTML=arcs.map(d=>"<path d='"+d+"' stroke='#2f3c5c' stroke-width='2' fill='none'/>").join("");
+    this.box.style.minWidth=tw+"px";
+  }
+  _swapPairs(s){
+    if(!s.swap)return[];
+    const pairs=Array.isArray(s.swap)&&s.swap.length&&Array.isArray(s.swap[0])?s.swap:[s.swap];
+    return pairs.filter(p=>p&&p.length===2);
+  }
+  _applyNodeHighlights(s){
+    this.nodeEls.forEach(n=>{n.classList.remove("rd","wr","sw","act");const b=n.querySelector(".nst");if(b)b.style.display="none"});
+    // badge "đọc"/"ghi" trên node đang tương tác (tree/ll)
+    if(s.read)[].concat(s.read).forEach(r=>{
+      const hit=this._markTarget(r.target,"rd");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="đọc";b.style.display=""}}
+    });
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake){
+      const hit=this._markTarget(s.write.dest,"wr");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="ghi";b.style.display=""}}
+    }
+    this._swapPairs(s).forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    // ptr → node-id: highlight + badge trên node
+    if(s.ptr&&this.kind!=="array"&&this.kind!=="mat"){
+      const names=Object.keys(s.ptr);
+      const active=new Set();
+      Object.values(s.ptr).forEach((v,vi)=>{
+        const id=typeof v==="number"?v:(isNodeTarget(v)?v.node:-1);
+        if(id<0)return;
+        active.add(id);
+        const n=this.nodeEls.get(id);
+        if(n)n.classList.add("act");
+        let b=n&&n.querySelector(".ptr-tag");
+        if(n&&!b){b=el("span","ptr-tag",names[vi]||"?");b.style.cssText="position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap";n.appendChild(b)}
+        if(b)b.textContent=names[vi]||"?";
+      });
+      /* ẩn badge của node không còn con trỏ */
+      this.nodeEls.forEach((n,id)=>{
+        if(active.has(id))return;
+        const b=n.querySelector(".ptr-tag");
+        if(b)b.style.display="none";
+      });
+    }
+  }
+  /* ---------- render dữ liệu cell (array/mat/stack/hash/set) ---------- */
+  renderCells(s){
+    this.cellEls.forEach(x=>x.classList.remove("rd","wr","sw","act"));
+    if(this.kind==="mat"){
+      const cols=this._matCols();
+      if(s.mat)s.mat.forEach((row,r)=>row.forEach((v,c)=>{const i=r*cols+c;const ce=this.cellEls[i];if(ce){const cv=ce.querySelector(".cv");if(cv)cv.textContent=String(v)}}));
+      // write colored → tô xanh lục cho đúng ô
+      this.cellEls.forEach(x=>x.classList.remove("colored"));
+      if(s.write&&s.write.dest&&Array.isArray(s.write.dest)&&s.write.colored){
+        const[r,c]=s.write.dest;const ce=this.cellEls[r*cols+c];
+        if(ce)ce.classList.add("colored");
+      }
+    }else if(this.kind==="array"){
+      const src=s.display||s.array;
+      if(Array.isArray(src))src.forEach((v,p)=>{const cv=this.cellEls[p]&&this.cellEls[p].querySelector(".cv");if(cv&&cv.textContent!==String(v))cv.textContent=v});
+    }else if(this.kind==="stack"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=Array.isArray(s.stack)?s.stack:[];
+      arr.forEach(v=>{const d=el("div","cell scol");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+      this.box.appendChild(this.topLabel);
+    }else if(this.kind==="hash"){
+      this.box.innerHTML="";this.cellEls=[];this.hashEls=[];
+      const pairs=typeof s.hash==="object"&&!Array.isArray(s.hash)?Object.entries(s.hash):s.hash||[];
+      pairs.forEach(([k,v])=>{const hp=el("div","hpair");hp.appendChild(el("span","hk",k));hp.appendChild(el("span","hv",v));this.cellEls.push(hp);this.hashEls.push(hp);this.box.appendChild(hp)});
+    }else if(this.kind==="set"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=s.set||[];
+      arr.forEach(v=>{const d=el("div","sbadge");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+    }
+    // highlight cell
+    if(s.read)[].concat(s.read).forEach(r=>{this._markTarget(r.target,"rd")});
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+    const swapPairs=this._swapPairs(s);
+    swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    if(s.cells)s.cells.forEach((c,i)=>{if(c&&c.active&&this.cellEls[i])this.cellEls[i].classList.add("act")});
+    // stack: highlight top (ô cuối) + con trỏ dọc bên phải
+    if(this.kind==="stack"){
+      const top=this.cellEls[this.cellEls.length-1];
+      if(top)top.classList.add("top");
+      this.renderStackPtrs(s);
+      return;
+    }
+    // hash highlight theo cặp
+    if(this.kind==="hash"){
+      this.hashEls.forEach(x=>x.classList.remove("rd","wr","sw"));
+      if(s.read)[].concat(s.read).forEach(r=>{const c=this._markTarget(r.target,"rd");if(c&&c.classList)c.classList.add("rd")});
+      if(s.write&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+      swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    }
+    // ptr trên cell: định vị
+    this.ptrEls.forEach(p=>{p.style.display="none";p.style.top="1px"});
+    if(s.ptr&&(this.kind==="array"||this.kind==="mat")){
+      let n=0;
+      const names=Object.keys(s.ptr);
+      Object.values(s.ptr).forEach(pos=>{
+        const nm=names[n++]||"?";
+        const p=this.ptrEls.get(nm);if(!p)return;
+        p.style.display="block";
+        if(Array.isArray(pos)&&this.kind==="mat"){
+          const[r,c]=pos;p.style.left=(c*44+8)+"px";p.style.top=(r*40+1)+"px";
+        }
+        else if(typeof pos==="number")p.style.left=(pos*49+8)+"px";
+      });
+    }
+  }
+  renderStackPtrs(s){
+    if(!this.stackPtrs)return;
+    this.stackPtrs.innerHTML="";
+    if(!s.ptr)return;
+    Object.keys(s.ptr).forEach(name=>{
+      const pos=s.ptr[name];
+      const tag=el("span","sph");
+      tag.appendChild(el("span","ptr-tag",name));
+      this.stackPtrs.appendChild(tag);
+    });
+  }
+  /* ---------- aux (mảng phụ bên cạnh, vd nums2 / rotated) ---------- */
+  renderAux(s){
+    const a=s.aux;
+    this.auxBox.style.display=a?"flex":"none";
+    this.auxBox.innerHTML="";
+    if(!a)return;
+    const rows=Array.isArray(a)?a:[a];
+    rows.forEach(aux=>{
+      const lbl=el("span","alabel",aux.label||"aux");
+      this.auxBox.appendChild(lbl);
+      const vals=aux.values||[];
+      const ac=el("div","acells");
+      const amap=[];
+      vals.forEach(v=>{
+        const d=el("div","acell");
+        d.appendChild(el("span","cv",String(v)));
+        ac.appendChild(d);amap.push(d);
+      });
+      this.auxBox.appendChild(ac);
+      const tgt=pos=>Array.isArray(pos)&&pos.length===1?pos[0]:(typeof pos==="number"?pos:-1);
+      const hlAux=(i,cls)=>{if(i>=0&&i<amap.length)amap[i].classList.add(cls)};
+      if(s.read)[].concat(s.read).forEach(r=>{if(r&&!isNodeTarget(r.target))hlAux(tgt(r.target),"rd")});
+      if(s.write&&!s.write.bake&&!isNodeTarget(s.write.dest))hlAux(tgt(s.write.dest),"wr");
+      if(s.swap)[].concat(s.swap).forEach(pair=>{if(pair&&pair.length)[0,1].forEach(k=>{if(!isNodeTarget(pair[k]))hlAux(tgt(pair[k]),"sw")})});
+    });
+  }
+  /* ---------- note + end ---------- */
+  renderNote(s){
+    // ưu tiên narrative (explain) do content viết; fallback note động
+    const txt = (s.explain && s.explain.trim()) ? s.explain : s.note;
+    this.note.textContent=txt;
+    this.note.classList.toggle("fin",!!s.end);
+    const old=this.host.querySelector(".result");if(old)old.remove();
+    if(s.end){const r=el("span","result",s.k!==undefined?" · k = "+s.k:(s.answer!==undefined?" · đáp án: "+s.answer:""));if(r.textContent)this.note.appendChild(r)}
+  }
+  stepTo(i){
+    this.idx=Math.max(0,Math.min(this.steps.length-1,i));
+    const s=this.steps[this.idx];
+    if(this.kind==="ll"||this.kind==="tree")this.renderNodes(s);
+    else this.renderCells(s);
+    this.renderAux(s);
+    this.renderCode(s);
+    this.renderNote(s);
+    this.counter.textContent=(this.idx+1)+" / "+this.steps.length;
+    this.range.value=this.idx;
+  }
+}
+
+/* ---------- renderer ---------- */
+function render(){
+  if(!DATA){document.getElementById("content").textContent="(Dữ liệu chưa được nhúng — chạy build script trước)";return}
+  const g=DATA.group;
+  document.title=g.title+" — Top Interview 150";
+  document.getElementById("grpChip").textContent=g.count+" bài";
+  document.getElementById("grpTitle").textContent=g.title;
+  document.getElementById("grpDesc").textContent=g.desc||"";
+  const toc=document.getElementById("toc");
+  toc.innerHTML="";
+  DATA.problems.forEach(p=>{
+    const a=el("a","grp");a.href="#p"+p.no;
+    a.appendChild(el("span","ic",p.done?"✅":"📄"));
+    const d=el("span");d.appendChild(el("b","",p.no+" · "+p.title));
+    d.appendChild(el("small","",p.cat+" · "+p.diff));
+    a.appendChild(d);toc.appendChild(a);
+  });
+  const main=document.getElementById("content");
+  main.innerHTML="";
+  DATA.problems.forEach(p=>main.appendChild(renderProblem(p)));
+  const foot=document.getElementById("foot");
+  foot.textContent="Top Interview 150 · "+g.title+" · nội dung tiếng Việt · giải Python có test thật · tạo 2026-08-15";
+}
+function renderProblem(p){
+  const s=el("section","card");s.id="p"+p.no;
+  const top=el("div","sec-top");
+  top.appendChild(el("h2","",p.no+" · "+p.title));
+  top.appendChild(el("span","tag "+(p.diff||"easy").toLowerCase(),p.diff||"Easy"));
+  top.appendChild(el("span","tag",p.cat));
+  s.appendChild(top);
+  s.appendChild(el("p","stmt",p.statement));
+  if(p.examples)s.appendChild(el("p","ex",p.examples));
+  if(p.keyIdea)s.appendChild(el("div","idea ✨ Ý tưởng chính: "+p.keyIdea));
+  p.approaches.forEach((ap,i)=>{
+    const sol=el("div","sol");
+    const h=el("h4");
+    h.appendChild(el("span","",["①","②","③"][i]+" "+ap.name));
+    if(ap.time&&ap.space)h.appendChild(el("span","meta",ap.time+" · "+ap.space));
+    sol.appendChild(h);
+    if(ap.idea)sol.appendChild(el("p","stmt",ap.idea));
+    if(ap.code){const pre=el("pre","code");pre.innerHTML=hlpy(ap.code);sol.appendChild(pre)}
+    if(ap.steps){
+      if(ap.anim){const run=el("div","run");sol.appendChild(run);requestAnimationFrame(()=>new Player(run,ap.steps,{problem:p.no,approach:ap.name,code:ap.code}))}
+      else{
+        sol.appendChild(el("p","steps-desc","Các bước (tự luyện: che code rồi viết lại):"));
+        const box=el("div","steps");
+        ap.steps.forEach((st,j)=>{const l=el("div","step-line");l.appendChild(el("span","sno",String(j+1)));l.appendChild(el("span","",st.note));box.appendChild(l)});
+        sol.appendChild(box);
+      }
+    }
+    s.appendChild(sol);
+  });
+  return s;
+}
+document.addEventListener("DOMContentLoaded",render);
+</script>
+<script>
+/*__PLAYER_PATCH__*/
+</script>
+</body>
+</html>

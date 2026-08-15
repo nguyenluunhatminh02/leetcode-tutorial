@@ -1,0 +1,347 @@
+{
+  "desc": "Toán: chuẩn hoá chữ số, luỹ thừa nhanh, đếm thừa số nguyên tố, hình học đường thẳng.",
+  "problems": [
+    {
+      "no": "9",
+      "title": "Palindrome Number",
+      "cat": "Math",
+      "diff": "Easy",
+      "statement": "Xem số nguyên có đọc xuôi ngược bằng nhau không, không dùng chuỗi.",
+      "examples": "121 → true · -121 → false · 10 → false",
+      "keyIdea": "Dựng nửa sau đảo ngược từng chữ số; so với nửa trước.",
+      "approaches": [
+        {
+          "name": "Đảo nửa số",
+          "time": "O(log n)",
+          "space": "O(1)",
+          "idea": "Số âm hoặc tận cùng 0 (khác 0) → false; rev = rev*10 + x%10; so khi rev ≥ x.",
+          "code": "def is_palindrome(x):\n    if x < 0 or (x % 10 == 0 and x != 0): return False\n    rev = 0\n    while rev < x:\n        rev = rev*10 + x % 10\n        x //= 10\n    return x == rev or x == rev // 10",
+          "tcex": {
+            "input": {
+              "x": 121
+            },
+            "kind": "none",
+            "expected": true
+          },
+          "static": [
+            "x=121: tách nửa sau 21 đảo thành 12, so nửa trước 12 → true",
+            "x âm → false ngay; x tận cùng 0 và x≠0 → false",
+            "Đảo từng chữ số cuối sang rev cho đến khi rev ≥ x//10",
+            "So sánh nửa trước (x//10) với nửa sau (rev) hoặc rev//10 (lẻ chữ số)"
+          ]
+        },
+        {
+          "name": "Dùng chuỗi",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "s = str(x); s == s[::-1]. Khi không bị cấm chuỗi.",
+          "code": "def is_palindrome(x):\n    s = str(x)\n    return s == s[::-1]",
+          "tcex": {
+            "input": {
+              "x": 121
+            },
+            "kind": "none",
+            "expected": true
+          },
+          "static": [
+            "x=121: tách nửa sau 21 đảo thành 12, so nửa trước 12 → true",
+            "x âm → false ngay; x tận cùng 0 và x≠0 → false",
+            "Đảo từng chữ số cuối sang rev cho đến khi rev ≥ x//10",
+            "So sánh nửa trước (x//10) với nửa sau (rev) hoặc rev//10 (lẻ chữ số)"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    },
+    {
+      "no": "66",
+      "title": "Plus One",
+      "cat": "Math",
+      "diff": "Easy",
+      "statement": "Cộng 1 vào số biểu diễn bằng mảng chữ số.",
+      "examples": "[1,2,3] → [1,2,4] · [9] → [1,0] · [9,9,9] → [1,0,0,0]",
+      "keyIdea": "Cộng từ cuối; nếu digit < 9 thì +1 và dừng; bằng 9 → về 0 và nhớ tiếp; hết mảng → chèn 1 đầu.",
+      "approaches": [
+        {
+          "name": "Quét ngược không carry biến",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "for i ngược: if digits[i] < 9: digits[i]+=1; return digits — else digits[i]=0; cuối [1]+digits.",
+          "code": "def plus_one(digits):\n    for i in range(len(digits)-1, -1, -1):\n        if digits[i] < 9:\n            digits[i] += 1\n            return digits\n        digits[i] = 0\n    return [1] + digits",
+          "tcex": {
+            "input": {
+              "digits": [
+                9,
+                9,
+                9
+              ]
+            },
+            "kind": "array",
+            "display": "digits",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              1,
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "name": "int rồi dựng lại",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "int(''.join(map(str,digits)))+1 rồi tách lại — tham chiếu dễ đọc.",
+          "code": "def plus_one(digits):\n    return [int(c) for c in str(int(''.join(map(str, digits))) + 1)]",
+          "tcex": {
+            "input": {
+              "digits": [
+                9,
+                9,
+                9
+              ]
+            },
+            "kind": "array",
+            "display": "digits",
+            "expected": [
+              1,
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    },
+    {
+      "no": "172",
+      "title": "Factorial Trailing Zeroes",
+      "cat": "Math",
+      "diff": "Medium",
+      "statement": "Đếm số 0 tận cùng của n!.",
+      "examples": "3! = 6 → 0 · 5! = 120 → 1 · 10! = 3628800 → 2",
+      "keyIdea": "Số 0 = số thừa số 10 = min(2,5) trong phân tích → chỉ cần đếm thừa số 5; mỗi 5^k góp k.",
+      "approaches": [
+        {
+          "name": "Đếm bội 5",
+          "time": "O(log n)",
+          "space": "O(1)",
+          "idea": "count += n//5; n//=5; lặp.",
+          "code": "def trailing_zeroes(n):\n    cnt = 0\n    while n:\n        n //= 5\n        cnt += n\n    return cnt",
+          "static": [
+            "Đếm số thừa số 5 trong n! (2 luôn đủ)",
+            "n=10: 10//5=2 → 2 chữ số 0",
+            "n=25: 25//5 + 25//25 = 5+1 = 6",
+            "Lặp n//=5 mỗi vòng, cộng dồn"
+          ],
+          "tcex": {
+            "input": {
+              "n": 25
+            },
+            "kind": "none",
+            "expected": 6
+          }
+        },
+        {
+          "name": "Đệ quy",
+          "time": "O(log n)",
+          "space": "O(log n)",
+          "idea": "f(n) = n//5 + f(n//5).",
+          "code": "def trailing_zeroes(n):\n    return 0 if n == 0 else n//5 + trailing_zeroes(n//5)",
+          "static": [
+            "Đếm số thừa số 5 trong n! (2 luôn đủ)",
+            "n=10: 10//5=2 → 2 chữ số 0",
+            "n=25: 25//5 + 25//25 = 5+1 = 6",
+            "Lặp n//=5 mỗi vòng, cộng dồn"
+          ],
+          "tcex": {
+            "input": {
+              "n": 25
+            },
+            "kind": "none",
+            "expected": 6
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    },
+    {
+      "no": "69",
+      "title": "Sqrt(x)",
+      "cat": "Math",
+      "diff": "Easy",
+      "statement": "Tính căn bậc hai nguyên (floor) của x.",
+      "examples": "8 → 2 · 4 → 2 · 2147395600 → 46340",
+      "keyIdea": "Binary search trên [0,x] tìm lớn nhất m² ≤ x; hoặc Newton.",
+      "approaches": [
+        {
+          "name": "BS [0,x]",
+          "time": "O(log x)",
+          "space": "O(1)",
+          "idea": "lo=0, hi=x+1; while lo<hi: mid; mid² ≤ x → lo=mid+1 else hi=mid; trả lo−1.",
+          "code": "def my_sqrt(x):\n    lo, hi = 0, x + 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if mid * mid <= x: lo = mid + 1\n        else: hi = mid\n    return lo - 1",
+          "tcex": {
+            "input": {
+              "x": 8
+            },
+            "kind": "none",
+            "ptrs": [
+              "lo",
+              "hi",
+              "mid"
+            ],
+            "expected": 2
+          }
+        },
+        {
+          "name": "Newton–Raphson",
+          "time": "O(log x)",
+          "space": "O(1)",
+          "idea": "g = 0.5*(g + x/g) tới khi hội tụ.",
+          "code": "def my_sqrt(x):\n    g = x\n    while g > x // g:\n        g = (g + x // g) // 2\n    return g",
+          "tcex": {
+            "input": {
+              "x": 8
+            },
+            "kind": "none",
+            "expected": 2
+          }
+        },
+        {
+          "name": "math.isqrt",
+          "time": "O(1)",
+          "space": "O(1)",
+          "idea": "Thư viện chuẩn chính xác.",
+          "code": "from math import isqrt\ndef my_sqrt(x):\n    return isqrt(x)",
+          "tcex": {
+            "input": {
+              "x": 8
+            },
+            "kind": "none",
+            "expected": 2
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    },
+    {
+      "no": "50",
+      "title": "Pow(x, n)",
+      "cat": "Math",
+      "diff": "Medium",
+      "statement": "Tính x^n (n có thể âm) trong O(log n).",
+      "examples": "2.0^10 → 1024.0 · 2.1^3 → 9.261 · 2^-2 → 0.25",
+      "keyIdea": "Luỹ thừa nhanh: x^(2k) = (x²)^k, x^(2k+1) = x·(x²)^k; n âm = 1/x^(−n).",
+      "approaches": [
+        {
+          "name": "Chia đôi số mũ",
+          "time": "O(log n)",
+          "space": "O(log n)",
+          "idea": "Đệ quy: n chẵn → pow(x*x, n/2); lẻ → x*pow(x*x, (n−1)/2).",
+          "code": "def my_pow(x, n):\n    if n == 0: return 1.0\n    if n < 0: return 1 / my_pow(x, -n)\n    if n % 2:\n        return x * my_pow(x*x, (n-1)//2)\n    return my_pow(x*x, n//2)",
+          "tcex": {
+            "input": {
+              "x": 2.0,
+              "n": 10
+            },
+            "kind": "none",
+            "expected": 1024.0
+          }
+        },
+        {
+          "name": "Vòng lặp bit (kỹ thuật gấp)",
+          "time": "O(log n)",
+          "space": "O(1)",
+          "idea": "Khi n chẵn: x², n//=2; khi lẻ: nhân x vào kết quả, n giảm. Mỗi bit n xử lý một lần.",
+          "code": "def my_pow(x, n):\n    neg = n < 0\n    n = abs(n); res = 1.0\n    while n:\n        if n & 1: res *= x\n        x *= x\n        n >>= 1\n    return 1/res if neg else res",
+          "tcex": {
+            "input": {
+              "x": 2.0,
+              "n": 10
+            },
+            "kind": "none",
+            "expected": 1024.0
+          },
+          "static": [
+            "Gấp đôi cơ số theo từng bit mũ, nhân khi bit=1",
+            "2^10: mũ 1010 → các bit 1 tại 2 và 8 → 2²·2⁸=1024",
+            "n âm: tính x^(|n|) rồi nghịch đảo"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    },
+    {
+      "no": "149",
+      "title": "Max Points on a Line",
+      "cat": "Math",
+      "diff": "Hard",
+      "statement": "Tìm số điểm nhiều nhất cùng nằm trên một đường thẳng.",
+      "examples": "points=[[1,1],[2,2],[3,3]] → 3 · [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]] → 4",
+      "keyIdea": "Mỗi điểm làm gốc, nhóm các hướng (dx,dy) chuẩn hoá bằng gcd; đếm tần suất; cộng bản thân.",
+      "approaches": [
+        {
+          "name": "Chuẩn hoá slope theo gcd",
+          "time": "O(n²)",
+          "space": "O(n)",
+          "idea": "Với mỗi i: map (dx/g, dy/g) đếm; g = gcd; cạnh trường hợp thẳng đứng (dx=0) và ngang; best = max(count)+1.",
+          "code": "from math import gcd\ndef max_points(points):\n    n = len(points)\n    if n < 3: return n\n    best = 1\n    for i in range(n):\n        slopes = {}\n        dup = 0\n        for j in range(n):\n            if i == j: continue\n            dx = points[j][0] - points[i][0]\n            dy = points[j][1] - points[i][1]\n            if dx == 0 and dy == 0: dup += 1\n            else:\n                g = gcd(dx, dy); dx//=g; dy//=g\n                key = 'v' if dx == 0 else (dy / dx)\n                slopes[key] = slopes.get(key, 0) + 1\n        best = max(best, (max(slopes.values()) if slopes else 0) + dup + 1)\n    return best",
+          "static": [
+            "Với mỗi điểm i, chuẩn hoá slope (dx,dy)/gcd",
+            "Lưu slope vào dict, đếm tần suất",
+            "Max cùng-slope + 1 (tính cả điểm i)",
+            "Xử lý trùng điểm (dx=dy=0)"
+          ],
+          "tcex": {
+            "input": {
+              "points": [
+                [
+                  1,
+                  1
+                ],
+                [
+                  2,
+                  2
+                ],
+                [
+                  3,
+                  3
+                ]
+              ]
+            },
+            "kind": "none",
+            "expected": 3
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
+        "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
+      },
+      "note": "Chú ý biên: số âm, 0, tràn int, float."
+    }
+  ]
+}

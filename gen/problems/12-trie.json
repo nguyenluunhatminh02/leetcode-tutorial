@@ -1,0 +1,86 @@
+{
+  "desc": "Trie (cây tiền tố): truy vấn tiền tố O(độ dài từ). Dùng cho tiền tố tìm kiếm nhanh và bài toán tìm từ trên lưới.",
+  "problems": [
+    {
+      "no": "208", "title": "Implement Trie (Prefix Tree)", "cat": "Trie", "diff": "Medium", "done": true,
+      "statement": "Thiết kế Trie với insert(word), search(word), startsWith(prefix).",
+      "examples": "insert('apple'),search('apple')→true,search('app')→false,startsWith('app')→true,insert('app'),search('app')→true",
+      "keyIdea": "Mỗi nút có dict con + cờ end. Duyệt theo ký tự; ends ở vị trí cuối.",
+      "thinking": {
+        "forward": "Quy nạp tiến: chèn từng ký tự tạo nhánh; từ chung tiền tố dùng chung nút nên insert 'apple' rồi 'app' chỉ tốn một đường.",
+        "reverse": "Quy nạp ngược: muốn biết một từ tồn tại, duyệt đủ số ký tự và kiểm tra cờ end — tiền tố thì chỉ cần duyệt được, không cần end."
+      },
+      "note": "Chú giải: search khác startsWith ở chỗ phải kiểm tra cờ end — từ 'app' không phải từ đã chèn dù là tiền tố của 'apple'; phức tạp mỗi thao tác O(L).",
+      "approaches": [
+        {"name": "Nút dict + cờ end", "time": "O(L)", "space": "O(chars)", "done": true,
+         "idea": "insert đi theo từng ký tự tạo nút con còn thiếu; search đi theo và đọc end; startsWith duyệt hết tiền tố là được (không cần end).",
+         "code": "class Trie:\n    def __init__(self):\n        self.ch = {}; self.end = False\n    def insert(self, w):\n        n = self\n        for c in w:\n            if c not in n.ch: n.ch[c] = Trie()\n            n = n.ch[c]\n        n.end = True\n    def search(self, w):\n        n = self._find(w)\n        return bool(n and n.end)\n    def startsWith(self, p):\n        return self._find(p) is not None\n    def _find(self, w):\n        n = self\n        for c in w:\n            if c not in n.ch: return None\n            n = n.ch[c]\n        return n",
+         "static": [
+           "Luồng thao tác: `insert('apple')`, `search('apple')`, `search('app')`, `startsWith('app')`, `insert('app')`, `search('app')`.",
+           "insert: từ gốc, đi theo từng ký tự; nếu nút con chưa tồn tại thì tạo mới; gán `end=True` ở nút cuối.",
+           "search: đi theo từng ký tự; hết đường → False; tới đúng nút cuối thì chỉ trả True nếu `end=True`.",
+           "startsWith: đi theo đủ tiền tố mà không cần quan tâm cờ end — chỉ cần đường đi tồn tại.",
+           "Chuỗi kết quả: 'apple'→True, 'app'→False, 'app' là tiền tố→True; sau khi insert('app'), 'app'→True."
+         ]},
+        {"name": "Nút mảng 26", "time": "O(L)", "space": "O(26·L)", "done": true,
+         "idea": "Thay dict bằng mảng 26 nút con — tối ưu truy cập nhưng cố định bảng chữ cái.",
+         "code": "class Trie:\n    def __init__(self):\n        self.kids = [None]*26; self.end = False\n    def insert(self, w):\n        n = self\n        for c in w:\n            i = ord(c) - 97\n            if not n.kids[i]: n.kids[i] = Trie()\n            n = n.kids[i]\n        n.end = True\n    def search(self, w):\n        n = self._f(w)\n        return bool(n and n.end)\n    def startsWith(self, p):\n        return self._f(p) is not None\n    def _f(self, w):\n        n = self\n        for c in w:\n            n = n.kids[ord(c)-97]\n            if not n: return None\n        return n",
+         "static": [
+           "Mỗi nút Trie dùng mảng 26 phần tử (một ô cho mỗi chữ cái thường) thay cho dict.",
+           "insert: với mỗi ký tự c, tính chỉ số `ord(c)-97`; ô trống thì gắn nút con mới; cuối từ gán `end=True`.",
+           "search: bước theo chỉ số từng ký tự; gặp ô None → False; nút cuối phải có cờ end.",
+           "startsWith: duyệt đủ độ dài tiền tố, không cần kiểm tra cờ end.",
+           "Ưu điểm: truy cập mảng O(1) cố định; nhược điểm: luôn tốn 26 con trỏ mỗi nút dù từ điển thưa."
+         ]}
+      ]
+    },
+    {
+      "no": "211", "title": "Design Add and Search Words Data Structure", "cat": "Trie", "diff": "Medium", "done": true,
+      "statement": "addWord(word); search(word) trong đó word có thể chứa '.' (khớp bất kỳ một ký tự).",
+      "examples": "addWord('bad'),addWord('dad'),addWord('mad'),search('pad')→false,search('.ad')→true",
+      "keyIdea": "Trie + khi gặp '.' phải thử MỌI nút con ở tầng đó (backtracking đệ quy).",
+      "thinking": {
+        "forward": "Quy nạp tiến: đi theo ký tự cụ thể nếu có; gặp '.' thì rẽ mọi nhánh con — mỗi nhánh là một khả năng khớp.",
+        "reverse": "Quy nạp ngược: pattern khớp nếu còn đúng một cách duyệt hết; để chắc chắn phải thử hết nhánh con ở dấu '.' tới tận lá."
+      },
+      "note": "Chú giải: '.' biến search từ O(L) thành O(26^L) tệ nhất; dùng any() để dừng sớm khi một nhánh đã khớp.",
+      "approaches": [
+        {"name": "Trie + DFS cho '.'", "time": "O(L) hoặc O(branches^L)", "space": "O(chars)", "done": true,
+         "idea": "search đệ quy; ký tự bình thường đi 1 nhánh, '.' duyệt tất cả con; có cờ end.",
+         "code": "class WordDictionary:\n    def __init__(self):\n        self.ch = {}; self.end = False\n    def addWord(self, w):\n        n = self\n        for c in w:\n            if c not in n.ch: n.ch[c] = WordDictionary()\n            n = n.ch[c]\n        n.end = True\n    def search(self, w):\n        def dfs(i, n):\n            if i == len(w): return n.end\n            c = w[i]\n            if c != '.':\n                return c in n.ch and dfs(i+1, n.ch[c])\n            return any(dfs(i+1, k) for k in n.ch.values())\n        return dfs(0, self)",
+         "static": [
+           "Luồng thao tác: `addWord('bad')`, `addWord('dad')`, `addWord('mad')`, `search('pad')`, `search('.ad')`, `search('b..')`.",
+           "addWord: chèn từng ký tự vào Trie, tạo nút con khi thiếu; nút cuối gán `end=True`.",
+           "search bắt đầu từ gốc với chỉ số 0, gọi đệ quy theo từng ký tự của pattern.",
+           "Ký tự thường (không phải '.') chỉ đi đúng một nhánh; thiếu nhánh → False.",
+           "Ký tự '.' duyệt mọi nút con ở tầng đó — bất kỳ nhánh nào tới đích đều tính là khớp.",
+           "Kết quả: 'pad'→False, '.ad'→True (khớp 'bad'/'dad'/'mad'), 'b..'→True (khớp 'bad')."
+         ]}
+      ]
+    },
+    {
+      "no": "212", "title": "Word Search II", "cat": "Trie", "diff": "Hard", "done": true,
+      "statement": "Tìm mọi từ trong words có mặt trên lưới ký tự (liền kề dọc/ngang, mỗi ô 1 lần).",
+      "examples": "board, words=['oath','pea','eat','rain'] → ['eat','oath']",
+      "keyIdea": "Dựng Trie của words rồi DFS từ mỗi ô, đi xuống theo ký tự; gom từ đạt được; cắt tỉa nhánh đã dùng.",
+      "thinking": {
+        "forward": "Quy nạp tiến: đứng ở một ô, chỉ đi tiếp nếu ký tự ô đó là con của nút Trie — lưới càng rộng càng tiết kiệm vì tìm kiếm chung cả bộ từ.",
+        "reverse": "Quy nạp ngược: một từ nằm trong lưới khi tồn tại đường đi tương ứng trong Trie — chia thành các lời giải con 'đi từ ô này theo nhánh nào'."
+      },
+      "note": "Chú giải: Dùng ký tự '#' để đánh dấu ô đang dùng rồi khôi phục khi quay lui; kết quả lưu trong set để tránh trùng từ tìm thấy nhiều lần.",
+      "approaches": [
+        {"name": "Trie + DFS backtrack", "time": "O(m·n·4^L)", "space": "O(sum words)", "done": true,
+         "idea": "Xây Trie words; mọi ô làm điểm xuất phát DFS theo các con của Trie; khi đạt end thì thêm kết quả; đánh dấu nút đã dùng bằng '#'. ",
+         "code": "class Trie:\n    def __init__(self): self.kids = {}; self.word = None\n    def add(self, w):\n        n = self\n        for c in w:\n            n = n.kids.setdefault(c, Trie())\n        n.word = w\ndef find_words(board, words):\n    root = Trie()\n    for w in words: root.add(w)\n    m, n = len(board), len(board[0]); res = set()\n    def dfs(i, j, node):\n        if i < 0 or i >= m or j < 0 or j >= n: return\n        c = board[i][j]\n        if c not in node.kids: return\n        node = node.kids[c]\n        if node.word: res.add(node.word)\n        board[i][j] = '#'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)): dfs(i+di, j+dj, node)\n        board[i][j] = c\n    for i in range(m):\n        for j in range(n): dfs(i, j, root)\n    return list(res)",
+         "static": [
+           "Dựng Trie từ `words`: mỗi nút lưu `kids` và `word` (từ hoàn chỉnh dừng tại nút).",
+           "Duyệt từng ô của lưới làm điểm xuất phát, đi xuống Trie theo ký tự của ô.",
+           "Nếu ký tự hiện tại không có trong con của nút Trie → cắt nhánh, quay lui.",
+           "Khi đạt nút có `word` đã ghi → thêm từ đó vào tập kết quả.",
+           "Đánh dấu ô đang dùng bằng '#' để không lặp ô, sau đó khôi phục khi quay lui.",
+           "Lưới ví dụ (4×4) tìm được 'oath' và 'eat'; 'pea'/'rain' không nối được → chỉ trả hai từ đó."
+         ]}
+      ]
+    }
+  ]
+}

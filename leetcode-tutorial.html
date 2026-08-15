@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="6 bài LeetCode nền tảng về mảng, 18 cách giải Python kèm animation từng bước — Merge Sorted Array, Remove Element, Remove Duplicates, Majority Element, Rotate Array.">
+<title>Sáu Bài Mảng</title>
+<style>
+:root{
+  --bg:#0d1017; --panel:#141926; --panel2:#1a2130; --ink:#eaf0f8; --mut:#8f9ab2;
+  --line:#242c3e; --acc:#7aa2ff; --acc2:#38d3f0; --ok:#3ddc97; --warn:#ffb454; --bad:#ff6b81;
+  --inksoft:#c9d2e3; --cellw:46px; --cellh:44px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  background-image:radial-gradient(#1d2434 1px, transparent 1px);
+  background-size:26px 26px;
+  font:16px/1.62 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+}
+a{color:var(--acc)}
+a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 90px}
+
+/* ---------- header / hero ---------- */
+.hero{padding:14px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.hero .kicker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{display:inline-block;padding:3px 12px;border-radius:999px;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);background:var(--panel)}
+.hero h1{font-size:31px;margin:0 0 12px;letter-spacing:.2px;text-wrap:balance}
+.hero p{color:var(--mut);margin:0;max-width:830px}
+.demobox{margin:18px 0 2px}
+.cells.demo{display:flex;gap:8px}
+.cell.dem{width:34px;height:32px;font-size:13px}
+.cell.dem:nth-child(1){animation:demopass 6s linear infinite}
+.cell.dem:nth-child(2){animation:demopass 6s linear infinite;animation-delay:1.2s}
+.cell.dem:nth-child(3){animation:demopass 6s linear infinite;animation-delay:2.4s}
+.cell.dem:nth-child(4){animation:demopass 6s linear infinite;animation-delay:3.6s}
+.cell.dem:nth-child(5){animation:demopass 6s linear infinite;animation-delay:4.8s}
+@keyframes demopass{
+  0%,14%{border-color:var(--acc2);background:#0f3947;color:var(--acc2)}
+  22%,100%{border-color:#39415c;background:#141828;color:var(--ink)}
+}
+
+/* ---------- mục lục ---------- */
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:24px 0 40px}
+.toc a{text-decoration:none;color:inherit;display:flex;align-items:flex-start;gap:12px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .15s,transform .15s}
+.toc a:hover{border-color:var(--acc);transform:translateY(-2px)}
+.toc .no{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:700;color:var(--acc);background:#1a2440;flex:none;font-variant-numeric:tabular-nums}
+.toc .d b{display:block;font-size:15px}
+.toc .d .row2{font-size:12.5px;color:var(--mut)}
+.toc-cells{display:flex;gap:3px;margin-top:9px}
+.toc-cells i{width:17px;height:17px;border:1px solid #39415c;border-radius:4px;display:grid;place-items:center;font:10px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-style:normal;color:#aeb8cf;background:#141828}
+.toc-cells i.ph{border-style:dashed;color:#59617a;background:transparent}
+
+/* ---------- section bài ---------- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin:34px 0;scroll-margin-top:18px}
+.sec-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.sec-top h2{margin:0;font-size:23px;text-wrap:balance}
+.tag{font-size:12.5px;letter-spacing:.04em;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.tag.easy{color:#a7f3d0;border-color:#14532d;background:#052e16}
+.tag.medium{color:#fde68a;border-color:#78350f;background:#2c1a05}
+.stmt{color:var(--inksoft);margin:14px 0 4px;line-height:1.7}
+.ex{color:var(--mut);font-size:14.5px}
+code{font:13.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b0e16;border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--acc2)}
+
+/* ---------- 3 cách giải ---------- */
+.sols{margin-top:26px;border-top:1px dashed var(--line);padding-top:6px}
+.sol{margin:28px 0}
+.sol h4{font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-wrap:balance}
+.sol h5{font-size:15px;margin:16px 0 8px;color:var(--acc2)}
+.meta{font-size:13.5px;color:var(--mut)}
+.meta b{color:var(--ink)}
+.complex{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;margin:10px 0 14px}
+.pill{padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--panel2)}
+.pill b{color:var(--acc)}
+
+/* ---------- code block ---------- */
+pre.code{background:#0b0e16;border:1px solid var(--line);border-radius:14px;padding:16px 18px;overflow-x:auto;font:13.5px/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:10px 0 6px;scrollbar-width:thin}
+pre.code .kw{color:#c792ea} pre.code .fn{color:#82aaff} pre.code .num{color:#f78c6c}
+pre.code .str{color:#c3e88d} pre.code .cm{color:#5c6478;font-style:italic} pre.code .op{color:#89ddff}
+
+/* ---------- player ---------- */
+.run{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:14px 16px;margin:12px 0 4px}
+.run>i{color:var(--mut);font-style:italic;font-size:14px}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:5px 12px;font-size:14px;transition:.12s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.sp{font-size:13px;color:var(--mut);margin-right:6px;font-variant-numeric:tabular-nums}
+.rng{flex:1;min-width:140px;accent-color:var(--acc)}
+.note{font-size:14.5px;color:var(--inksoft);margin:0 0 10px;min-height:22px}
+.note.fin{color:var(--ok)}
+.result{display:inline;font-weight:700}
+
+.cells-wrap{position:relative;padding:14px 6px 6px;min-height:60px}
+.cells{display:flex;gap:8px;flex-wrap:wrap}
+.cell{position:relative;width:var(--cellw);height:var(--cellh);border:1.5px solid #39415c;border-radius:10px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-variant-numeric:tabular-nums}
+.cell.dead{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.05) 6px 12px);border-style:dashed;color:#5b6377}
+.cell.keep{background:#153a2b;border-color:#2f7d5a;color:#d1fae5}
+.cell.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.cell.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.cell.sw{background:#4c1120;border-color:var(--bad)}
+.cell.act{background:#33250a;border-color:var(--warn)}
+.cv{font-size:15px}
+.ci{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:10.5px;color:#5b6377;font-variant-numeric:tabular-nums}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+.ptrs{position:absolute;inset:0;pointer-events:none}
+.ptr{position:absolute;top:2px;font-size:11.5px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:6px;padding:1px 7px;white-space:nowrap}
+.aux{display:flex;align-items:center;gap:12px;margin-top:14px;padding-top:10px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--mut)}
+.aux-label{font-weight:700;color:var(--acc2);letter-spacing:.04em}
+.cells.small .cell{width:38px;height:36px}
+.cells.small .ci{bottom:-14px;font-size:9.5px}
+
+/* ---------- đoạn phụ trợ ---------- */
+.ins{background:#101a2e;border-left:3px solid var(--acc2);border-radius:0 12px 12px 0;padding:12px 16px;margin:14px 0;font-size:14.5px;color:var(--inksoft)}
+.pits{margin:8px 0 0;padding-left:20px;color:#e3b7b7}
+.pits li{margin:5px 0}
+.think{background:#123225;border-left:3px solid var(--ok);border-radius:0 12px 12px 0;padding:14px 18px;margin:16px 0 8px;font-size:14.5px;color:#d4e8dc;line-height:1.75}
+
+footer{color:#5b6377;font-size:13px;margin-top:50px;border-top:1px solid var(--line);padding-top:18px}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media (max-width:640px){
+  .wrap{padding:14px 10px 70px}
+  section.card{padding:18px 14px}
+  .cell{width:38px;height:36px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">
+    <span class="chip">18 solution · Python</span>
+    <span class="chip">6 bài nền tảng</span>
+    <span class="chip">Animation từng bước</span>
+  </div>
+  <h1>Sáu Bài Mảng</h1>
+  <p>Mỗi bài được giải theo <b>3 cách</b>, từ dễ hiểu nhất tới tối ưu, kèm phân tích độ phức tạp,
+     cạm bẫy hay mắc và cách tư duy trước khi code. Mã Python của cả 18 solution được <b>verify bằng
+     bộ test</b> (chính thức + biên + fuzz). Bấm <b>▶</b> trong mỗi mục để xem thuật toán tự bước đi —
+     con trỏ, so sánh và ghi chép hiện ngay trên ô vuông.</p>
+  <div class="demobox" aria-hidden="true">
+    <div class="cells">
+      <span class="cell dem">1</span><span class="cell dem">2</span><span class="cell dem">3</span>
+      <span class="cell dem">2</span><span class="cell dem">5</span><span class="cell dem">6</span>
+    </div>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#p88"><span class="no">88</span><span class="d"><b>Merge Sorted Array</b>
+    <span class="row2"><span class="dot e"></span>Easy — trộn 2 mảng đã sắp</span>
+    <span class="toc-cells"><i>1</i><i>2</i><i>3</i><i class="ph">2</i><i class="ph">5</i><i class="ph">6</i></span></span></a>
+  <a href="#p27"><span class="no">27</span><span class="d"><b>Remove Element</b>
+    <span class="row2"><span class="dot e"></span>Easy — bỏ phần tử khỏi mảng</span>
+    <span class="toc-cells"><i>3</i><i>2</i><i>2</i><i class="ph">3</i></span></span></a>
+  <a href="#p26"><span class="no">26</span><span class="d"><b>Remove Duplicates I</b>
+    <span class="row2"><span class="dot e"></span>Easy — mỗi giá trị 1 lần</span>
+    <span class="toc-cells"><i>0</i><i>0</i><i>1</i><i>1</i><i>1</i><i>2</i></span></span></a>
+  <a href="#p80"><span class="no">80</span><span class="d"><b>Remove Duplicates II</b>
+    <span class="row2"><span class="dot m"></span>Medium — mỗi giá trị tối đa 2 lần</span>
+    <span class="toc-cells"><i>1</i><i>1</i><i>1</i><i>2</i><i>2</i><i>3</i></span></span></a>
+  <a href="#p169"><span class="no">169</span><span class="d"><b>Majority Element</b>
+    <span class="row2"><span class="dot e"></span>Easy — phần tử đa số</span>
+    <span class="toc-cells"><i>2</i><i>2</i><i>1</i><i>1</i><i>1</i><i>2</i></span></span></a>
+  <a href="#p189"><span class="no">189</span><span class="d"><b>Rotate Array</b>
+    <span class="row2"><span class="dot m"></span>Medium — xoay mảng phải</span>
+    <span class="toc-cells"><i>1</i><i>2</i><i class="ph">7</i><i class="ph">6</i><i class="ph">5</i><i class="ph">4</i></span></span></a>
+</nav>
+
+<!-- ============================================================= -->
+<section class="card" id="p88">
+  <div class="sec-top">
+    <h2>88 · Merge Sorted Array</h2>
+    <span class="tag easy">Easy</span>
+    <span class="tag">Array · Two Pointers</span>
+  </div>
+  <p class="stmt">Cho hai mảng nguyên <code>nums1</code> và <code>nums2</code> đã được sắp tăng dần (non‑decreasing),
+    và hai số <code>m</code>, <code>n</code> là số phần tử thực sự của chúng. Gộp hai mảng thành một mảng sắp xếp duy nhất.
+    Kết quả phải được <b>ghi vào chính <code>nums1</code></b> — mảng này có độ dài <code>m + n</code>, trong đó
+    <code>n</code> ô cuối là chỗ trống (điền sẵn số 0 và sẽ bị bỏ qua).</p>
+  <p class="ex">Ví dụ: <code>nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3</code> → <code>[1,2,2,3,5,6]</code>
+    · <code>nums1 = [0], m = 0, nums2 = [1], n = 1</code> → <code>[1]</code></p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Two‑pointer merge từ cuối (ghi lùi)</span><span class="meta"><b>O(m+n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Điểm mấu chốt: <b>nửa đuôi của nums1 đang trống</b>. Đặt <code>i</code> ở cuối phần thật của
+      nums1, <code>j</code> ở cuối nums2 và <code>w</code> ở ô trống cuối cùng. Mỗi bước so sánh hai phần tử lớn nhất
+      còn lại, ghi <b>cái lớn hơn vào ô trống <code>w</code></b> rồi lùi con trỏ tương ứng. Viết từ phải qua trái nên
+      không bao giờ đè lên phần chưa xử lý — không cần mảng phụ.</p>
+      <pre class="code">def merge_backwards(nums1, m, nums2, n):
+    i, j, w = m - 1, n - 1, m + n - 1      <span class="cm"># 3 con trỏ ở cuối</span>
+    while j &gt;= 0:                          <span class="cm"># nums1 còn lại thì đã đúng chỗ</span>
+        if i &gt;= 0 and nums1[i] &gt; nums2[j]:
+            nums1[w] = nums1[i]           <span class="cm"># lấy phần tử lớn hơn</span>
+            i -= 1
+        else:
+            nums1[w] = nums2[j]
+            j -= 1
+        w -= 1</pre>
+      <div class="run" data-traceid="88-backwards"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao đúng:</b> ô <code>w</code> luôn nằm sau các con trỏ đọc (i, j) trong vùng
+      trống, nên việc ghi không phá hỏng dữ liệu chưa đọc. Điều kiện vòng lặp chỉ dựa trên <code>j</code>:
+      khi nums2 cạn thì phần nums1 còn thừa <b>đã ở đúng vị trí sẵn</b>, không cần di chuyển.</div>
+      <div class="think">🧠 <b>Cách nghĩ:</b> Hỏi 4 câu trước khi code:
+      <br>1) <i>Ghi từ đâu?</i> — Ghi từ trái sẽ đè dữ liệu; ghi từ phải vào vùng trống là an toàn, đó là toàn bộ trò.
+      <br>2) <i>Khi nào dừng?</i> — nums2 phải được trút hết (j &lt; 0); nums1 thừa lại vốn đã đúng chỗ.
+      <br>3) <i>Phần tử nào ghi trước?</i> — Phần tử cuối mỗi mảng là lớn nhất còn lại của nó, so sánh rồi lấy cái lớn hơn.
+      <br>4) <i>Tie thì sao?</i> — Với <code>&gt;</code>, khi bằng nhau sẽ lấy từ nums2; kết quả vẫn đúng vì hai giá trị bằng nhau.</div>
+      <div class="pits"><ul>
+        <li>Merge từ <b>đầu</b> in‑place mà không tạo bản sao → đè lên phần tử nums1 chưa đọc (lỗi mất dữ liệu kinh điển).</li>
+        <li>Quên rằng <code>n</code> ô cuối là "chỗ trống", coi cả <code>m + n</code> phần tử là dữ liệu thật.</li>
+        <li>Không trút phần còn lại của bên kia khi một bên cạn.</li>
+      </ul></div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Copy nums1 ra mảng phụ, merge từ đầu</span><span class="meta"><b>O(m+n)</b> thời gian · <b>O(m)</b> thêm</span></h4>
+      <p class="stmt">Đây chính là bước <b>merge</b> trong merge‑sort: lưu <code>m</code> phần tử thật của nums1 sang
+      <code>left</code>, rồi dùng hai con trỏ bắt đầu từ 0 so sánh và ghi phần tử nhỏ hơn vào nums1 từ đầu mảng.
+      Dễ hiểu nhất trong ba cách — nhưng phải trả thêm <b>O(m) bộ nhớ</b>.</p>
+      <pre class="code">def merge_copy_front(nums1, m, nums2, n):
+    left = nums1[:m]                      <span class="cm"># bản sao — đổi chỗ đọc/ghi</span>
+    i = j = w = 0
+    while i &lt; m and j &lt; n:                 <span class="cm"># merge cổ điển</span>
+        if left[i] &lt;= nums2[j]:
+            nums1[w], i = left[i], i + 1
+        else:
+            nums1[w], j = nums2[j], j + 1
+        w += 1
+    while i &lt; m:   nums1[w], w, i = left[i], w + 1, i + 1
+    while j &lt; n:   nums1[w], w, j = nums2[j], w + 1, j + 1</pre>
+      <div class="run" data-traceid="88-copyfront"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao đúng:</b> bản sao <code>left</code> tách hẳn bên đọc khỏi bên ghi —
+      merge từ trái trở nên an toàn. Bạn trả O(m) bộ nhớ để đổi lấy sự đơn giản.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ Nối nums2 rồi gọi sort()</span><span class="meta"><b>O((m+n)·log(m+n))</b> thời gian</span></h4>
+      <p class="stmt">Ngắn nhất có thể: đổ nums2 vào đuôi nums1, rồi để ngôn ngữ tự sắp (Python dùng
+      Timsort). Đáp số luôn đúng vì việc nối chỉ thay đổi vị trí, không thay đổi <i>tập phần tử</i>;
+      nhưng nó vứt bỏ luôn "hai nửa đã sắp" và trả giá O((m+n)·log(m+n)).</p>
+      <pre class="code">def merge_sorted(nums1, m, nums2, n):
+    nums1[m:] = nums2[:n]                 <span class="cm"># lấp đầy ô trống</span>
+    nums1.sort()                          <span class="cm"># để Timsort lo phần còn lại</span></pre>
+      <div class="run" data-traceid="88-sorted"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Khi nào dùng:</b> viết prototype cho nhanh thì được — đi phỏng vấn thì đừng.
+      Follow‑up của đề bài hỏi hẳn "có làm được O(m+n) không?"</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="p27">
+  <div class="sec-top">
+    <h2>27 · Remove Element</h2>
+    <span class="tag easy">Easy</span>
+    <span class="tag">Array · Two Pointers</span>
+  </div>
+  <p class="stmt">Cho mảng <code>nums</code> và giá trị <code>val</code>, bỏ hết mọi phần tử bằng <code>val</code>
+  <b>trong‑place</b>. Được phép thay đổi thứ tự các phần tử. Trả về <code>k</code> = số phần tử còn lại là
+  <code>≠ val</code>; <code>k</code> phần tử đầu của <code>nums</code> phải chứa những phần tử giữ lại
+  (thứ tự tự do), phần sau <code>k</code> không cần quan tâm.</p>
+  <p class="ex">Ví dụ: <code>nums = [3,2,2,3], val = 3</code> → <code>k = 2, nums = [2,2,…]</code>
+    · <code>nums = [0,1,2,2,3,0,4,2], val = 2</code> → <code>k = 5, nums = [0,1,4,0,3,…]</code></p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Two‑pointer ghi đè (slow/fast)</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Mẫu hình <b>ghi‑đè</b>: <code>r</code> (fast) chạy qua từng phần tử,
+      <code>w</code> (slow) ghi lại những phần tử đáng giữ. Mỗi lần gặp phần tử <code>≠ val</code> thì ghi nó
+      vào <code>nums[w]</code> rồi tăng <code>w</code>. Vì ta "đọc" nhanh hơn "ghi", phần tử sẽ không bao giờ
+      bị đè trước khi được đọc. Giữ được <b>thứ tự tương đối</b> — phần thưởng phụ.</p>
+      <pre class="code">def remove_element_twopointer(nums, val):
+    w = 0                                   <span class="cm"># vị trí sẽ ghi</span>
+    for r in range(len(nums)):             <span class="cm"># r: con trỏ đọc</span>
+        if nums[r] != val:
+            nums[w] = nums[r]              <span class="cm"># giữ lại</span>
+            w += 1
+    return w                               <span class="cm"># w == k</span></pre>
+      <div class="run" data-traceid="27-twopointer"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao đúng:</b> bất biến <code>nums[0..w)</code> luôn là tập các phần tử
+      <code>≠ val</code> đã gặp. Cuối vòng lặp, mọi phần tử <code>≠ val</code> đã được đọc → nằm trong kết quả,
+      và <code>w</code> đếm đúng số lượng đó.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Đổi chỗ với phần tử cuối (thu hẹp)</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Cách "bắn tỉa": gặp <code>nums[l] == val</code> thì đổi chỗ nó với <code>nums[r]</code>
+      (phần tử cuối vùng còn xét) và thu hẹp <code>r</code>. <b>Không tăng <code>l</code></b> vì phần tử mới
+      hoán vào từ cuối cũng có thể bằng <code>val</code> — cần kiểm tra lại. Số phép ghi chỉ ~ k lần, nhưng
+      <b>thứ tự tương đối bị xáo</b> — đề bài chấp nhận.</p>
+      <pre class="code">def remove_element_swap(nums, val):
+    l, r = 0, len(nums) - 1
+    while l &lt;= r:
+        if nums[l] == val:
+            nums[l], nums[r] = nums[r], nums[l]   <span class="cm"># hoán ra ngoài cạnh r</span>
+            r -= 1                                <span class="cm"># thu hẹp vùng cần xét</span>
+        else:
+            l += 1
+    return l                                      <span class="cm"># == k</span></pre>
+      <div class="run" data-traceid="27-swap"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Cạm bẫy kinh điển:</b> tăng <code>l</code> ngay sau khi hoán đổi → phần tử
+      mang <code>val</code> lọt vào kết quả. "Đổi xong chưa chắc sạch" — phải kiểm tra lại vị trí đó.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ Lọc bằng list comprehension</span><span class="meta"><b>O(n)</b> thời gian · <b>O(n)</b> thêm</span></h4>
+      <p class="stmt">Viết 2 dòng, dễ đọc nhất — nhưng tạo mảng mới, vi phạm yêu cầu trong‑place
+      (nếu chấm điểm nghiêm). Thêm nữa, nếu gán <code>nums = ...</code> thì chỉ đổi biến cục bộ, mất hết
+      kết quả — phải gán qua slice <code>nums[:] = ...</code>.</p>
+      <pre class="code">def remove_element_filter(nums, val):
+    kept = [x for x in nums if x != val]
+    nums[:] = kept                        <span class="cm"># gán qua slice mới ăn</span>
+    return len(kept)</pre>
+      <div class="run" data-traceid="27-filter"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Đừng trả list:</b> đề hỏi <code>k</code> (số nguyên), LeetCode so sánh
+      <code>k</code> rồi mới so <code>nums[:k]</code>.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="p26">
+  <div class="sec-top">
+    <h2>26 · Remove Duplicates from Sorted Array</h2>
+    <span class="tag easy">Easy</span>
+    <span class="tag">Array · Two Pointers</span>
+  </div>
+  <p class="stmt">Cho mảng <code>nums</code> <b>đã sắp</b> tăng dần, bỏ các phần tử trùng trong‑place sao cho
+  mỗi giá trị chỉ xuất hiện <b>một</b> lần và giữ nguyên thứ tự. Trả về <code>k</code> = số phần tử duy nhất;
+  <code>k</code> phần tử đầu của <code>nums</code> phải là kết quả.</p>
+  <p class="ex">Ví dụ: <code>[1,1,2]</code> → <code>k = 2, [1,2,…]</code>
+    · <code>[0,0,1,1,1,2,2,3,3,4]</code> → <code>k = 5, [0,1,2,3,4,…]</code></p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Two‑pointer ghi đè</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Giống bài 27 nhưng điều kiện giữ là: <b>khác phần tử cuối cùng đã giữ</b>
+      (ô <code>nums[w-1]</code> trong vùng kết quả). Nhờ mảng đã sắp, các phần tử trùng đứng cạnh nhau,
+      nên so với "giá trị đã ghi gần nhất" là đủ để loại trùng. <code>w</code> cũng chính là <code>k</code>.</p>
+      <pre class="code">def remove_duplicates_twopointer(nums):
+    if not nums: return 0
+    w = 1                                   <span class="cm"># ô 0 giữ nguyên</span>
+    for r in range(1, len(nums)):
+        if nums[r] != nums[w - 1]:         <span class="cm"># so với ô đã ghi gần nhất</span>
+            nums[w] = nums[r]
+            w += 1
+    return w</pre>
+      <div class="run" data-traceid="26-twopointer"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao đúng:</b> <code>nums[0..w)</code> luôn là các giá trị duy nhất đã gặp,
+      theo đúng thứ tự. Con trỏ đọc chạy nhanh hơn con trỏ ghi nên không thể đè.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Nén sang mảng mới rồi ghi đè</span><span class="meta"><b>O(n)</b> thời gian · <b>O(n)</b> thêm</span></h4>
+      <p class="stmt">Xây <code>kept</code>: thêm phần tử khi nó khác phần tử liền trước trong <code>kept</code>.
+      Rồi <code>nums[:] = kept</code>. Đơn giản, khó sai — cái giá là O(n) bộ nhớ phụ.</p>
+      <pre class="code">def remove_duplicates_compress(nums):
+    kept = []
+    for x in nums:
+        if not kept or kept[-1] != x:
+            kept.append(x)
+    nums[:] = kept
+    return len(kept)</pre>
+      <div class="run" data-traceid="26-compress"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ itertools.groupby</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt"><code>groupby</code> gom các giá trị liên tiếp giống nhau thành các "run" — với mảng
+      đã sắp, mỗi run chính là một giá trị trùng lặp. Ghi lại phần tử đầu mỗi run là xong: thể hiện súc tích
+      nhất của ý tưởng "nén run".</p>
+      <pre class="code">from itertools import groupby
+
+def remove_duplicates_groupby(nums):
+    w = 0
+    for val, _ in groupby(nums):          <span class="cm"># mỗi run = một giá trị</span>
+        nums[w] = val
+        w += 1
+    return w</pre>
+      <div class="run" data-traceid="26-groupby"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Nhớ:</b> <code>groupby</code> chỉ gom phần tử <i>liên tiếp</i> — dùng
+      <code>sorted(nums)</code> trước nếu mảng chưa sắp.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="p80">
+  <div class="sec-top">
+    <h2>80 · Remove Duplicates from Sorted Array II</h2>
+    <span class="tag medium">Medium</span>
+    <span class="tag">Array · Two Pointers</span>
+  </div>
+  <p class="stmt">Như bài 26, nhưng mỗi giá trị được phép xuất hiện <b>tối đa 2 lần</b>. Mảng đã sắp tăng dần,
+  giữ nguyên thứ tự tương đối, trả về <code>k</code>.</p>
+  <p class="ex">Ví dụ: <code>[1,1,1,2,2,3]</code> → <code>k = 5, [1,1,2,2,3,…]</code>
+    · <code>[0,0,1,1,1,1,2,3,3]</code> → <code>k = 7, [0,0,1,1,2,3,3,…]</code></p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Two‑pointer + biến đếm lần xuất hiện</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Giữ thêm biến <code>run</code>: gặp giá trị mới thì reset về 1, cùng giá trị thì +1.
+      Chỉ ghi khi <code>run &lt;= 2</code>. Trực quan, dễ diễn giải trong phỏng vấn.</p>
+      <pre class="code">def remove_duplicates_ii_counter(nums):
+    w = run = 0
+    last = None
+    for x in nums:
+        run = run + 1 if x == last else 1  <span class="cm"># đếm liên tiếp</span>
+        last = x
+        if run &lt;= 2:
+            nums[w] = x
+            w += 1
+    return w</pre>
+      <div class="run" data-traceid="80-counter"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Trick "so với ô cách 2 về trước"</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Vùng kết quả đã ghi. Nếu <code>nums[r] == nums[w-2]</code> nghĩa là đã có <b>hai</b> bản
+      của giá trị đó trong kết quả → bỏ qua. Chỉ một dòng so sánh, không cần biến đếm — đây là lời giải
+      "chất" nhất, hay gặp trong đáp án chính thức. Nhớ phải <b>so với <code>w-2</code> của vùng kết quả</b>,
+      không phải <code>r-2</code> của mảng gốc.</p>
+      <pre class="code">def remove_duplicates_ii_trick(nums):
+    w = 0
+    for r in range(len(nums)):
+        if w &lt; 2 or nums[r] != nums[w - 2]:  <span class="cm"># chưa đủ 2 bản?</span>
+            nums[w] = nums[r]
+            w += 1
+    return w</pre>
+      <div class="run" data-traceid="80-trick"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao đúng:</b> với M kết quả, ô <code>w-2</code> là bộ đếm trạng thái mini:
+      nó "nhớ" giá trị của 2 ô gần nhất. Khái quát: giữ tối đa <code>t</code> lần thì so với <code>nums[w-t]</code>.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ Đếm tần suất bằng Counter rồi dựng lại</span><span class="meta"><b>O(n)</b> thời gian · <b>O(n)</b> thêm</span></h4>
+      <p class="stmt">Đếm mỗi giá trị bằng <code>Counter</code>; vì mảng đã sắp, thứ tự chèn của từ điển đúng
+      thứ tự giá trị, ghi lại mỗi giá trị tối đa 2 lần. Lời giải "hack", đọc nhanh — bù lại tốn bộ nhớ phụ.</p>
+      <pre class="code">from collections import Counter
+
+def remove_duplicates_ii_counterdict(nums):
+    freq = Counter(nums)
+    w = 0
+    for x in freq:                         <span class="cm"># dict giữ thứ tự chèn (3.7+)</span>
+        for _ in range(min(freq[x], 2)):
+            nums[w] = x
+            w += 1
+    return w</pre>
+      <div class="run" data-traceid="80-counterdict"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="p169">
+  <div class="sec-top">
+    <h2>169 · Majority Element</h2>
+    <span class="tag easy">Easy</span>
+    <span class="tag">Array · Voting</span>
+  </div>
+  <p class="stmt">Cho mảng <code>nums</code> có n phần tử, tìm <b>phần tử đa số</b>: phần tử xuất hiện
+  <b>hơn</b> ⌊n/2⌋ lần. Đề đảm bảo luôn tồn tại phần tử như vậy. Follow‑up: làm được O(n) thời gian và
+  O(1) bộ nhớ không?</p>
+  <p class="ex">Ví dụ: <code>[3,2,3]</code> → <code>3</code> (xuất hiện 2 &gt; ⌊3/2⌋=1)
+    · <code>[2,2,1,1,1,2,2]</code> → <code>2</code> (4 &gt; 3)</p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Boyer–Moore Majority Vote</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Một "cuộc bỏ phiếu" một lượt: duy trì <code>candidate</code> và số phiếu ròng
+      <code>votes</code>. Phần tử mới trùng candidate thì <code>votes+1</code>, khác thì <code>votes-1</code>;
+      khi <code>votes</code> về 0 thì chọn phần tử hiện tại làm candidate mới. Định lý: nếu có phần tử
+      chiếm quá nửa, nó <b>luôn</b> là candidate cuối cùng — các ứng viên có thể thay nhau nhưng không ai
+      "dập" nổi đa số.</p>
+      <pre class="code">def majority_vote(nums):
+    candidate, votes = None, 0
+    for x in nums:
+        if votes == 0:                     <span class="cm"># chưa ai dẫn — chọn mới</span>
+            candidate = x
+        votes += 1 if x == candidate else -1
+    return candidate</pre>
+      <div class="run" data-traceid="169-vote"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Cách nhớ:</b> tưởng tượng từng phần tử "đứng lên" — phần tử mới giống mình thì
+      kéo ứng viên, khác mình thì "triệt phiếu" của ứng viên. Kẻ đông hơn (đa số) luôn còn phiếu cuối cùng.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Sort rồi lấy phần tử giữa</span><span class="meta"><b>O(n·log n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Sau khi sắp xếp, phần tử đa số chiếm hơn n/2 vị trí liên tiếp nên nó nhất định phủ qua
+      <b>vị trí chính giữa</b> <code>nums[n//2]</code>. Không cần cài gì, log n "mua" sự đơn giản.</p>
+      <pre class="code">def majority_sorted(nums):
+    nums.sort()
+    return nums[len(nums) // 2]</pre>
+      <div class="run" data-traceid="169-sorted"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ Đếm tần suất bằng Counter</span><span class="meta"><b>O(n)</b> thời gian · <b>O(n)</b> thêm</span></h4>
+      <p class="stmt">Trực tiếp nhất: đếm từng phần tử, trả về kẻ nhiều nhất.
+      <code>Counter(nums).most_common(1)[0][0]</code> gói gọn cả bài — nhưng trả O(n) bộ nhớ phụ.</p>
+      <pre class="code">from collections import Counter
+
+def majority_counter(nums):
+    return Counter(nums).most_common(1)[0][0]</pre>
+      <div class="run" data-traceid="169-counter"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="think">🧠 <b>Cách nghĩ:</b> Nếu không có ràng buộc "tồn tại phần tử đa số", cả 3 cách
+      đều có thể trả sai. Khi mô tả trong phỏng vấn, hãy nhấn: <i>điều kiện để thuật toán đúng là
+      đa số khắt khe (&gt; n/2)</i>.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="p189">
+  <div class="sec-top">
+    <h2>189 · Rotate Array</h2>
+    <span class="tag medium">Medium</span>
+    <span class="tag">Array · Math</span>
+  </div>
+  <p class="stmt">Xoay mảng <code>nums</code> sang <b>phải</b> <code>k</code> bước: mỗi bước, phần tử cuối
+  chuyển lên đầu. <code>k</code> có thể lớn hơn độ dài mảng. Follow‑up: làm in‑place O(1) được không?</p>
+  <p class="ex">Ví dụ: <code>[1,2,3,4,5,6,7], k = 3</code> → <code>[5,6,7,1,2,3,4]</code>
+    · <code>[-1,-100,3,99], k = 2</code> → <code>[3,99,-1,-100]</code></p>
+
+  <div class="sols">
+
+    <div class="sol">
+      <h4><span>① Reverse 3 lần</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Công thức kinh điển: <b>đảo cả mảng → đảo nửa đầu → đảo nửa sau</b>.
+      Đảo cả mảng đưa khối cuối lên đầu (nhưng ngược thứ tự bên trong), đảo hai nửa khôi phục thứ tự.
+      Mỗi phần tử bị đảo đúng 2 lần → O(n), không cần mảng phụ. <b>Nhớ <code>k %= n</code></b> trước.</p>
+      <pre class="code">def rotate_reverse(nums, k):
+    n = len(nums)
+    k %= n                                  <span class="cm"># xoay n lần = giữ nguyên</span>
+    if k == 0: return
+    def reverse(lo, hi):
+        while lo &lt; hi:
+            nums[lo], nums[hi] = nums[hi], nums[lo]
+            lo += 1; hi -= 1
+    reverse(0, n - 1)                       <span class="cm"># đảo toàn bộ</span>
+    reverse(0, k - 1)                       <span class="cm"># nửa đầu (đã ở đúng chỗ)</span>
+    reverse(k, n - 1)                       <span class="cm"># nửa sau</span></pre>
+      <div class="run" data-traceid="189-reverse"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Thứ tự đảo quyết định chiều:</b> đảo nửa trước rồi đảo cả mảng → xoay TRÁI.
+      Cận của các lần đảo dễ nhầm: <code>[0, k-1]</code> chứ không phải <code>[0, k]</code>.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>② Cyclic replacements (xích phần tử)</span><span class="meta"><b>O(n)</b> thời gian · <b>O(1)</b> thêm</span></h4>
+      <p class="stmt">Vị trí đích của ô i là <code>(i + k) % n</code>. Đi theo chuỗi
+      <code>0 → k → 2k mod n → …</code>, xách giá trị "cầm tay" và đặt vào chỗ trống như trò xếp hình
+      dịch chuyển (juggling). Đếm số ô đã đặt để biết đã ghé hết các xích (số xích = gcd(n, k)).
+      Mỗi phần tử ghi <b>đúng 1 lần</b> — cách nhanh nhất để in‑place.</p>
+      <pre class="code">def rotate_cyclic(nums, k):
+    n, k = len(nums), k % n
+    placed = start = 0
+    while placed &lt; n:
+        cur, carry = start, nums[start]
+        while True:
+            nxt = (cur + k) % n            <span class="cm"># vị trí đích</span>
+            carry, nums[nxt] = nums[nxt], carry
+            cur = nxt
+            placed += 1
+            if cur == start: break         <span class="cm"># khép xích</span>
+        start += 1</pre>
+      <div class="run" data-traceid="189-cyclic"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="ins">💡 <b>Vì sao phải đếm <code>placed</code>:</b> khi <code>k</code> và <code>n</code>
+      có ước chung (vd n=6, k=2), một xích không đi qua hết mọi ô — phải mở xích mới từ start kế tiếp
+      tới khi đủ n ô.</div>
+    </div>
+
+    <div class="sol">
+      <h4><span>③ Mảng phụ + công thức modulo</span><span class="meta"><b>O(n)</b> thời gian · <b>O(n)</b> thêm</span></h4>
+      <p class="stmt">Công thức xoay "thuần túy": <code>rotated[(i + k) % n] = nums[i]</code>. Rõ ràng
+      về toán, khó sai — cái giá là một mảng phụ nguyên vẹn. Bản Python‑idiomatic gọn tới mức
+      <code>nums[:] = nums[-k:] + nums[:-k]</code>.</p>
+      <pre class="code">def rotate_extra(nums, k):
+    n = len(nums)
+    k %= n
+    rotated = [0] * n
+    for i, x in enumerate(nums):
+        rotated[(i + k) % n] = x          <span class="cm"># đúng vị trí đích</span>
+    nums[:] = rotated</pre>
+      <div class="run" data-traceid="189-extra"><i>Dùng nút `>` bên dưới để đi từng bước (cần JavaScript)</i></div>
+      <div class="think">🧠 <b>Tư duy chung:</b> 3 cách là 3 góc nhìn của cùng một phép hoán vị
+      <code>i → (i+k) mod n</code>: (a) phân rã thành 2 lần đảo, (b) đi từng xích, (c) tính trực tiếp
+      bằng mảng phụ. Nhận diện "phép hoán vị modulo" là chìa khoá cho mọi bài xoay/đổi chỗ.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================= -->
+<section class="card" id="tongket">
+  <div class="sec-top"><h2>Tổng kết — bản đồ tư duy</h2></div>
+  <div class="think">🧠 <b>Mẫu hình xuyên suốt 6 bài:</b>
+    <br>1) <b>Two pointers ghi‑đè</b> (27, 26, 80, và merge của 88): để con trỏ đọc chạy nhanh hơn con trỏ
+    ghi, vùng <code>0..w</code> luôn là kết quả. Nếu ghi từ phải (88) thì không cần mảng phụ.
+    <br>2) <b>"Bộ đếm" bằng chính mảng kết quả</b>: 80 dùng <code>w-2</code> để nhớ 2 bản gần nhất —
+    mẫu này tổng quát hoá thành "giữ tối đa t lần thì so với <code>w-t</code>".
+    <br>3) <b>Đổi chỗ / hoán vị</b>: 27‑swap dồn rác ra cạnh ngoài, 189 dồn bằng reverse‑3‑lần hoặc xích
+    ghi đúng 1 lần.
+    <br>4) <b>Cực đại/đa số</b>: "đếm bỏ phiếu" (169) là cách đếm mà không cần bộ nhớ — chỉ cần điều kiện
+    quá bán là bất biến tự đảm bảo.
+  </div>
+  <p class="ex">Tài liệu được viết từ research thực tế (trang LeetCode + leetcode.cn + GeeksforGeeks, NeetCode,
+  Programiz, AlgoMonster…), mã nguồn verify bằng bộ test 5.514 ca (chính thức + biên + fuzz), animation
+  chạy đúng luồng thực thi của thuật toán.</p>
+</section>
+
+<footer>
+  <p>LeetCode Array Tutorial · 6 bài nền tảng · 18 solution Python + animation · tạo 2026‑08‑15 ·
+  Bấm ⏭ để tua nhanh tới kết quả, kéo thanh trượt để xem lại từng bước.</p>
+</footer>
+
+</div>
+
+<script>
+/*
+ * trace.js — JS "song sinh" của 18 solution Python.
+ * Mỗi hàm mô phỏng đúng thuật toán, nhưng thay vì mutate mảng thật nó
+ * ghi LẠI từng thao tác (đọc, ghi, so sánh, hoán đổi, di chuyển con trỏ)
+ * thành một chuỗi step để trình duyệt dựng animation. Dùng chung cho
+ * cả 18 nút "▶ Chạy từng bước" trong tutorial.
+ *
+ * Mảng hiển thị trong HTML là hộp ảo: các bước luôn có {display} — snapshot
+ * sau khi áp thao tác — nên lời giải thích bên dưới hộp luôn khớp với
+ * những gì người học nhìn thấy.
+ *
+ * Mỗi step:
+ *   note      chuỗi tiếng Việt mô tả bước
+ *   read      {target: [i,j], value}      các ô vừa đọc để so sánh
+ *   write     {dest, value, colored?}     thao tác ghi (một hoặc nhiều)
+ *   swap      [a, b]                      trao đổi hai ô
+ *   ptr       {name, pos}                 vị trí con trỏ sau bước
+ *   line      {label, start, end}         vạch phạm vi (two-pointer)
+ *   array     snapshot dùng làm dữ liệu thật
+ *   display   snapshot hiển thị (đã đánh dấu hoặc đã reshape)
+ *   end       step cuối: k = kết quả của bài
+ */
+
+function at(arr, i) { return { target: [i], value: arr[i] }; }
+
+/* ============================== #88 Merge Sorted Array ============================== */
+
+function snapmerge(a, m, b, n, k) {
+  const arr = a.slice(0, m).concat(b.slice(0, n));
+  const cells = [];
+  for (let i = 0; i < m + n; i++) {
+    const dead = i >= m && i < m + n ? '#393f55' : null;
+    cells.push({ value: arr[i], dead, write: i >= m && i < m + n ? 1 : 0 });
+  }
+  return { k, arr, cells };
+}
+
+function trace_merge_backwards(input) {
+  const { nums1, m, nums2, n } = input;
+  // Hai nguồn ĐỘC LẬP như Python thật: a = nums1 (với ô trống ở đuôi),
+  // b = nums2. Ghi kết quả vào a từ phải qua trái.
+  const a = nums1.slice();
+  const b = nums2.slice();
+  const steps = [];
+  let i = m - 1, j = n - 1, w = m + n - 1;
+
+  const push = (note, patch, end) => {
+    // "written" mô tả ô đuôi đã được w đi qua (đã ghi) hay vẫn trống
+    const cells = a.map((v, idx) => ({ value: v, zone: idx >= m ? 'tail' : 'main', written: idx < m || idx > w }));
+    steps.push(Object.assign({ note, cells, array: a.slice() }, patch, end ? { end: true, k: m + n } : {}));
+  };
+
+  push('Bắt đầu: ba con trỏ tại cuối các vùng — i cuối nums1, j cuối nums2, w ô trống cuối cùng.',
+    { ptr: { i, j, w }, aux: { label: 'nums2', values: b.slice() } });
+  while (j >= 0) {
+    if (i >= 0 && a[i] > b[j]) {
+      const v = a[i];
+      a[w] = v;
+      i -= 1; w -= 1;
+      push(`So sánh ${v} > ${b[j + 1]} (nums2): lấy ${v} (bên nums1) ghi vào ô trống ${w + 1}.`,
+        { read: [at(a, i + 1), at(b, j + 1)], write: { dest: w + 1, value: v, colored: 1, src: i + 1 }, ptr: { i, j, w }, aux: { label: 'nums2', values: b.slice() } });
+    } else {
+      const v = b[j];
+      a[w] = v;
+      j -= 1; w -= 1;
+      push(`So sánh ${a[i] !== undefined && a[i] > v ? '·' : ''}lấy ${v} (bên nums2) ghi vào ô trống ${w + 1} — nhánh này không lệ thuộc vào i, nên dù i < 0 vẫn chạy.`,
+        { read: [i >= 0 ? at(a, i) : null, at(b, j + 1)].filter(Boolean), write: { dest: w + 1, value: v, colored: 1, src: null }, ptr: { i, j, w }, aux: { label: 'nums2', values: b.slice() } });
+    }
+  }
+  push('Xong! j < 0 — mọi phần tử mảng 2 đã nằm đúng chỗ, phần nums1 gốc còn lại vốn đã ở đúng vị trí.',
+    { ptr: { i, j, w } }, true);
+  return steps;
+}
+
+
+function trace_merge_copy_front(input) {
+  const { nums1, m, nums2, n } = input;
+  const steps = [];
+  const left0 = nums1.slice(0, m);
+  let i = 0, j = 0, w = 0;
+
+  const push = (note, patch, end) => {
+    const cells = nums1.map((v, idx) => ({ value: v }));
+    const s = Object.assign({ note, array: nums1.slice(), cells }, patch, end ? { end: true } : {});
+    steps.push(s);
+  };
+
+  push('Copy phần thật của nums1 (m phần tử đầu) sang mảng phụ left — nums1 giờ bị “xóa” để tái sử dụng.',
+    { ptr: { i, j, w }, aux: { label: 'left', values: left0 } });
+
+  while (i < m && j < n) {
+    if (left0[i] <= nums2[j]) {
+      const d = w;
+      nums1[w] = left0[i];
+      i += 1; w += 1;
+      push(`So sánh left[${i - 1}] = ${left0[i - 1]} ≤ nums2[${j}] = ${nums2[j]} → ghi ${left0[i - 1]} vào nums1[${d}].`,
+        { read: at(left0, i - 1), write: { dest: d, value: left0[i - 1] }, ptr: { i, j, w }, aux: { label: 'left', values: left0 } });
+    } else {
+      const d = w;
+      nums1[w] = nums2[j];
+      j += 1; w += 1;
+      push(`So sánh: left[${i}] = ${left0[i]} > nums2[${j - 1}] = ${nums2[j - 1]} → ghi ${nums2[j - 1]} vào nums1[${d}].`,
+        { read: [at(left0, i), at(nums2, j - 1)], write: { dest: d, value: nums2[j - 1] }, ptr: { i, j, w }, aux: { label: 'left', values: left0 } });
+    }
+  }
+  while (i < m) {
+    const d = w;
+    nums1[w] = left0[i];
+    i += 1; w += 1;
+    push(`left còn ${left0[i - 1]} → dốc nốt vào nums1[${d}].`,
+      { write: { dest: d, value: left0[i - 1] }, ptr: { i, j, w }, aux: { label: 'left', values: left0 } });
+  }
+  while (j < n) {
+    const d = w;
+    nums1[w] = nums2[j];
+    j += 1; w += 1;
+    push(`nums2 còn ${nums2[j - 1]} → dốc nốt vào nums1[${d}].`,
+      { write: { dest: d, value: nums2[j - 1] }, ptr: { i, j, w }, aux: { label: 'left', values: left0 } });
+  }
+  push('Xong! Ba mảng đã được trộn đúng thứ tự — kết quả là phần trộn của left và nums2.', {}, true);
+  return steps;
+}
+
+function trace_merge_sorted(input) {
+  const { nums1, m, nums2, n } = input;
+  const steps = [];
+  const sw = nums1.slice(0, m).concat(nums2.slice(0, n)); // minh hoạ sort trên bản sao
+
+  const push = (note, patch, end) => {
+    const cells = sw.map((v, idx) => ({ value: v, dead: idx >= m && idx < m + n ? '#393f55' : null, write: idx >= m && idx < m + n ? 1 : 0 }));
+    steps.push(Object.assign({ note, array: sw.slice(), cells }, patch, end ? { end: true, k: m + n } : {}));
+  };
+
+  push('Nối nums2 vào sau phần thật của nums1 (các ô xám là ô trống được “lấp đầy”): nums1[m:] = nums2[:n].');
+  push('Gọi nums1.sort() — ngôn ngữ tự sắp toàn bộ (Python: Timsort, O((m+n)·log(m+n))).',
+    { std: { code: 'nums1[m:] = nums2[:n]\nnums1.sort()' } });
+
+  // mô phỏng bubble-sort để người học THẤY vì sao sort() ra kết quả đúng
+  const seen = new Set();
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let idx = 0; idx < sw.length - 1; idx++) {
+      if (sw[idx] > sw[idx + 1]) {
+        [sw[idx], sw[idx + 1]] = [sw[idx + 1], sw[idx]];
+        changed = true;
+        const key = sw.join(',');
+        if (!seen.has(key)) {
+          seen.add(key);
+          const cells = sw.map((v, cidx) => ({ value: v, dead: cidx >= m && cidx < m + n ? '#393f55' : null, active: cidx === idx || cidx === idx + 1 }));
+          steps.push({ note: `(mô phỏng) sort() hoán đổi ${sw[idx]?.toString() ?? ''} và ${sw[idx + 1]?.toString() ?? ''}...`, array: sw.slice(), cells });
+        }
+      }
+    }
+  }
+  push('Xong — nums1 đã thành mảng sắp xếp hoàn chỉnh. (Thực tế Timsort nhanh hơn mô phỏng này nhiều.)',
+    { std: { code: 'nums1[m:] = nums2[:n]\nnums1.sort()' } }, true);
+  return steps;
+}
+
+/* ============================== #27 Remove Element ============================== */
+
+function trace_remove_twopointer(input) {
+  const { nums, val } = input;
+  const steps = [];
+  let w = 0;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push('w (slow) = 0: vị trí sẽ ghi, r (fast) chạy từng phần tử.');
+  for (let r = 0; r < nums.length; r++) {
+    if (nums[r] !== val) {
+      const d = w;
+      nums[w] = nums[r];
+      w += 1;
+      push(`nums[${r}] = ${nums[r]} ≠ ${val} → ghi ${nums[r]} vào nums[${d}], tăng w.`,
+        { read: at(nums, r), write: { dest: d, value: nums[r] }, ptr: { w, r }, ptrNames: ['w', 'r'] });
+    } else {
+      push(`nums[${r}] = ${val} = val → BỎ QUA, không ghi.`,
+        { read: at(nums, r), ptr: { w, r }, ptrNames: ['w', 'r'] });
+    }
+  }
+  push(`Xong! w = ${w} — đó chính là số phần tử ≠ val (k).`, { ptr: { w, r: nums.length - 1 }, ptrNames: ['w', 'r'] }, true);
+  return steps;
+}
+
+function trace_remove_swap(input) {
+  const { nums, val } = input;
+  const steps = [];
+  let l = 0, r = nums.length - 1;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < l }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: l } : {}));
+  };
+
+  push('Hai con trỏ: l duyệt từ trái, r là “bức tường” cuối mảng.');
+  while (l <= r) {
+    if (l === r) {
+      // ô cuối cùng còn lại: swap với chính nó vô nghĩa — thuật toán vẫn thu hẹp r
+      if (nums[l] === val) {
+        r -= 1;
+        push(`nums[${l}] = ${val} = val (ô cuối) → loại khỏi vùng giữ lại, r thu hẹp.`,
+          { read: at(nums, l), ptr: { l, r }, ptrNames: ['l', 'r'] });
+      } else {
+        l += 1;
+        push(`nums[${l - 1}] = ${nums[l - 1]} ≠ val (ô cuối) → giữ lại, l tiến.`,
+          { read: at(nums, l - 1), ptr: { l, r }, ptrNames: ['l', 'r'] });
+      }
+    } else if (nums[l] === val) {
+      const r0 = r;
+      [nums[l], nums[r]] = [nums[r], nums[l]];
+      r -= 1;
+      push(`nums[${l}] = ${val} = val → đổi chỗ với nums[${r0}] = ${nums[l]} rồi thu hẹp r (l giữ nguyên để kiểm tra giá trị mới).`,
+        { read: [at(nums, l), at(nums, r0)], swap: [l, r0], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    } else {
+      push(`nums[${l}] = ${nums[l]} ≠ val → l tiến lên (giữ lại).`, { read: at(nums, l), ptr: { l: l + 1, r }, ptrNames: ['l', 'r'] });
+      l += 1;
+    }
+  }
+  push(`Xong! l = ${l} chính là k. Thứ tự tương đối không được giữ — bài toán không yêu cầu.`, { ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+  return steps;
+}
+
+function trace_remove_filter(input) {
+  const { nums, val } = input;
+  const steps = [];
+  const kept = [];
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < kept.length }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: kept.length } : {}));
+  };
+
+  push('Dùng list comprehension duyệt qua từng phần tử; giữ lại những cái ≠ val.');
+  for (let i = 0; i < nums.length; i++) {
+    if (nums[i] !== val) {
+      const was = kept.length;
+      kept.push(nums[i]);
+      push(`nums[${i}] = ${nums[i]} ≠ ${val} → đưa vào mảng mới (vị trí ${was}).`,
+        { read: at(nums, i), write: { dest: i, value: nums[i], bake: 'kept' } });
+    } else {
+      push(`nums[${i}] = ${val} = val → loại bỏ.`, { read: at(nums, i) });
+    }
+  }
+  nums.splice(0, nums.length, ...kept);
+  push(`Gán nums[:] = kept — mảng gốc bị thay bằng mảng đã lọc. k = ${kept.length}.`, {}, true);
+  return steps;
+}
+
+/* ============================== #26 Remove Duplicates I ============================== */
+
+function trace_dupes_twopointer(input) {
+  const vis = input.nums.slice(); // mảng làm việc thật (ghi đè dần)
+  if (!vis.length) return [{ note: 'Mảng rỗng → trả về 0.', end: true, k: 0 }];
+  const steps = [];
+  let w = 1; // ô đầu tiên giữ nguyên — vùng "đã ghi" nén từ đây
+
+  const push = (note, patch, end) => {
+    const cells = vis.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: vis.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push('w = 1 (ô 0 của mảng đã nén giữ nguyên). r duyệt từ 1.');
+  for (let r = 1; r < vis.length; r++) {
+    const same = vis[r] === vis[w - 1];
+    push(`So sánh nums[${r}] = ${vis[r]} với nums[${w - 1}] = ${vis[w - 1]} (phần tử khác biệt cuối cùng đã giữ) → ${same ? 'trùng' : 'khác'}.`,
+      { read: [at(vis, r), at(vis, w - 1)], ptr: { w, r }, ptrNames: ['w', 'r'] });
+    if (!same) {
+      const d = w;
+      vis[w] = vis[r];
+      w += 1;
+      push(`Khác nhau → ghi ${vis[r]} vào nums[${d}], tăng w.`, { write: { dest: d, value: vis[r] }, ptr: { w, r }, ptrNames: ['w', 'r'] });
+    }
+  }
+  push(`Xong! w = ${w} — số phần tử duy nhất.`, { ptr: { w, r: vis.length - 1 }, ptrNames: ['w', 'r'] }, true);
+  return steps;
+}
+
+function trace_dupes_compress(input) {
+  const { nums } = input;
+  const steps = [];
+  const kept = [];
+  let prev = null, first = true;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < kept.length }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: kept.length } : {}));
+  };
+
+  push('Xây mảng kept bằng cách chỉ thêm phần tử khác phần tử liền trước.');
+  for (let i = 0; i < nums.length; i++) {
+    if (first || nums[i] !== prev) {
+      const was = kept.length;
+      kept.push(nums[i]);
+      push(`nums[${i}] = ${nums[i]} khác ${prev} → thêm vào kept (vị trí ${was}).`,
+        { read: at(nums, i), write: { dest: was, value: nums[i], bake: 'kept' } });
+    } else {
+      push(`nums[${i}] = ${nums[i]} trùng ${prev} → bỏ qua.`, { read: at(nums, i) });
+    }
+    prev = nums[i]; first = false;
+  }
+  nums.splice(0, nums.length, ...kept);
+  push(`Xong — ghi đè nums[:] = kept, k = ${kept.length}.`, {}, true);
+  return steps;
+}
+
+function trace_dupes_groupby(input) {
+  const vis = input.nums.slice();
+  const steps = [];
+  let w = 0;
+
+  const push = (note, patch, end) => {
+    const cells = vis.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: vis.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push('groupby(nums) gom các giá trị liên tiếp giống nhau thành từng nhóm (run).');
+  let i = 0;
+  while (i < vis.length) {
+    const start = i;
+    const v = vis[i];
+    while (i < vis.length && vis[i] === v) i++;
+    const grp = i - start;
+    const d = w;
+    vis[w] = v;
+    w += 1;
+    push(`Run [${start}..${i - 1}]: giá trị ${v} lặp ${grp} lần. Chỉ giữ lại MỘT phần tử đại diện → ghi vào nums[${d}].`,
+      { read: at(vis, start), write: { dest: d, value: v }, ptr: { w, r: i - 1 }, ptrNames: ['w', 'r'] });
+  }
+  push(`Xong! groupby đã nén mọi run liên tiếp — w = ${w}.`, { ptr: { w, r: vis.length - 1 }, ptrNames: ['w', 'r'] }, true);
+  return steps;
+}
+
+/* ============================== #80 Remove Duplicates II ============================== */
+
+function trace_dupes2_counter(input) {
+  const { nums } = input;
+  const steps = [];
+  let w = 0, run = 0, last;
+  let first = true;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push('w = vị trí ghi; run = số lần giá trị hiện tại đã xuất hiện liên tiếp.');
+  for (let i = 0; i < nums.length; i++) {
+    const x = nums[i];
+    const isNew = first || x !== last;
+    run = isNew ? 1 : run + 1;
+    last = x; first = false;
+    if (run <= 2) {
+      const d = w;
+      nums[w] = x;
+      w += 1;
+      push(`nums[${i}] = ${x} (lần thứ ${run} liên tiếp) ≤ 2 → ghi vào nums[${d}].`, { read: at(nums, i), write: { dest: d, value: x }, ptr: { w, i }, ptrNames: ['w', 'i'] });
+    } else {
+      push(`nums[${i}] = ${x} — lần thứ ${run} liên tiếp > 2 → BỎ QUA.`, { read: at(nums, i), ptr: { w, i }, ptrNames: ['w', 'i'] });
+    }
+  }
+  push(`Xong! w = ${w}.`, { ptr: { w, i: nums.length - 1 }, ptrNames: ['w', 'i'] }, true);
+  return steps;
+}
+
+function trace_dupes2_trick(input) {
+  const { nums } = input;
+  const steps = [];
+  let w = 0;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push('Mẹo: ghi nums[r] trừ khi nums[r] === nums[w - 2] — tức đã có 2 bản của giá trị đó trong vùng đã ghi.');
+  for (let r = 0; r < nums.length; r++) {
+    if (w < 2) {
+      const d = w;
+      nums[w] = nums[r];
+      w += 1;
+      push(`w = ${d} < 2 → ghi thẳng ${nums[r]} vào nums[${d}].`, { read: at(nums, r), write: { dest: d, value: nums[r] }, ptr: { w, r }, ptrNames: ['w', 'r'] });
+    } else if (nums[r] !== nums[w - 2]) {
+      const d = w;
+      nums[w] = nums[r];
+      w += 1;
+      push(`nums[${r}] = ${nums[r]} ≠ nums[${d - 2}] = ${nums[r - 1]} (giá trị cách 2 ô về trước trong vùng đã ghi) → chưa đủ 2 bản, ghi vào nums[${d}].`,
+        { read: [at(nums, r), at(nums, r - 2)], write: { dest: d, value: nums[r] }, ptr: { w, r }, ptrNames: ['w', 'r'] });
+    } else {
+      push(`nums[${r}] = ${nums[r]} === nums[${r - 2}] → đã có 2 bản ${nums[r]}, BỎ QUA.`,
+        { read: [at(nums, r), at(nums, r - 2)], ptr: { w, r }, ptrNames: ['w', 'r'] });
+    }
+  }
+  push(`Xong! w = ${w}.`, { ptr: { w, r: nums.length - 1 }, ptrNames: ['w', 'r'] }, true);
+  return steps;
+}
+
+function trace_dupes2_counterdict(input) {
+  const { nums } = input;
+  const steps = [];
+  const freq = new Map();
+  for (const x of nums) freq.set(x, (freq.get(x) || 0) + 1);
+  let w = 0;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v, keep: idx < w }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, k: w } : {}));
+  };
+
+  push(`Đếm tần suất bằng từ điển: ${[...freq.entries()].map(([k, v]) => `${k} × ${v}`).join(', ')}.`);
+  for (const [x, c] of freq) {
+    const take = Math.min(c, 2);
+    const d0 = w;
+    for (let t = 0; t < take; t++) { nums[w] = x; w++; }
+    push(`Giá trị ${x} xuất hiện ${c} lần → giữ tối đa 2, ghi ${take} bản vào nums[${d0}..${w - 1}].`,
+      { read: at(nums, d0), write: { dest: d0, value: x, count: take }, ptr: { w } });
+  }
+  push(`Xong! w = ${w}.`, {}, true);
+  return steps;
+}
+
+/* ============================== #169 Majority Element ============================== */
+
+function trace_majority_vote(input) {
+  const { nums } = input;
+  const steps = [];
+  let cand = null, votes = 0;
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, answer: cand } : {}));
+  };
+
+  push('Boyer–Moore: candidate là “ứng viên”, votes là số phiếu tán thành ròng của candidate đó.');
+  for (let i = 0; i < nums.length; i++) {
+    const x = nums[i];
+    if (votes === 0) {
+      cand = x;
+      push(`votes = 0 → chọn candidate = ${x}.`, { read: at(nums, i), vote: { cand, votes }, ptr: { i }, ptrNames: ['i'] });
+    }
+    votes += x === cand ? 1 : -1;
+    push(`nums[${i}] = ${x} ${x === cand ? 'trùng' : 'khác'} candidate ${cand} → votes ${x === cand ? '+1' : '−1'} = ${votes}.`,
+      { read: at(nums, i), vote: { cand, votes }, ptr: { i }, ptrNames: ['i'] });
+  }
+  push(`Duyệt xong. Vì phần tử đa số xuất hiện > n/2 lần, nó thắng mọi “cuộc chiến phiếu” → candidate = ${cand} chính là đáp án.`,
+    { vote: { cand, votes } }, true);
+  return steps;
+}
+
+function trace_majority_sorted(input) {
+  const { nums } = input;
+  const steps = [];
+  const arr = nums.slice();
+
+  const push = (note, patch, end) => {
+    const cells = arr.map((v, idx) => ({ value: v, mid: idx === Math.floor(arr.length / 2) }));
+    steps.push(Object.assign({ note, cells, array: arr.slice() }, patch, end ? { end: true, answer: arr[Math.floor(arr.length / 2)] } : {}));
+  };
+
+  push('Sort mảng. Phần tử đa số chiếm hơn n/2 vị trí → chắc chắn chiếm cả vị trí giữa.', {});
+  arr.sort((a, b) => a - b);
+  push('Mảng đã sắp xếp. Bất kể mọi thứ xoay quanh thế nào, phần tử giữa luôn là phần tử đa số.',
+    { midv: arr[Math.floor(arr.length / 2)] });
+  push(`Trả về nums[n // 2] = ${arr[Math.floor(arr.length / 2)]} — chính là đa số.`,
+    { midv: arr[Math.floor(arr.length / 2)] }, true);
+  return steps;
+}
+
+function trace_majority_counter(input) {
+  const { nums } = input;
+  const steps = [];
+  const freq = new Map();
+  for (const x of nums) freq.set(x, (freq.get(x) || 0) + 1);
+  let best = null, bestC = -1;
+  for (const [k, v] of freq) if (v > bestC) { bestC = v; best = k; }
+
+  const push = (note, patch, end) => {
+    const cells = nums.map((v, idx) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice(), freq: [...freq.entries()] }, patch, end ? { end: true, answer: best } : {}));
+  };
+
+  push(`Đếm tần suất: ${[...freq.entries()].map(([k, v]) => `${k} × ${v}`).join(', ')}.`);
+  push(`Phần tử xuất hiện nhiều nhất là ${best} với ${bestC} lần (> n/2) → đáp án.`, { freq: [...freq.entries()], best }, true);
+  return steps;
+}
+
+/* ============================== #189 Rotate Array ============================== */
+
+function trace_rotate_reverse(input) {
+  const { nums, k } = input;
+  const n = nums.length;
+  const kk = ((k % n) + n) % n;
+  const steps = [];
+  const arr = nums.slice();
+
+  const push = (note, patch, end) => {
+    const cells = arr.map((v, idx) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: arr.slice() }, patch, end ? { end: true } : {}));
+  };
+
+  push(`k = ${k} → quy về k' = ${kk} (mod n). Bây giờ xoay PHẢI ${kk} bước.`, {});
+  if (kk === 0) return push(`k' = 0 → không cần làm gì, mảng giữ nguyên.`, {}, true);
+
+  const rev = (lo, hi, tag) => {
+    while (lo < hi) {
+      push(`(Đảo ${tag}) đổi chỗ nums[${lo}] ↔ nums[${hi}].`, { swap: [lo, hi], ptr: { lo, hi }, ptrNames: ['lo', 'hi'] });
+      [arr[lo], arr[hi]] = [arr[hi], arr[lo]];
+      lo++; hi--;
+    }
+  };
+
+  push(`Bước 1 — đảo TOÀN BỘ mảng [0..${n - 1}]: các phần tử cuối (sẽ đi đầu) chui lên phía trước.`, {});
+  rev(0, n - 1, 'toàn bộ');
+
+  push(`Bước 2 — đảo nửa trái [0..${kk - 1}]: trả các phần tử sẽ đứng đầu về đúng thứ tự.`, {});
+  rev(0, kk - 1, 'nửa trái');
+
+  push(`Bước 3 — đảo nửa phải [${kk}..${n - 1}]: trả phần còn lại về đúng thứ tự.`, {});
+  rev(kk, n - 1, 'nửa phải');
+  push('Xong! Đảo 3 lần cho ra đúng mảng xoay phải k bước.', {}, true);
+  return steps;
+}
+
+function trace_rotate_cyclic(input) {
+  const { nums, k } = input;
+  const n = nums.length;
+  const kk = ((k % n) + n) % n;
+  const steps = [];
+  const arr = nums.slice();
+
+  const push = (note, patch, end) => {
+    const cells = arr.map((v, idx) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: arr.slice() }, patch, end ? { end: true } : {}));
+  };
+
+  push(`k' = ${kk}. Ý tưởng: mỗi phần tử chuyển đến vị trí (i + k) % n — đi theo từng “xích” (cycle) và không ghi đè dữ liệu chưa xử lý.`, {});
+  if (kk === 0 || n < 2) return push('Không cần xoay — mảng nhỏ hơn 2 hoặc k bội của n.', {}, true);
+
+  let placed = 0, start = 0;
+  while (placed < n) {
+    let cur = start, carry = arr[start];
+    push(`Mở xích mới từ vị trí ${start}: cầm giá trị ${carry}, đến nơi thì “trả” nó vào chỗ trống của phần tử kế.`, { ptr: { start, cur }, ptrNames: ['start', 'cur'] });
+    do {
+      const nxt = (cur + kk) % n;
+      push(`Đặt giá trị đang cầm ${carry} vào vị trí ${nxt} (đúng (${cur} + ${kk}) % ${n} = ${nxt}); nhận lại ${arr[nxt]} để tiếp tục đi.`,
+        { ptr: { start, cur: nxt }, ptrNames: ['start', 'cur'], move: { from: cur, to: nxt, value: carry } });
+      const tmp = arr[nxt];
+      arr[nxt] = carry;
+      carry = tmp;
+      cur = nxt;
+      placed++;
+    } while (cur !== start);
+    push(`Xích khép kín (quay lại ${start}). Đã đặt ${placed}/${n} phần tử.`, { ptr: { start: start + 1, cur }, ptrNames: ['start', 'cur'] });
+    start++;
+  }
+  push('Xong — mọi phần tử đã đi đúng vị trí, mỗi phần tử chỉ được ghi ĐÚNG 1 lần.', {}, true);
+  return steps;
+}
+
+function trace_rotate_extra(input) {
+  const { nums, k } = input;
+  const n = nums.length;
+  const kk = ((k % n) + n) % n;
+  const steps = [];
+  const arr = nums.slice();
+  const rotated = new Array(n);
+
+  const push = (note, patch, end) => {
+    const cells = arr.map((v, idx) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: arr.slice() }, patch, end ? { end: true } : {}));
+  };
+
+  push(`k' = ${kk}. Dùng mảng phụ rotated cùng độ dài; mỗi phần tử nums[i] về vị trí (i + ${kk}) % ${n} trong rotated.`, {});
+  if (kk === 0) return push('k bội của n → giữ nguyên.', {}, true);
+
+  for (let i = 0; i < n; i++) {
+    const dest = (i + kk) % n;
+    rotated[dest] = arr[i];
+    push(`Đặt nums[${i}] = ${arr[i]} vào rotated[${dest}] = (${i} + ${kk}) % ${n}.`, { write: { dest, value: arr[i], bake: 'rotated' }, read: at(arr, i), aux: { label: 'rotated', values: rotated.slice() } });
+  }
+  push('Sao chép rotated về nums — ra đúng mảng xoay.', { aux: { label: 'rotated', values: rotated.slice() } });
+  for (let i = 0; i < n; i++) arr[i] = rotated[i];
+  push('Xong! Cách dễ hiểu nhất về mặt toán — nhưng tốn O(n) bộ nhớ phụ.', {}, true);
+  return steps;
+}
+
+/* ============================== registry ============================== */
+
+const TRACES = {
+  '88-backwards': { fn: trace_merge_backwards, input: { nums1: [1, 2, 3, 0, 0, 0], m: 3, nums2: [2, 5, 6], n: 3 } },
+  '88-copyfront': { fn: trace_merge_copy_front, input: { nums1: [1, 2, 3, 0, 0, 0], m: 3, nums2: [2, 5, 6], n: 3 } },
+  '88-sorted':    { fn: trace_merge_sorted, input: { nums1: [1, 2, 3, 0, 0, 0], m: 3, nums2: [2, 5, 6], n: 3 } },
+  '27-twopointer':{ fn: trace_remove_twopointer, input: { nums: [3, 2, 2, 3], val: 3 } },
+  '27-swap':      { fn: trace_remove_swap, input: { nums: [3, 2, 2, 3], val: 3 } },
+  '27-filter':    { fn: trace_remove_filter, input: { nums: [3, 2, 2, 3], val: 3 } },
+  '26-twopointer':{ fn: trace_dupes_twopointer, input: { nums: [0, 0, 1, 1, 1, 2, 2, 3, 3, 4] } },
+  '26-compress':  { fn: trace_dupes_compress, input: { nums: [0, 0, 1, 1, 1, 2, 2, 3, 3, 4] } },
+  '26-groupby':   { fn: trace_dupes_groupby, input: { nums: [0, 0, 1, 1, 1, 2, 2, 3, 3, 4] } },
+  '80-counter':   { fn: trace_dupes2_counter, input: { nums: [1, 1, 1, 2, 2, 3], val: 2 } },
+  '80-trick':     { fn: trace_dupes2_trick, input: { nums: [1, 1, 1, 2, 2, 3], val: 2 } },
+  '80-counterdict':{ fn: trace_dupes2_counterdict, input: { nums: [1, 1, 1, 2, 2, 3], val: 2 } },
+  '169-vote':     { fn: trace_majority_vote, input: { nums: [2, 2, 1, 1, 1, 2, 2] } },
+  '169-sorted':   { fn: trace_majority_sorted, input: { nums: [2, 2, 1, 1, 1, 2, 2] } },
+  '169-counter':  { fn: trace_majority_counter, input: { nums: [2, 2, 1, 1, 1, 2, 2] } },
+  '189-reverse':  { fn: trace_rotate_reverse, input: { nums: [1, 2, 3, 4, 5, 6, 7], k: 3 } },
+  '189-cyclic':   { fn: trace_rotate_cyclic, input: { nums: [1, 2, 3, 4, 5, 6, 7], k: 3 } },
+  '189-extra':    { fn: trace_rotate_extra, input: { nums: [1, 2, 3, 4, 5, 6, 7], k: 3 } },
+};
+
+if (typeof module !== 'undefined' && module.exports) module.exports = { TRACES, trace_merge_backwards };
+globalThis.TRACES = TRACES; // chung cho browser / player.js / node
+</script>
+<script>
+/*
+ * player.js — trình phát animation cho 18 thuật toán.
+ * Nhận trace (mảng step) + cấu hình, vẽ hộp ô vuông có con trỏ,
+ * tô màu đọc/ghi/swap từng bước, điều khiển ⏮ ◀ ▶ ⏭ + thanh trượt.
+ * Lệ thuộc: TRACES (trace.js). DOM API thuần — chạy ngay trong <script>.
+ */
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+class Player {
+  constructor(host, steps, cfg) {
+    this.host = host;
+    this.steps = steps;
+    this.cfg = cfg || {};
+    this.idx = 0;
+
+    // DOM
+    this.ctl = el('div', 'ctl');
+    this.note = el('p', 'note', '');
+    this.wrap = el('div', 'cells-wrap');
+    this.box = el('div', 'cells');
+    this.ptrLayer = el('div', 'ptrs');
+    this.wrap.appendChild(this.box);
+    this.wrap.appendChild(this.ptrLayer);
+    this.auxBox = el('div', 'aux');
+    this.auxBox.style.display = 'none';
+
+    this.cellEls = [];
+    this.ptrEls = new Map();
+
+    this.buildCells();
+    this.buildPtrs();
+    this.buildControls();
+    this.stepTo(0);
+
+    host.appendChild(this.ctl);
+    host.appendChild(this.note);
+    host.appendChild(this.wrap);
+    host.appendChild(this.auxBox);
+  }
+
+  /* ---------- dựng hộp ô ---------- */
+  buildCells() {
+    const steps = this.steps;
+    const first = steps[0];
+    if (!first.cells) first.cells = (first.array || []).map(v => ({ value: v }));
+    first.cells.forEach((c, i) => {
+      const d = el('div', 'cell');
+      if (c.keep) d.classList.add('keep');
+      if (c.dead) { d.classList.add('dead'); }
+      d.appendChild(el('span', 'cv', c.value));
+      d.appendChild(el('span', 'ci', String(i)));
+      this.box.appendChild(d);
+      this.cellEls.push(d);
+    });
+  }
+
+  /* ---------- con trỏ: nhãn mũi ong trên các ô ---------- */
+  buildPtrs() {
+    const names = new Set();
+    for (const s of this.steps) {
+      if (s.ptrNames) s.ptrNames.forEach(x => names.add(x));
+    }
+    names.forEach(name => {
+      const p = el('span', 'ptr', name);
+      p.style.display = 'none';
+      this.ptrLayer.appendChild(p);
+      this.ptrEls.set(name, p);
+    });
+  }
+
+  /* ---------- nút điều khiển: tiến từng bước bằng tay ---------- */
+  buildControls() {
+    const bar = this.ctl;
+    const mk = (t, fn, title) => { const b = el('button', 'btn', t); b.title = title || ''; b.onclick = fn; bar.appendChild(b); return b; };
+    mk('⏮', () => this.stepTo(0), 'Về đầu');
+    mk('◀', () => this.stepTo(this.idx - 1), 'Lùi 1 bước');
+    mk('>', () => this.stepTo(this.idx + 1), 'Tiến 1 bước');
+    mk('⏭', () => this.stepTo(this.steps.length - 1), 'Tới kết quả');
+    this.counter = el('span', 'sp', '');
+    bar.appendChild(this.counter);
+
+    this.range = el('input', 'rng');
+    this.range.type = 'range';
+    this.range.min = 0;
+    this.range.max = Math.max(0, this.steps.length - 1);
+    this.range.value = 0;
+    this.range.oninput = () => this.stepTo(+this.range.value);
+    bar.appendChild(this.range);
+  }
+  next() { this.stepTo(this.idx + 1); }
+
+  /* ---------- hiển thị 1 bước ---------- */
+  stepTo(i) {
+    this.idx = Math.max(0, Math.min(this.steps.length - 1, i));
+    const s = this.steps[this.idx];
+
+    // nội dung ô = snapshot trạng thái sau bước
+    const src = s.display || s.array;
+    if (src) src.forEach((v, pos) => {
+      const cell = this.cellEls[pos];
+      const cv = cell && cell.querySelector('.cv');
+      if (cv && cv.textContent !== String(v)) cv.textContent = v;
+    });
+
+    // tô màu
+    this.cellEls.forEach(x => x.classList.remove('rd', 'wr', 'sw', 'act', 'src'));
+    if (s.read) [].concat(s.read).forEach(r => { if (r && r.target && r.target[0] >= 0 && r.target[0] < this.cellEls.length) this.cellEls[r.target[0]].classList.add('rd'); });
+    if (s.write && s.write.dest !== undefined && !s.write.bake) {
+      const d = s.write.dest;
+      if (d >= 0 && d < this.cellEls.length) this.cellEls[d].classList.add('wr');
+    }
+    if (s.swap) { const [a, b] = s.swap; this.cellEls[a] && this.cellEls[a].classList.add('sw'); this.cellEls[b] && this.cellEls[b].classList.add('sw'); }
+    if (s.cells) s.cells.forEach((c, i) => { if (c.active && this.cellEls[i]) this.cellEls[i].classList.add('act'); });
+
+    // con trỏ
+    this.ptrEls.forEach(p => p.style.display = 'none');
+    if (s.ptr) {
+      const names = s.ptrNames || Object.keys(s.ptr).map((_, k) => ['i', 'j', 'w'][k] || String(k));
+      let n = 0;
+      Object.values(s.ptr).forEach(pos => {
+        const nm = names[n++] || '?';
+        const p = this.ptrEls.get(nm);
+        if (p) { p.style.display = 'block'; p.style.left = `${pos * 58 + 10}px`; }
+      });
+    }
+
+    // mảng phụ
+    if (s.aux) {
+      this.auxBox.innerHTML = '';
+      this.auxBox.appendChild(el('span', 'aux-label', s.aux.label));
+      const inner = el('div', 'cells small');
+      s.aux.values.forEach((v, i) => {
+        const d = el('div', 'cell');
+        if (s.write && s.write.bake === s.aux.label && s.write.dest === i && !this.auxHighlight) d.classList.add('wr');
+        d.appendChild(el('span', 'cv', v));
+        d.appendChild(el('span', 'ci', String(i)));
+        inner.appendChild(d);
+      });
+      this.auxBox.appendChild(inner);
+      this.auxBox.style.display = '';
+    } else this.auxBox.style.display = 'none';
+
+    // ghi chú + kết quả cuối
+    this.note.textContent = s.note;
+    this.note.classList.toggle('fin', !!s.end);
+    const old = this.host.querySelector('.result');
+    if (old) old.remove();
+    if (s.end) {
+      const res = el('div', 'result');
+      if (s.k !== undefined) res.textContent = `· kết quả k = ${s.k}`;
+      else if (s.answer !== undefined) res.textContent = `· đáp án: ${s.answer}`;
+      if (res.textContent) this.note.appendChild(res);
+    }
+
+    this.counter.textContent = `${(this.idx + 1).toLocaleString('vi-VN')} / ${this.steps.length.toLocaleString('vi-VN')}`;
+    this.range.value = this.idx;
+  }
+}
+
+/* ---------- khởi động mọi player ---------- */
+function initAllPlayers() {
+  document.querySelectorAll('[data-traceid]').forEach(host => {
+    const id = host.dataset.traceid;
+    const input = JSON.parse(JSON.stringify(TRACES[id].input));
+    const steps = TRACES[id].fn(input);
+    new Player(host, steps);
+  });
+}
+document.addEventListener('DOMContentLoaded', initAllPlayers);
+</script>
+</body>
+</html>

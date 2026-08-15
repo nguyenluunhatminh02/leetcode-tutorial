@@ -1,0 +1,428 @@
+{
+  "desc": "Với các khoảng [start,end], bí quyết là sort theo start rồi xử lý từng khoảng với cái 'đã gộp' đang mở.",
+  "problems": [
+    {
+      "no": "228",
+      "title": "Summary Ranges",
+      "cat": "Intervals",
+      "diff": "Easy",
+      "statement": "Cho mảng số nguyên sắp xếp tăng, không trùng. Gom các số liên tiếp thành khoảng \"a->b\" hoặc \"a\".",
+      "examples": "[0,1,2,4,5,7] → [\"0->2\",\"4->5\",\"7\"] · [0,2,3,4,6,8,9] → [\"0\",\"2->4\",\"6\",\"8->9\"]",
+      "keyIdea": "Duyệt một lượt, mở khoảng khi số không liên tiếp với trước.",
+      "approaches": [
+        {
+          "name": "Một lượt, mở/đóng khoảng",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Khởi khoảng tại nums[0]; khi nums[i] != nums[i-1]+1 thì đóng khoảng cũ, mở khoảng mới.",
+          "code": "def summary_ranges(nums):\n    if not nums: return []\n    res = []; start = nums[0]\n    for i in range(1, len(nums) + 1):\n        if i == len(nums) or nums[i] != nums[i-1] + 1:\n            res.append(str(start) if start == nums[i-1] else f'{start}->{nums[i-1]}')\n            if i < len(nums): start = nums[i]\n    return res",
+          "tcex": {
+            "input": {
+              "nums": [
+                0,
+                1,
+                2,
+                4,
+                5,
+                7
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              "0->2",
+              "4->5",
+              "7"
+            ]
+          }
+        },
+        {
+          "name": "Thuần vị trí",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Duyệt theo chỉ số; mỗi lần l đi tới đoạn liên tiếp, đóng tại r rồi nhảy l = r.",
+          "code": "def summary_ranges(nums):\n    res = []; i = 0\n    while i < len(nums):\n        start = nums[i]\n        while i + 1 < len(nums) and nums[i+1] == nums[i] + 1:\n            i += 1\n        res.append(str(start) if start == nums[i] else f'{start}->{nums[i]}')\n        i += 1\n    return res",
+          "tcex": {
+            "input": {
+              "nums": [
+                0,
+                1,
+                2,
+                4,
+                5,
+                7
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              "0->2",
+              "4->5",
+              "7"
+            ]
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
+        "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+      },
+      "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
+    },
+    {
+      "no": "56",
+      "title": "Merge Intervals",
+      "cat": "Intervals",
+      "diff": "Medium",
+      "statement": "Gộp mọi khoảng chồng lấn thành khoảng không chạm nhau.",
+      "examples": "[[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]]",
+      "keyIdea": "Sort theo start; mỗi khoảng, nếu chồng với khoảng đang mở thì nới end, ngược lại đóng và mở mới.",
+      "approaches": [
+        {
+          "name": "Sort + gộp",
+          "time": "O(n·log n)",
+          "space": "O(n)",
+          "idea": "Sắp theo start; với mỗi (s,e): nếu s ≤ cur_end thì cur_end = max(cur_end,e); else push cur và bắt đầu mới.",
+          "code": "def merge(intervals):\n    intervals.sort()\n    res = []\n    for s, e in intervals:\n        if res and s <= res[-1][1]:\n            res[-1][1] = max(res[-1][1], e)\n        else:\n            res.append([s, e])\n    return res",
+          "tcex": {
+            "input": {
+              "intervals": [
+                [
+                  1,
+                  3
+                ],
+                [
+                  2,
+                  6
+                ],
+                [
+                  8,
+                  10
+                ],
+                [
+                  15,
+                  18
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "intervals",
+            "ptrs": ["s", "e"],
+            "expected": [
+              [
+                1,
+                6
+              ],
+              [
+                8,
+                10
+              ],
+              [
+                15,
+                18
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Sort theo end gộp thuận",
+          "time": "O(n·log n)",
+          "space": "O(n)",
+          "idea": "Vì nhu cầu chỉ cần không chạm nhau, sort theo end rồi gộp cũng được; đây là bản sort theo start rõ ràng hơn.",
+          "code": "def merge(intervals):\n    intervals.sort(key=lambda x: x[0])\n    merged = [intervals[0]]\n    for s, e in intervals[1:]:\n        if s <= merged[-1][1]:\n            merged[-1][1] = max(merged[-1][1], e)\n        else:\n            merged.append([s, e])\n    return merged",
+          "tcex": {
+            "input": {
+              "intervals": [
+                [
+                  1,
+                  3
+                ],
+                [
+                  2,
+                  6
+                ],
+                [
+                  8,
+                  10
+                ],
+                [
+                  15,
+                  18
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "intervals",
+            "ptrs": ["s", "e"],
+            "expected": [
+              [
+                1,
+                6
+              ],
+              [
+                8,
+                10
+              ],
+              [
+                15,
+                18
+              ]
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
+        "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+      },
+      "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
+    },
+    {
+      "no": "57",
+      "title": "Insert Interval",
+      "cat": "Intervals",
+      "diff": "Medium",
+      "statement": "Chèn newInterval vào danh sách khoảng đã sắp (không chồng), gộp nếu chồng, trả danh sách vẫn sắp.",
+      "examples": "intervals=[[1,3],[6,9]], newInterval=[2,5] → [[1,5],[6,9]] · [[1,2],[3,5],[6,7],[8,10],[12,16]], [4,8] → [[1,2],[3,10],[12,16]]",
+      "keyIdea": "Chia 3 phần: khoảng trước (end < s.new), khoảng chồng cần gộp, khoảng sau (start > e.new).",
+      "approaches": [
+        {
+          "name": "Ba pha quét",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Gom các khoảng có end < new[0] vào trước; gộp mọi khoảng start ≤ new[1] vào new; đẩy phần còn lại sau.",
+          "code": "def insert(intervals, newInterval):\n    res = []; i = 0; n = len(intervals)\n    while i < n and intervals[i][1] < newInterval[0]:\n        res.append(intervals[i]); i += 1\n    while i < n and intervals[i][0] <= newInterval[1]:\n        newInterval[0] = min(newInterval[0], intervals[i][0])\n        newInterval[1] = max(newInterval[1], intervals[i][1])\n        i += 1\n    res.append(newInterval)\n    while i < n: res.append(intervals[i]); i += 1\n    return res",
+          "tcex": {
+            "input": {
+              "intervals": [
+                [
+                  1,
+                  3
+                ],
+                [
+                  6,
+                  9
+                ]
+              ],
+              "newInterval": [
+                2,
+                5
+              ]
+            },
+            "kind": "mat",
+            "display": "intervals",
+            "ptrs": ["i"],
+            "expected": [
+              [
+                1,
+                5
+              ],
+              [
+                6,
+                9
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Chèn rồi gộp (dùng lại merge)",
+          "time": "O(n·log n)",
+          "space": "O(n)",
+          "idea": "Thêm newInterval vào danh sách, rồi chạy thuật toán merge intervals.",
+          "code": "def insert(intervals, newInterval):\n    intervals.append(newInterval)\n    intervals.sort()\n    res = []\n    for s, e in intervals:\n        if res and s <= res[-1][1]: res[-1][1] = max(res[-1][1], e)\n        else: res.append([s, e])\n    return res",
+          "tcex": {
+            "input": {
+              "intervals": [
+                [
+                  1,
+                  3
+                ],
+                [
+                  6,
+                  9
+                ]
+              ],
+              "newInterval": [
+                2,
+                5
+              ]
+            },
+            "kind": "mat",
+            "display": "intervals",
+            "ptrs": ["s", "e"],
+            "expected": [
+              [
+                1,
+                5
+              ],
+              [
+                6,
+                9
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Nhị phân tìm vị trí chèn",
+          "time": "O(log n + k)",
+          "space": "O(n)",
+          "idea": "Dùng bisect tìm ranh giới chồng lấn rồi gộp một lần; nhanh hơn khi chưa cần duyệt hết.",
+          "code": "from bisect import bisect_left, bisect_right\ndef insert(intervals, newInterval):\n    ns = newInterval[0]; ne = newInterval[1]\n    i = bisect_left(intervals, [ns, 1e9])\n    j = bisect_right(intervals, [ne, 1e9])\n    left = intervals[:i]\n    overlap = intervals[i:j]\n    if overlap:\n        ns = min(ns, overlap[0][0]); ne = max(ne, overlap[-1][1])\n    return left + [[ns, ne]] + intervals[j:]",
+          "tcex": {
+            "input": {
+              "intervals": [
+                [
+                  1,
+                  3
+                ],
+                [
+                  6,
+                  9
+                ]
+              ],
+              "newInterval": [
+                2,
+                5
+              ]
+            },
+            "kind": "mat",
+            "display": "intervals",
+            "ptrs": [],
+            "expected": [
+              [
+                1,
+                5
+              ],
+              [
+                6,
+                9
+              ]
+            ],
+            "anim": true
+          },
+          "static": [
+            "Dùng bisect_left tìm khoảng đầu có start >= new[0].",
+            "Dùng bisect_right tìm khoảng đầu có start > new[1].",
+            "Phần left = intervals[:i] giữ nguyên (không chồng).",
+            "Phần overlap = intervals[i:j] gộp vào newInterval: ns = min, ne = max.",
+            "Ghép left + [[ns, ne]] + intervals[j:] — luôn sắp tăng.",
+            "Ví dụ [[1,3],[6,9]] + [2,5] → [[1,5],[6,9]]."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
+        "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+      },
+      "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
+    },
+    {
+      "no": "452",
+      "title": "Minimum Number of Arrows to Burst Balloons",
+      "cat": "Intervals",
+      "diff": "Medium",
+      "statement": "Cho khoảng ngang của bong bóng; một mũi tên dọc bắn trúng mọi bong bóng chạm điểm đó. Tối thiểu hoá số mũi tên.",
+      "examples": "[[10,16],[2,8],[1,6],[7,12]] → 2 · [[1,2],[3,4],[5,6],[7,8]] → 4",
+      "keyIdea": "Sort theo END; một mũi tên bắn ở end của khoảng sớm nhất sẽ làm vỡ mọi khoảng chạm nó. Giống dạy tối thiểu phòng họp chồng nhau.",
+      "approaches": [
+        {
+          "name": "Greedy theo điểm cuối",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Sort theo end; bắn mũi tên tại end của khoảng đầu; mọi khoảng có start ≤ điểm đó đã vỡ; nếu start > điểm đó thì cần mũi tên mới.",
+          "code": "def find_min_arrow_shots(points):\n    points.sort(key=lambda x: x[1])\n    arrows = 1; cur = points[0][1]\n    for s, e in points[1:]:\n        if s > cur:\n            arrows += 1; cur = e\n    return arrows",
+          "tcex": {
+            "input": {
+              "points": [
+                [
+                  10,
+                  16
+                ],
+                [
+                  2,
+                  8
+                ],
+                [
+                  1,
+                  6
+                ],
+                [
+                  7,
+                  12
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "points",
+            "ptrs": ["s", "e"],
+            "expected": 2,
+            "anim": true
+          },
+          "static": [
+            "Sort theo điểm cuối (end) tăng dần.",
+            "Bắn mũi tên đầu tiên tại end của balloon sớm nhất.",
+            "Mọi balloon có start <= điểm bắn hiện tại đã vỡ — bỏ qua.",
+            "Khi start > điểm bắn → cần mũi tên mới tại end của balloon đó.",
+            "Ví dụ [[1,6],[2,8],[7,12],[10,16]] → 2 mũi tên."
+          ]
+        },
+        {
+          "name": "Greedy theo start",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Sort theo start và theo dõi điểm bắn chung là min end gặp được.",
+          "code": "def find_min_arrow_shots(points):\n    points.sort()\n    arrows = 0; end = None\n    for s, e in points:\n        if end is None or s > end:\n            arrows += 1; end = e\n        else:\n            end = min(end, e)\n    return arrows",
+          "tcex": {
+            "input": {
+              "points": [
+                [
+                  10,
+                  16
+                ],
+                [
+                  2,
+                  8
+                ],
+                [
+                  1,
+                  6
+                ],
+                [
+                  7,
+                  12
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "points",
+            "ptrs": ["s", "e"],
+            "expected": 2,
+            "anim": true
+          },
+          "static": [
+            "Sort theo start tăng dần.",
+            "Theo dõi điểm bắn chung end = min(end) của các balloon cùng nhóm.",
+            "Balloon sau có start > end → cần mũi tên mới, end = end của nó.",
+            "Balloon sau chồng (start <= end) → thu hẹp end = min(end, e).",
+            "Ví dụ [[1,6],[2,8],[7,12],[10,16]] → 2 mũi tên."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
+        "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+      },
+      "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
+    }
+  ]
+}

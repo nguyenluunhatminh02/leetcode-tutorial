@@ -1,0 +1,7 @@
+# runtime / trình biên dịch
+__pycache__/
+*.pyc
+Untitled
+
+# scratch
+data/

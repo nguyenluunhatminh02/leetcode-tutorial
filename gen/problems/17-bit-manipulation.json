@@ -1,0 +1,318 @@
+{
+  "desc": "Thao tác bit: XOR nhận biết cặp, đếm bit set, dịch bit, và quy nạp từng bit.",
+  "problems": [
+    {
+      "no": "67",
+      "title": "Add Binary",
+      "cat": "Bit Manipulation",
+      "diff": "Easy",
+      "statement": "Cộng hai chuỗi nhị phân, trả chuỗi tổng.",
+      "examples": "a='11', b='1' → '100' · a='1010', b='1011' → '10101'",
+      "keyIdea": "Cộng từ phải với carry; hoặc int(a,2)+int(b,2) rồi bin.",
+      "approaches": [
+        {
+          "name": "Cộng tay từ phải",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "i,j cuối; s = bit1+bit2+carry; thêm s%2; carry=s//2; xoá carry cuối.",
+          "code": "def add_binary(a, b):\n    i, j = len(a)-1, len(b)-1\n    carry = 0; out = []\n    while i >= 0 or j >= 0 or carry:\n        s = carry\n        if i >= 0: s += int(a[i]); i -= 1\n        if j >= 0: s += int(b[j]); j -= 1\n        out.append(str(s % 2)); carry = s // 2\n    return ''.join(reversed(out))",
+          "tcex": {
+            "input": {
+              "a": "101",
+              "b": "1"
+            },
+            "kind": "stack",
+            "display": "out",
+            "ptrs": [
+              "i",
+              "j"
+            ],
+            "expected": "101",
+            "anim": true
+          }
+        },
+        {
+          "name": "int/bin",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Python int cơ số 2.",
+          "code": "def add_binary(a, b):\n    return bin(int(a, 2) + int(b, 2))[2:]",
+          "static": [
+            "Ví dụ a='101', b='1': chuyển sang int cơ số 2 — int('101',2)=5, int('1',2)=1",
+            "Cộng 5+1 = 6",
+            "bin(6) = '0b110' → bỏ tiền tố [2:] được '110'",
+            "Trả '110' — đúng tổng nhị phân; Python xử lý mượn/nhớ tự động"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: cộng từ bit phải nhất; mỗi vị trí s = bit1 + bit2 + carry, bit ghi = s%2, carry kế = s//2.",
+        "reverse": "Quy nạp ngược: khi i,j đều hết mà carry vẫn còn thì phải thêm một bit 1 ở đầu — điều kiện dừng là i<0, j<0 và carry=0 đồng thời."
+      },
+      "note": "Quy nạp ngược: khi i,j đều hết mà carry vẫn còn thì phải thêm một bit 1 ở đầu — điều kiện dừng là i<0, j<0 và carry=0 đồng thời."
+    },
+    {
+      "no": "190",
+      "title": "Reverse Bits",
+      "cat": "Bit Manipulation",
+      "diff": "Easy",
+      "statement": "Đảo 32 bit của integer không dấu.",
+      "examples": "00000010100101000001111010011100 → 00111001011110000010100101000000",
+      "keyIdea": "Lấy bit cuối (x&1), dịch kết quả lên, chuyển bit; lặp 32 lần.",
+      "approaches": [
+        {
+          "name": "Dịch & gom bit",
+          "time": "O(32)",
+          "space": "O(1)",
+          "idea": "res = (res<<1) | (n&1); n >>= 1; chạy 32 lần.",
+          "code": "def reverse_bits(n):\n    res = 0\n    for _ in range(32):\n        res = (res << 1) | (n & 1)\n        n >>= 1\n    return res",
+          "static": [
+            "Ví dụ n=43261596 (bit thấp nhất là 0). Lặp 32 lần, mỗi lần: res = (res<<1)|(n&1); n >>= 1",
+            "Lần 1: n&1=0 → res=0, n=21630798",
+            "Lần 2: n&1=0 → res=0, n=10815399",
+            "Lần 3: n&1=1 → res=1, n=5407699",
+            "Lần 4: n&1=1 → res=3 (11₂), n=2703849",
+            "Cứ thế 32 lần — bit cũ vị trí i chuyển về vị trí 31−i",
+            "Kết quả cuối res = 964176192 — 32 bit đảo ngược hoàn toàn"
+          ]
+        },
+        {
+          "name": "Chuỗi bit",
+          "time": "O(32)",
+          "space": "O(1)",
+          "idea": "f'{n:032b}'[::-1] rồi int(...,2).",
+          "code": "def reverse_bits(n):\n    return int(f'{n:032b}'[::-1], 2)",
+          "static": [
+            "Định dạng n thành đúng 32 bit: f'{n:032b}' = '00000010100101000001111010011100'",
+            "Đảo chuỗi: [::-1] → '00111001011110000010100101000000'",
+            "Chuyển ngược sang int cơ số 2: int(...,2) = 964176192",
+            "Trả 964176192 — chuỗi hoá làm đơn giản hoá phép đảo bit"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: lặp 32 lần — mỗi lần lấy bit cuối của n, gom vào res ở vị trí cao dần, rồi dịch n phải một bit.",
+        "reverse": "Quy nạp ngược: bit thấp nhất của n phải thành bit cao nhất của kết quả; nhờ dịch res trái mỗi bước, đúng 32 lần thì mọi bit đảo vị trí."
+      },
+      "note": "Quy nạp ngược: bit thấp nhất của n phải thành bit cao nhất của kết quả; nhờ dịch res trái mỗi bước, đúng 32 lần thì mọi bit đảo vị trí."
+    },
+    {
+      "no": "191",
+      "title": "Number of 1 Bits",
+      "cat": "Bit Manipulation",
+      "diff": "Easy",
+      "statement": "Đếm số bit 1 trong biểu diễn nhị phân.",
+      "examples": "n=11 (1011) → 3 · n=128 → 1",
+      "keyIdea": "n & (n-1) xoá bit 1 thấp nhất — đếm được tới khi hết.",
+      "approaches": [
+        {
+          "name": "n & (n-1)",
+          "time": "O(k)",
+          "space": "O(1)",
+          "idea": "Mỗi bước xoá 1 bit 1, tăng đếm.",
+          "code": "def hamming_weight(n):\n    cnt = 0\n    while n:\n        n &= n - 1\n        cnt += 1\n    return cnt",
+          "static": [
+            "Ví dụ n=11 (1011₂). n &= (n-1) xoá bit 1 thấp nhất: 11 & 10 = 1011₂ & 1010₂ = 1010₂ = 10 → cnt=1",
+            "10 & 9 = 1010₂ & 1001₂ = 1000₂ = 8 → cnt=2",
+            "8 & 7 = 1000₂ & 0111₂ = 0 → cnt=3",
+            "n = 0 dừng → trả 3 — đúng số bit 1 của 1011₂",
+            "Chỉ chạy k lần với k là số bit 1, không phải 32 lần cố định"
+          ]
+        },
+        {
+          "name": "bit_count / bin đếm",
+          "time": "O(k)",
+          "space": "O(1)",
+          "idea": "Python int.bit_count() hoặc bin(n).count('1').",
+          "code": "def hamming_weight(n):\n    return n.bit_count()",
+          "static": [
+            "Ví dụ n=11: n.bit_count() đếm số bit 1 trong biểu diễn nhị phân",
+            "Python triển khai bằng đếm từng word (32/64 bit) hiệu quả hơn vòng lặp Python",
+            "Trả 3 — nhanh nhất, nhưng che giấu bản chất phép dịch bit mà hai cách kia minh hoạ"
+          ]
+        },
+        {
+          "name": "Duyệt 32 bit",
+          "time": "O(32)",
+          "space": "O(1)",
+          "idea": "Cộng (n>>i)&1 cho mỗi i.",
+          "code": "def hamming_weight(n):\n    return sum((n >> i) & 1 for i in range(32))",
+          "static": [
+            "Ví dụ n=11 (1011₂): duyệt i từ 0 tới 31, cộng (n>>i)&1 vào tổng",
+            "i=0: (11>>0)&1 = 1; i=1: (11>>1)&1 = 1; i=2: (11>>2)&1 = 0; i=3: (11>>3)&1 = 1",
+            "Tổng = 1+1+0+1 = 3 — đúng 3 bit 1",
+            "Duyệt đủ 32 lần luôn (kể cả bit cao toàn 0) — minh hoạ rõ nhất cách đếm từng bit"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi lần n &= (n-1) xoá đi đúng một bit 1 thấp nhất — đếm số lần tới khi n = 0.",
+        "reverse": "Quy nạp ngược: muốn biết còn bit 1 nào không chỉ cần kiểm tra n ≠ 0; số bước thực hiện bằng đúng số bit 1 (k ≤ 32), nhanh hơn duyệt đủ 32 bit."
+      },
+      "note": "Quy nạp ngược: muốn biết còn bit 1 nào không chỉ cần kiểm tra n ≠ 0; số bước thực hiện bằng đúng số bit 1 (k ≤ 32), nhanh hơn duyệt đủ 32 bit."
+    },
+    {
+      "no": "136",
+      "title": "Single Number",
+      "cat": "Bit Manipulation",
+      "diff": "Easy",
+      "statement": "Mọi phần tử xuất hiện 2 lần, trừ một; tìm nó.",
+      "examples": "[4,1,2,1,2] → 4",
+      "keyIdea": "x^x = 0 và giao hoán → XOR tất cả trả về kẻ lẻ.",
+      "approaches": [
+        {
+          "name": "XOR tất cả",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "acc ^= x mọi phần tử.",
+          "code": "def single_number(nums):\n    acc = 0\n    for x in nums: acc ^= x\n    return acc",
+          "tcex": {
+            "input": {
+              "nums": [
+                4,
+                1,
+                2,
+                1,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "x"
+            ],
+            "expected": 4,
+            "anim": true
+          }
+        },
+        {
+          "name": "reduce",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "functools.reduce(operator.xor, ...) một dòng.",
+          "code": "from functools import reduce\nimport operator\ndef single_number(nums):\n    return reduce(operator.xor, nums, 0)",
+          "static": [
+            "reduce(operator.xor, nums, 0) quét toàn bộ nums, XOR tích luỹ từng phần tử",
+            "Ví dụ [4,1,2,1,2]: ((((0^4)^1)^2)^1)^2 — tính chất a^a=0 triệt tiêu các cặp",
+            "1^1 = 0, 2^2 = 0 → còn lại 4",
+            "Trả 4 — kẻ xuất hiện một lần; một dòng gọn nhờ functools.reduce"
+          ]
+        },
+        {
+          "name": "Toán học",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "2×sum(set) − sum(nums) — dạy ý tưởng nhưng cần bộ nhớ set.",
+          "code": "def single_number(nums):\n    return 2*sum(set(nums)) - sum(nums)",
+          "static": [
+            "Ví dụ nums=[4,1,2,1,2]. set(nums) = {4,1,2}, sum = 7, nhân 2 = 14",
+            "sum(nums) = 10; 2·sum(set) − sum(nums) = 14 − 10 = 4",
+            "Trả 4 — ý tưởng: phần tử lẻ làm lệch tổng gấp đôi tập hợp",
+            "Tốn O(n) bộ nhớ cho set — kém hơn XOR O(1)"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: XOR có tính kết hợp và a^a = 0 — mọi phần tử xuất hiện hai lần tự triệt tiêu.",
+        "reverse": "Quy nạp ngược: phần tử lẻ còn lại là phần duy nhất không bị 'huỷ' — vì 0^x = x nên acc cuối chính là nó."
+      },
+      "note": "Quy nạp ngược: phần tử lẻ còn lại là phần duy nhất không bị 'huỷ' — vì 0^x = x nên acc cuối chính là nó."
+    },
+    {
+      "no": "137",
+      "title": "Single Number II",
+      "cat": "Bit Manipulation",
+      "diff": "Medium",
+      "statement": "Mỗi phần tử xuất hiện đúng 3 lần, trừ một xuất hiện 1 lần; tìm nó.",
+      "examples": "[2,2,3,2] → 3 · [0,1,0,1,0,1,99] → 99",
+      "keyIdea": "Đếm từng bit: bit nào count%3 == 1 thì thuộc phần tử lẻ. Áp dụng theo bit (máy trạng thái nâng cao).",
+      "approaches": [
+        {
+          "name": "Đếm bit %3",
+          "time": "O(32n)",
+          "space": "O(1)",
+          "idea": "Với mỗi bit i: tổng các (x>>i)&1 mod 3 là bit của đáp án.",
+          "code": "def single_number(nums):\n    res = 0\n    for i in range(32):\n        s = sum((x >> i) & 1 for x in nums) % 3\n        res |= s << i\n    return res - (1 << 32) if res >= (1 << 31) else res",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                2,
+                3,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        },
+        {
+          "name": "Counter / sort",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Đếm tần suất rồi tìm phần tử count == 1 — bản rõ ràng để hiểu đề.",
+          "code": "from collections import Counter\ndef single_number(nums):\n    return next(x for x, c in Counter(nums).items() if c == 1)",
+          "static": [
+            "Ví dụ nums=[2,2,3,2]. Counter đếm tần suất: {2:3, 3:1}",
+            "next(x for x,c in Counter(...).items() if c == 1) tìm phần tử có count = 1",
+            "Tìm được x=3 → trả 3",
+            "Rõ ràng và dễ hiểu nhưng tốn O(n) bộ nhớ — không dùng phép bit"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: đếm từng bit — bit nào có tổng chia 3 dư 1 thì bit đó thuộc phần tử xuất hiện một lần.",
+        "reverse": "Quy nạp ngược: sau khi gom các bit thoả mãn thành res, kiểm tra res ≥ 2^31 để quy về số âm nếu cần — vì đầu vào có thể chứa số âm."
+      },
+      "note": "Quy nạp ngược: sau khi gom các bit thoả mãn thành res, kiểm tra res ≥ 2^31 để quy về số âm nếu cần — vì đầu vào có thể chứa số âm."
+    },
+    {
+      "no": "201",
+      "title": "Bitwise AND of Numbers Range",
+      "cat": "Bit Manipulation",
+      "diff": "Medium",
+      "statement": "Tính left & (left+1) & … & right (khoảng BIG: 0 ≤ left ≤ right ≤ 2^31−1).",
+      "examples": "left=5, right=7 → 4 · left=0, right=0 → 0 · left=1, right=2^31−1 → 0",
+      "keyIdea": "Kết quả = tiền tố chung của left và right (dịch hai số phải tới khi bằng nhau).",
+      "approaches": [
+        {
+          "name": "Dịch tìm tiền tố chung",
+          "time": "O(31)",
+          "space": "O(1)",
+          "idea": "Dịch left&right phải tới khi bằng; kết quả = left << shifts.",
+          "code": "def range_bitwise_and(left, right):\n        sh = 0\n        while left != right:\n            left >>= 1; right >>= 1; sh += 1\n        return left << sh",
+          "static": [
+            "Ví dụ left=5 (101₂), right=7 (111₂). Dịch cả hai phải tới khi bằng nhau:",
+            "5≠7 → 5>>1=2, 7>>1=3, sh=1; 2≠3 → 1, 1, sh=2; 1==1 dừng",
+            "left << sh = 1 << 2 = 4",
+            "Trả 4 — đúng left & (left+1) & ... & right = 5&6&7 = 4",
+            "AND toàn khoảng chỉ giữ lại phần bit KHÔNG đổi trong khoảng — chính là tiền tố chung"
+          ]
+        },
+        {
+          "name": "Xoá bit thấp của right",
+          "time": "O(31)",
+          "space": "O(1)",
+          "idea": "right & (right−1) xoá bit 1 thấp nhất tới khi right ≤ left; trả right.",
+          "code": "def range_bitwise_and(left, right):\n    while right > left:\n        right &= right - 1\n    return right",
+          "static": [
+            "Ví dụ left=5, right=7. right & (right-1) xoá bit 1 thấp nhất của right",
+            "right=7 > 5: 7&6 = 6 (110₂); vẫn > 5: 6&5 = 4 (100₂); 4 ≤ 5 dừng",
+            "Trả right = 4 — đúng đáp án",
+            "Cách này 'xoá phần nhiễu' từ phía phải, chỉ giữ phần chung bền vững"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: AND toàn khoảng = tiền tố chung của left và right — dịch cả hai sang phải tới khi bằng nhau rồi dịch lại số lần đã đi.",
+        "reverse": "Quy nạp ngược: nếu right > left thì bit thấp nhất của right chắc chắn không nằm chung (vì có sự khác biệt trong khoảng) — xoá dần tới khi right ≤ left."
+      },
+      "note": "Quy nạp ngược: nếu right > left thì bit thấp nhất của right chắc chắn không nằm chung (vì có sự khác biệt trong khoảng) — xoá dần tới khi right ≤ left."
+    }
+  ]
+}

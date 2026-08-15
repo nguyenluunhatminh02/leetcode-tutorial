@@ -1,0 +1,27 @@
+{
+  "title": "Top Interview 150 — Toàn bộ 150 bài",
+  "desc": "Bộ 150 bài của LeetCode Study Plan, chia theo nhóm chủ đề. Mỗi nhóm là một file riêng; bài nào có ✅ đã có tutorial, 📄 còn trống đang chờ nội dung. Lọc nhanh: bấm nhóm ở dưới để mở bài tương ứng.",
+  "groups": {
+    "01-array-string":    { "title": "Mảng & Chuỗi",      "desc": "Kỹ thuật nền: ghi đè tại chỗ, cộng dồn (prefix/suffix), hai hướng duyệt, sắp xếp lại mảng." },
+    "02-two-pointers":    { "title": "Hai con trỏ",       "desc": "Thu hẹp hai đầu, gặp giữa, hoán đổi có điều kiện." },
+    "03-sliding-window":  { "title": "Cửa sổ trượt",      "desc": "Duy trì cửa sổ con liên tiếp với bộ đếm tần suất." },
+    "04-matrix":          { "title": "Ma trận",           "desc": "Duyệt theo lớp, xoay, truy vết trạng thái tại chỗ." },
+    "05-hashmap":         { "title": "Bảng băm",          "desc": "Đổi thời gian lấy bộ nhớ: tra cứu O(1)." },
+    "06-intervals":       { "title": "Khoảng",            "desc": "Sort theo start rồi gộp/đếm chồng lấn." },
+    "07-stack":           { "title": "Ngăn xếp",          "desc": "Khớp cặp, giữ thứ tự, tính toán hậu tố." },
+    "08-linked-list":     { "title": "Danh sách liên kết", "desc": "Đảo, gộp, tìm chu trình, con trỏ trước/sau." },
+    "09-binary-tree":     { "title": "Cây nhị phân",      "desc": "Duyệt DFS/BFS, độ sâu, đối xứng, dựng cây." },
+    "10-bst":             { "title": "Cây tìm kiếm nhị phân", "desc": "Bất biến inorder, tìm kiếm, kiểm chứng." },
+    "11-graph":           { "title": "Đồ thị",            "desc": "DFS/BFS, tô màu, topo, chu trình." },
+    "12-trie":            { "title": "Trie",              "desc": "Tiền tố, tìm kiếm có ký tự đại diện." },
+    "13-backtracking":    { "title": "Backtracking",      "desc": "Quy lui: chọn – khám phá – huỷ chọn." },
+    "14-divide-conquer":  { "title": "Chia để trị",       "desc": "Chia nhỏ bài toán, gộp kết quả." },
+    "15-binary-search":   { "title": "Tìm kiếm nhị phân", "desc": "Tìm trong mảng đã sắp, peak, rotated." },
+    "16-heap":            { "title": "Heap & hàng đợi ưu tiên", "desc": "Top-K, trung vị, lập lịch." },
+    "17-bit-manipulation": { "title": "Thao tác bit",     "desc": "XOR, đếm bit, quy nạp bit." },
+    "18-math":            { "title": "Toán học",          "desc": "Chuẩn hoá số, luỹ thừa nhanh." },
+    "19-dp-1d":           { "title": "Quy hoạch động 1D", "desc": "Ghi nhớ, phụ thuộc một chiều." },
+    "20-dp-multi":        { "title": "Quy hoạch động đa chiều", "desc": "Bảng 2D, chữ số, chuỗi con chung." }
+  },
+  "groupsArr": ["01-array-string","02-two-pointers","03-sliding-window","04-matrix","05-hashmap","06-intervals","07-stack","08-linked-list","09-binary-tree","10-bst","11-graph","12-trie","13-backtracking","14-divide-conquer","15-binary-search","16-heap","17-bit-manipulation","18-math","19-dp-1d","20-dp-multi"]
+}

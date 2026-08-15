@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Top Interview 150 — Học theo nhóm</title>
+<style>
+:root{
+  --bg:#0d1017; --panel:#141926; --panel2:#1a2130; --ink:#eaf0f8; --mut:#8f9ab2;
+  --line:#242c3e; --acc:#7aa2ff; --acc2:#38d3f0; --ok:#3ddc97; --warn:#ffb454; --bad:#ff6b81;
+  --inksoft:#c9d2e3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);background-image:radial-gradient(#1d2434 1px,transparent 1px);background-size:26px 26px;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+a{color:var(--acc)}
+a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 90px}
+.hero{padding:10px 0 20px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.chip{display:inline-block;padding:3px 12px;border-radius:999px;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);background:var(--panel);margin:2px 6px 0 0}
+.hero h1{font-size:27px;margin:10px 0 8px;text-wrap:balance}
+.hero p{color:var(--mut);margin:6px 0 0;max-width:850px}
+
+/* ---------- index / toc ---------- */
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0 28px}
+.grp{text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 12px;display:flex;gap:10px;align-items:center;transition:border-color .15s}
+.grp:hover{border-color:var(--acc)}
+.grp .ic{font-size:20px}
+.grp b{font-size:14px}
+.grp small{display:block;color:var(--mut);font-size:11.5px}
+
+/* ---------- problem ---------- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;margin:30px 0;scroll-margin-top:16px}
+.sec-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-top h2{margin:0;font-size:21px;text-wrap:balance}
+.tag{font-size:12px;letter-spacing:.04em;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.tag.easy{color:#a7f3d0;border-color:#14532d;background:#052e16}
+.tag.medium{color:#fde68a;border-color:#78350f;background:#2c1a05}
+.tag.hard{color:#fecaca;border-color:#7f1d1d;background:#2a0a0a}
+.stmt{color:var(--inksoft);margin:12px 0 4px;line-height:1.7}
+.ex{color:var(--mut);font-size:14px}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b0e16;border:1px solid var(--line);border-radius:6px;padding:1px 5px;color:var(--acc2)}
+.idea{background:#101a2e;border-left:3px solid var(--acc2);border-radius:0 12px 12px 0;padding:11px 15px;margin:13px 0;font-size:14.5px;color:var(--inksoft)}
+
+/* ---------- solution ---------- */
+.sol{border-top:1px dashed var(--line);margin-top:22px;padding-top:18px}
+.sol h4{font-size:16px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-wrap:balance}
+.sol h5{font-size:14.5px;margin:14px 0 6px;color:var(--acc2)}
+.meta{font-size:13px;color:var(--mut)}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-size:12.5px;margin-right:8px;margin-bottom:4px}
+.pill b{color:var(--acc)}
+pre.code{background:#0b0e16;border:1px solid var(--line);border-radius:13px;padding:14px 16px;overflow-x:auto;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:9px 0}
+pre.code .k{color:#c792ea} pre.code .f{color:#82aaff} pre.code .n{color:#f78c6c}
+pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code .o{color:#89ddff}
+.steps-desc{color:var(--mut);font-size:14px;margin:8px 0}
+
+/* ---------- static steps ---------- */
+.steps{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.step-line{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:13.5px;color:var(--inksoft)}
+.step-line .sno{color:var(--acc2);font-weight:700;font-variant-numeric:tabular-nums;min-width:22px}
+
+/* ---------- interactive player ---------- */
+.run{border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:13px 15px;margin:11px 0}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:5px 11px;font-size:14px;transition:.12s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.sp{font-size:13px;color:var(--mut);margin-right:6px;font-variant-numeric:tabular-nums}
+.rng{flex:1;min-width:130px;accent-color:var(--acc)}
+.note{font-size:14px;color:var(--inksoft);margin:0 0 9px;min-height:21px}
+.note.fin{color:var(--ok)}
+.cells-wrap{position:relative;padding:13px 4px 4px;min-height:56px}
+.cells{display:flex;gap:7px;flex-wrap:wrap}
+.cell{position:relative;width:42px;height:40px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.cell.dead{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.05) 6px 12px);border-style:dashed;color:#5b6377}
+.cell.keep{background:#153a2b;border-color:#2f7d5a;color:#d1fae5}
+.cell.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.cell.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.cell.sw{background:#4c1120;border-color:var(--bad)}
+.cell.act{background:#33250a;border-color:var(--warn)}
+.ci{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:10px;color:#5b6377;font-variant-numeric:tabular-nums}
+/* ---------- player v2: mat / node (ll/tree) / stack / hash / set / aux ---------- */
+.run:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+/* mat */
+.cells.mat{flex-direction:column;gap:6px;flex-wrap:nowrap;width:max-content}
+.mrow{display:flex;gap:6px}
+.cell.mcell{width:38px;height:34px;font-size:13px;border-radius:6px}
+.cell.tail{border-style:dashed;color:#7d8aa5}
+.cell.colored{background:#12402c;border-color:var(--ok)}
+/* stack */
+.cells.stack{flex-direction:column-reverse;align-items:center;gap:6px;width:78px;border:1.5px solid #39415c;border-top:none;border-radius:0 0 10px 10px;padding:10px 8px 7px;background:#0f1522;min-height:66px}
+.cell.scol{width:56px;height:34px;font-size:13px;border-radius:6px}
+.cell.top{border-color:var(--warn)}
+.topb{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--warn);margin-top:3px;text-transform:uppercase}
+.stack-row{display:flex;gap:12px;align-items:stretch}
+.stack-ptrs{display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:6px;padding:10px 0 7px}
+.sph{min-height:40px;display:flex;align-items:center}
+.ptr-tag{font-size:10.5px;font-weight:700;color:var(--acc2);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:1px 6px;white-space:nowrap}
+/* ll + tree: node dùng chung */
+.cells.tree,.cells.ll{display:block}
+.tbox{position:relative;overflow-x:auto;padding:14px 0 20px}
+.tgrid{position:relative;display:grid;margin:0 auto}
+.tgrid svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+.llrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node{position:relative;min-width:46px;height:40px;padding:0 8px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.node.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.node.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.node.sw{background:#4c1120;border-color:var(--bad)}
+.node.act{background:#33250a;border-color:var(--warn)}
+.node.tnd{width:44px;height:44px;min-width:44px;border-radius:50%;justify-self:center;align-self:center}
+.nid{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:9.5px;color:#5b6377;font-variant-numeric:tabular-nums}
+.nstate{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9px;background:#1b2740;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--acc2);white-space:nowrap;z-index:2}
+.arrow{color:var(--mut);font-size:16px;font-weight:700;padding:0 2px;align-self:center}
+/* hash */
+.cells.hash{flex-direction:column;gap:5px;width:max-content}
+.hpair{display:flex;align-items:center;gap:8px;border:1px solid #2a3550;border-radius:8px;background:#101828;padding:2px 4px;transition:background .18s,border-color .18s}
+.hpair.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.hpair.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.hpair.sw{background:#4c1120;border-color:var(--bad)}
+.hk{min-width:42px;text-align:center;font-weight:700;color:var(--acc);font-size:12.5px;background:#16203a;border-radius:6px;padding:2px 6px}
+.hv{font-weight:600;font-size:13.5px;padding:2px 7px;font-variant-numeric:tabular-nums;min-width:24px;color:var(--inksoft)}
+/* set */
+.cells.set{gap:6px;flex-wrap:wrap}
+.sbadge{border:1px solid #3a4560;border-radius:999px;background:#101828;padding:4px 13px;font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums}
+.sbadge.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.sbadge.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.sbadge.sw{background:#4c1120;border-color:var(--bad)}
+/* aux */
+.aux{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap}
+.alabel{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.acells{display:flex;gap:5px}
+.acell{min-width:30px;height:26px;border:1px solid #3a4560;border-radius:6px;background:#121a2a;display:grid;place-items:center;font-size:12.5px;font-weight:600;padding:0 7px;font-variant-numeric:tabular-nums;transition:background .18s,border-color .18s}
+.acell.rd{background:#4a2c10;border-color:var(--warn)}
+.acell.wr{background:#1a2f5c;border-color:var(--acc)}
+.acell.sw{background:#4c1120;border-color:var(--bad)}
+.note .result{color:var(--acc2);font-weight:700}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+.ptrs{position:absolute;inset:0;pointer-events:none}
+.ptr{position:absolute;top:1px;font-size:11px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:5px;padding:1px 6px;white-space:nowrap}
+@media (max-width:640px){.wrap{padding:14px 10px 70px}section.card{padding:16px 12px}.cell{width:36px;height:34px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* code pane + dòng đang chạy */
+pre.code.pane{position:relative;margin:8px 0;border-left:3px solid var(--acc2);font-size:12.5px;max-height:180px;overflow-y:auto}
+pre.code .curline{background:rgba(122,162,255,.14);box-shadow:inset 3px 0 0 var(--acc);border-radius:3px}
+pre.code.pane .curline{background:rgba(122,162,255,.16)}
+/* region (khung vùng hoạt động) */
+.region{position:absolute;border:2px dashed var(--acc2);border-radius:8px;pointer-events:none;opacity:.55;transition:all .15s;z-index:2}
+
+/* badge đọc/ghi trên node cây */
+.nst{position:absolute;top:-9px;right:-12px;font-size:9px;font-weight:700;background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:0 4px;color:var(--acc2);z-index:4;display:none}
+.node.rd .nst{display:block;border-color:var(--warn);color:var(--warn);background:#33250a}
+.node.wr .nst{display:block;border-color:var(--acc);color:var(--acc);background:#0b1e2b}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="chip">Top Interview 150</span>
+    <span class="chip" id="grpChip"></span>
+    <span class="chip">Python · tiếng Việt</span>
+  </div>
+  <h1 id="grpTitle"></h1>
+  <p id="grpDesc"></p>
+</header>
+<nav class="toc" id="toc"></nav>
+<main id="content"></main>
+<footer id="foot"></footer>
+</div>
+
+<script>
+"use strict";
+/*
+ * traces150.js — trace animation cho các bài ngoài 6 bài gốc (Top Interview 150).
+ * Nguyên tắc như traces.js: mỗi hàm nhận input, trả mảng step {note, cells, array, read, write, swap, ptr, ptrNames, end}.
+ * Bước 1 làm quen với 4 thuật toán kinh điển.
+ */
+'use strict';
+
+function at150(arr, i) { return { target: [i], value: arr[i] }; }
+
+/* ============ 121 Best Time to Buy and Sell Stock ============ */
+function trace_stock(input) {
+  const { prices } = input;
+  const steps = [];
+  let buy = prices[0], profit = 0;
+  const push = (note, patch, end) => {
+    const cells = prices.map((v, idx) => ({ value: v, keep: idx === 0 ? false : false }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: buy = prices[0] = ${buy}, max profit = 0. Duyệt từ ngày 1.`, { ptr: { buy: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] < buy) {
+      buy = prices[i];
+      push(`prices[${i}] = ${prices[i]} < buy ${prices[i - 1] > prices[i] ? '(giảm so với trước)' : ''} → cập nhật buy = ${prices[i]} (mua rẻ hơn, bỏ qua mức lời cũ chưa tốt hơn).`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    } else {
+      const p = prices[i] - buy;
+      const better = p > profit;
+      profit = Math.max(profit, p);
+      push(`prices[${i}] = ${prices[i]} ≥ buy ${buy} → lời nếu bán ở đây = ${p}. ${better ? 'Cập nhật max profit = ' + p + '!' : 'Chưa hơn max profit hiện tại (' + profit + ').'}`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    }
+  }
+  push(`Xong: max profit = ${profit} (mua ở ${buy}, các ngày sau là nơi bán tối ưu).`, {}, true);
+  return steps;
+}
+
+/* ============ 122 Best Time to Buy and Sell Stock II ============ */
+function trace_stock_ii(input) {
+  const { prices } = input;
+  const steps = [];
+  let profit = 0, last = prices[0];
+  const push = (note, patch, end) => {
+    const cells = prices.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: profit = 0, last = prices[0] = ${last}.`, { ptr: { last: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] > last) {
+      profit += prices[i] - last;
+      push(`prices[${i}] = ${prices[i]} > ${last} → gom ${prices[i] - last} (bán ngay lập tức). profit = ${profit}.`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    } else {
+      push(`prices[${i}] = ${prices[i]} ≤ ${last} → không giao dịch (chờ giá lên).`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    }
+    last = prices[i];
+  }
+  push(`Xong: tổng lợi nhuận ${profit} — cộng dồn MỌI bước tăng liên tiếp.`, {}, true);
+  return steps;
+}
+
+/* ============ 15 3Sum ============ */
+function trace_3sum(input) {
+  const { nums } = input;
+  const a = nums.slice().sort((x, y) => x - y);
+  const res = [];
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = a.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: a.slice() }, patch, end ? { end: true, answer: res.length + ' bộ ba' } : {}));
+  };
+  push('Sắp xếp mảng để dùng hai con trỏ.', {});
+  for (let i = 0; i < a.length - 2; i++) {
+    if (i > 0 && a[i] === a[i - 1]) { push(`a[${i}] = ${a[i]} trùng a[${i - 1}] → bỏ qua để tránh bộ ba trùng.`, { ptr: { i }, ptrNames: ['i'] }); continue; }
+    let lo = i + 1, hi = a.length - 1;
+    push(`Cố định a[${i}] = ${a[i]}; lo = ${lo}, hi = ${hi}. Tìm cặp (lo, hi) sao cho tổng = 0.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+    while (lo < hi) {
+      const s = a[i] + a[lo] + a[hi];
+      if (s === 0) {
+        res.push([a[i], a[lo], a[hi]]);
+        push(`tổng ${a[i]} + ${a[lo]} + ${a[hi]} = 0 → ghi nhận bộ ba.`, { read: [at150(a, i), at150(a, lo), at150(a, hi)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+        const x = a[lo], y = a[hi];
+        while (lo < hi && a[lo] === x) lo++;
+        while (lo < hi && a[hi] === y) hi--;
+        push(`Nhảy qua các giá trị trùng (lo → ${lo}, hi → ${hi}) để không lặp bộ ba.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else if (s < 0) {
+        lo++;
+        push(`tổng = ${s} < 0 → tăng lo lên ${lo} (cần tổng lớn hơn).`, { read: [at150(a, lo - 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else {
+        hi--;
+        push(`tổng = ${s} > 0 → giảm hi xuống ${hi} (cần tổng nhỏ hơn).`, { read: [at150(a, hi + 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      }
+    }
+  }
+  push(`Xong: ${res.length} bộ ba`, {}, true);
+  return steps;
+}
+
+/* ============ 11 Container With Most Water ============ */
+function trace_container(input) {
+  const { height } = input;
+  const steps = [];
+  let l = 0, r = height.length - 1, best = 0;
+  const push = (note, patch, end) => {
+    const cells = height.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: height.slice() }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Hai con trỏ: l = ${l}, r = ${r}. Diện tích = chiều cao thấp hơn × khoảng cách.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const w = r - l;
+    const area = Math.min(height[l], height[r]) * w;
+    best = Math.max(best, area);
+    const goLeft = height[l] < height[r];
+    push(`Cặp (${l}, ${r}): diện tích = ${Math.min(height[l], height[r])} × ${w} = ${area} → best = ${best}. ${goLeft ? 'Cạnh trái thấp hơn → dịch l++' : 'Cạnh phải thấp hơn → dịch r--'} (giữ cạnh cao hơn để còn triển vọng).`,
+      { read: [at150(height, l), at150(height, r)], ptr: { l: l + (goLeft ? 1 : 0), r: r - (goLeft ? 0 : 1) }, ptrNames: ['l', 'r'] });
+    if (goLeft) l++; else r--;
+  }
+  push(`Xong: thể tích nước tối đa = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 3 Longest Substring Without Repeating Characters ============ */
+function trace_longest_substr(input) {
+  const { s } = input;
+  const steps = [];
+  let l = 0, best = 0;
+  const seen = new Map();
+  const push = (note, patch, end) => {
+    const cells = s.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: s.split('') }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Cửa sổ [l, r): ký tự trong cửa sổ đều là duy nhất. best = 0.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < s.length; r++) {
+    const c = s[r];
+    if (seen.has(c) && seen.get(c) >= l) {
+      const old = l;
+      l = seen.get(c) + 1;
+      push(`Gặp '${c}' đã xuất hiện ở vị trí ${seen.get(c)} (đang trong cửa sổ) → dịch l từ ${old} lên ${l}.`,
+        { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+    seen.set(c, r);
+    best = Math.max(best, r - l + 1);
+    push(`Thêm '${c}' vào cửa sổ [${l}, ${r}]. best = ${best} (đoạn dài nhất không trùng).`,
+      { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+  }
+  push(`Xong: độ dài lớn nhất = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 209 Minimum Size Subarray Sum ============ */
+function trace_min_subarray(input) {
+  const { nums, target } = input;
+  const steps = [];
+  let l = 0, sum = 0, best = Infinity;
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, answer: best === Infinity ? 0 : best } : {}));
+  };
+  push(`Cửa sổ [l, r): sum = tổng trong cửa sổ. Mở rộng r khi sum < ${target}, thu hẹp l khi sum ≥ ${target}.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < nums.length; r++) {
+    sum += nums[r];
+    push(`Thêm nums[${r}] = ${nums[r]} → sum = ${sum}.`, { read: at150(nums, r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    while (sum >= target && l <= r) {
+      const len = r - l + 1;
+      best = Math.min(best, len);
+      const removed = nums[l];
+      push(`sum ${sum} ≥ ${target} → cửa sổ [${l}, ${r}] dài ${len} hợp lệ. best = ${best}. Thu hẹp l (bỏ ${removed}).`,
+        { read: at150(nums, l), ptr: { l: l + 1, r }, ptrNames: ['l', 'r'] });
+      sum -= removed;
+      l++;
+    }
+  }
+  push(`Xong: chiều dài ngắn nhất = ${best === Infinity ? 0 : best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 238 Product of Array Except Self ============ */
+function trace_product_except_self(input) {
+  const { nums } = input;
+  const steps = [];
+  const n = nums.length;
+  const res = new Array(n).fill(1);
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice(), aux: { label: 'ans', values: res.slice() } }, patch, end ? { end: true, answer: res.slice() } : {}));
+  };
+  push('Ý tưởng: ans[i] = tích các phần tử bên trái × tích các phần tử bên phải. Duyệt 2 lần.', { aux: { label: 'ans', values: res.slice() } });
+  let left = 1;
+  for (let i = 0; i < n; i++) {
+    res[i] = left;
+    push(`Lượt trái: ans[${i}] = tích các phần tử nhỏ hơn ${i} = ${left}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    left *= nums[i];
+  }
+  let right = 1;
+  for (let i = n - 1; i >= 0; i--) {
+    res[i] *= right;
+    push(`Lượt phải: ans[${i}] *= tích các phần tử lớn hơn ${i} = ${right} → ${res[i]}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    right *= nums[i];
+  }
+  push(`Xong: ans = ${res.join(', ')}. Mỗi ans[i] = tích mọi phần tử trừ nums[i] — O(1) phụ.`, {}, true);
+  return steps;
+}
+
+/* ============ 125 Valid Palindrome ============ */
+function trace_valid_palindrome(input) {
+  const { s } = input;
+  const text = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = text.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: text.split('') }, patch, end ? { end: true, answer: true } : {}));
+  };
+  push(`Lọc chuỗi: giữ chữ & số, viết thường → '${text}'. Giờ kiểm tra palindrome bằng hai con trỏ.`,
+    { ptr: { l: 0, r: text.length - 1 }, ptrNames: ['l', 'r'] });
+  let l = 0, r = text.length - 1;
+  while (l < r) {
+    if (text[l] !== text[r]) {
+      push(`'${text[l]}' ≠ '${text[r]}' → KHÔNG phải palindrome.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      steps[steps.length - 1].answer = false;
+      return steps;
+    }
+    push(`'${text[l]}' = '${text[r]}' → tiếp tục thu hẹp.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l: l + 1, r: r - 1 }, ptrNames: ['l', 'r'] });
+    l++; r--;
+  }
+  push('Hai con trỏ gặp nhau → chuỗi là palindrome.', {}, true);
+  return steps;
+}
+
+/* ============ 392 Is Subsequence ============ */
+function trace_is_subsequence(input) {
+  const { s, t } = input;
+  const steps = [];
+  let i = 0, j = 0;
+  const push = (note, patch, end) => {
+    const cells = t.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: t.split('') }, patch, end ? { end: true, answer: i === s.length } : {}));
+  };
+  push(`Tìm ${s.length ? "mọi ký tự của '"+s+"'" : 'chuỗi rỗng'} trong '${t}' theo thứ tự. i = con trỏ s, j = con trỏ t.`,
+    { ptr: { i, j }, ptrNames: ['i', 'j'] });
+  while (i < s.length && j < t.length) {
+    if (s[i] === t[j]) {
+      push(`s[${i}] = '${s[i]}' trùng t[${j}] → khớp! i++, j++.`, { read: at150(t.split(''), j), ptr: { i: i + 1, j: j + 1 }, ptrNames: ['i', 'j'] });
+      i++; j++;
+    } else {
+      push(`s[${i}] = '${s[i]}' ≠ t[${j}] = '${t[j]}' → chỉ tăng j (bỏ qua ký tự trong t).`,
+        { read: at150(t.split(''), j), ptr: { i, j: j + 1 }, ptrNames: ['i', 'j'] });
+      j++;
+    }
+  }
+  push(i === s.length ? `Đã khớp toàn bộ '${s}' → subsequence.` : `Hết t trước khi khớp hết → không phải subsequence.`, {}, true);
+  return steps;
+}
+
+/* ============ 167 Two Sum II - Input Array Is Sorted ============ */
+function trace_two_sum_ii(input) {
+  const { numbers, target } = input;
+  const steps = [];
+  let l = 0, r = numbers.length - 1;
+  const push = (note, patch, end) => {
+    const cells = numbers.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: numbers.slice() }, patch, end ? { end: true, answer: [l + 1, r + 1] } : {}));
+  };
+  push(`Mảng đã sắp tăng → bắt đầu l = 0, r = ${r}. Tổng hiện tại: ${numbers[l] + numbers[r]}.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const s = numbers[l] + numbers[r];
+    if (s === target) {
+      push(`Tổng ${numbers[l]} + ${numbers[r]} = ${target} → đáp án 1-indexed: [${l + 1}, ${r + 1}].`,
+        { read: [at150(numbers, l), at150(numbers, r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      return steps;
+    } else if (s < target) {
+      l++;
+      push(`Tổng ${s} < ${target} → tăng l lên ${l} (cần tổng lớn hơn; mảng tăng nên chỉ còn hướng này).`,
+        { read: [at150(numbers, l - 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    } else {
+      r--;
+      push(`Tổng ${s} > ${target} → giảm r xuống ${r}.`,
+        { read: [at150(numbers, r + 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+  }
+  push('Không tìm thấy cặp.', {}, true);
+  return steps;
+}
+
+/* ============ EXPORT ============ */
+const TRACES150 = {
+  '125-valid-palindrome': { fn: trace_valid_palindrome, input: { s: 'A man, a plan, a canal: Panama' } },
+  '392-is-subsequence': { fn: trace_is_subsequence, input: { s: 'abc', t: 'ahbgdc' } },
+  '167-two-sum-ii-input-array-is-sorted': { fn: trace_two_sum_ii, input: { numbers: [2, 7, 11, 15], target: 9 } },
+  '121-best-time-to-buy-and-sell-stock': { fn: trace_stock, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '122-best-time-to-buy-and-sell-stock-ii': { fn: trace_stock_ii, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '15-3sum': { fn: trace_3sum, input: { nums: [-1, 0, 1, 2, -1, -4] } },
+  '11-container-with-most-water': { fn: trace_container, input: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
+  '3-longest-substring-without-repeating-characters': { fn: trace_longest_substr, input: { s: 'abcabcbb' } },
+  '209-minimum-size-subarray-sum': { fn: trace_min_subarray, input: { nums: [2, 3, 1, 2, 4, 3], target: 7 } },
+  '238-product-of-array-except-self': { fn: trace_product_except_self, input: { nums: [1, 2, 3, 4] } },
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = { TRACES150 };
+globalThis.TRACES150 = TRACES150;
+/* phần dữ liệu DATA được chèn vào đây bởi build script */
+const DATA = {"group":{"title":"Bảng băm","count":9,"desc":"Đổi thời gian lấy bộ nhớ: dùng hash để tra cứu O(1). Nhóm này là trái tim của 'đếm và so trạng thái'."},"problems":[{"no":"383","title":"Ransom Note","cat":"Hashmap","diff":"Easy","statement":"Xem có thể viết ransomNote từ các ký tự magazine (mỗi ký tự dùng tối đa 1 lần).","examples":"ransomNote=\"a\", magazine=\"b\" → false · \"aa\",\"aab\" → true","keyIdea":"Đếm tần suất ký tự của magazine, trừ dần theo ransomNote.","approaches":[{"name":"Counter trừ","time":"O(n+m)","space":"O(1)","idea":"dùng Counter(magazine); với mỗi ký tự trong ransomNote, nếu thiếu → false, ngược lại giảm 1.","code":"from collections import Counter\ndef can_construct(ransomNote, magazine):\n    c = Counter(magazine)\n    for ch in ransomNote:\n        if c[ch] <= 0: return False\n        c[ch] -= 1\n    return True","static":["Counter(magazine) đếm từng ký tự","Với mỗi ký tự trong ransomNote: trừ 1 khỏi counter","Nếu counter[ch] < 0 → không đủ chữ → false","Đi hết ransomNote → true"],"_pno":"383","steps":[{"note":"Counter(magazine) đếm từng ký tự"},{"note":"Với mỗi ký tự trong ransomNote: trừ 1 khỏi counter"},{"note":"Nếu counter[ch] < 0 → không đủ chữ → false"},{"note":"Đi hết ransomNote → true"}],"anim":false},{"name":"So sánh Counter","time":"O(n+m)","space":"O(1)","idea":"kết quả đúng khi mọi tần suất trong ransomNote ≤ tần suất tương ứng trong magazine.","code":"from collections import Counter\ndef can_construct(ransomNote, magazine):\n    a, b = Counter(ransomNote), Counter(magazine)\n    return all(b[ch] >= a[ch] for ch in a)","static":["Counter(ransomNote) đếm nhu cầu; Counter(magazine) đếm nguồn cung.","Với mỗi ký tự ch trong ransomNote: so tần suất hai bên.","Hợp lệ khi b[ch] >= a[ch] cho mọi ch — nguồn cung đủ nhu cầu.","Ví dụ 'aa' với 'aab': b['a']=2 >= a['a']=2 → true."],"_pno":"383","steps":[{"note":"Counter(ransomNote) đếm nhu cầu; Counter(magazine) đếm nguồn cung."},{"note":"Với mỗi ký tự ch trong ransomNote: so tần suất hai bên."},{"note":"Hợp lệ khi b[ch] >= a[ch] cho mọi ch — nguồn cung đủ nhu cầu."},{"note":"Ví dụ 'aa' với 'aab': b['a']=2 >= a['a']=2 → true."}],"anim":false},{"name":"replace 1 lần","time":"O(m·n)","space":"O(1)","idea":"Với mỗi ký tự, thay 1 lần xuất hiện bằng rỗng trong bản sao magazine.","code":"def can_construct(ransomNote, magazine):\n    m = magazine\n    for ch in ransomNote:\n        if ch not in m: return False\n        m = m.replace(ch, '', 1)\n    return True","static":["Bắt đầu với bản sao m = magazine.","Với mỗi ký tự ch trong ransomNote: nếu ch không còn trong m → false.","Nếu có, xoá đúng một lần xuất hiện của ch trong m (replace 1 lần).","Đi hết ransomNote mà luôn tìm được → true. O(m·n) vì replace quét lại m."],"_pno":"383","steps":[{"note":"Bắt đầu với bản sao m = magazine."},{"note":"Với mỗi ký tự ch trong ransomNote: nếu ch không còn trong m → false."},{"note":"Nếu có, xoá đúng một lần xuất hiện của ch trong m (replace 1 lần)."},{"note":"Đi hết ransomNote mà luôn tìm được → true. O(m·n) vì replace quét lại m."}],"anim":false}],"thinking":{"forward":"Đếm tần suất chữ cái trong magazine, trừ dần khi dùng cho ransomNote.","reverse":"Cần đủ chữ để viết ransomNote → mỗi ký tự trong ransomNote phải có trong magazine với số lượng còn đủ."},"note":"Chuỗi ký tự — dùng Counter (đếm tần suất) thay vì mảng."},{"no":"40","title":"Isomorphic Strings","cat":"Hashmap","diff":"Easy","statement":"Hai chuỗi đẳng cấu (isomorphic) nếu có phép thay ký tự 1-1 ánh xạ s → t.","examples":"\"egg\"→\"add\" true · \"foo\"→\"bar\" false · \"paper\"→\"title\" true","keyIdea":"Ánh xạ hai chiều: mỗi ký tự s phải luôn khớp 1 ký tự t và ngược lại.","approaches":[{"name":"Hai dict ánh xạ","time":"O(n)","space":"O(1)","idea":"map_sx và map_tx: nếu đã gán mà khác → false; nếu cả hai chưa gán thì gán cả hai chiều.","code":"def is_isomorphic(s, t):\n    a = {}; b = {}\n    for x, y in zip(s, t):\n        if x in a and a[x] != y: return False\n        if y in b and b[y] != x: return False\n        a[x] = y; b[y] = x\n    return True","static":["Khởi tạo hai dict ánh xạ a (s→t) và b (t→s).","Với mỗi cặp ký tự (x, y) = zip(s, t):","Nếu x đã được ánh xạ tới ký tự khác y → hai chuỗi không đẳng cấu.","Nếu y đã được ánh xạ ngược tới ký tự khác x → không đẳng cấu.","Ngược lại gán cả hai chiều: a[x] = y và b[y] = x.","Duyệt hết mà không vi phạm → hai chuỗi đẳng cấu (true).","Ví dụ 'egg'→'add' đúng, 'foo'→'bar' sai vì o phải ánh xạ 1-1."],"_pno":"40","steps":[{"note":"Khởi tạo hai dict ánh xạ a (s→t) và b (t→s)."},{"note":"Với mỗi cặp ký tự (x, y) = zip(s, t):"},{"note":"Nếu x đã được ánh xạ tới ký tự khác y → hai chuỗi không đẳng cấu."},{"note":"Nếu y đã được ánh xạ ngược tới ký tự khác x → không đẳng cấu."},{"note":"Ngược lại gán cả hai chiều: a[x] = y và b[y] = x."},{"note":"Duyệt hết mà không vi phạm → hai chuỗi đẳng cấu (true)."},{"note":"Ví dụ 'egg'→'add' đúng, 'foo'→'bar' sai vì o phải ánh xạ 1-1."}],"anim":false},{"name":"Chuẩn hoá pattern","time":"O(n)","space":"O(n)","idea":"Mã mỗi ký tự bằng vị trí xuất hiện đầu tiên; hai chuỗi cùng pattern → đẳng cấu.","code":"def pattern(s):\n    first, out = {}, []\n    for i, ch in enumerate(s):\n        if ch not in first: first[ch] = i\n        out.append(first[ch])\n    return out\ndef is_isomorphic(s, t):\n    return pattern(s) == pattern(t)","static":["Định nghĩa hàm pattern: mã mỗi ký tự bằng vị trí xuất hiện đầu tiên của nó.","Quét chuỗi, lần đầu gặp ký tự thì ghi first[ch] = i; luôn thêm first[ch] vào out.","Sinh pattern số: ví dụ 'egg' → [0, 1, 1], 'add' → [0, 1, 1].","Hai chuỗi đẳng cấu khi và chỉ khi pattern(s) == pattern(t).","Kết thúc: trả đúng nếu hai pattern trùng nhau."],"_pno":"40","steps":[{"note":"Định nghĩa hàm pattern: mã mỗi ký tự bằng vị trí xuất hiện đầu tiên của nó."},{"note":"Quét chuỗi, lần đầu gặp ký tự thì ghi first[ch] = i; luôn thêm first[ch] vào out."},{"note":"Sinh pattern số: ví dụ 'egg' → [0, 1, 1], 'add' → [0, 1, 1]."},{"note":"Hai chuỗi đẳng cấu khi và chỉ khi pattern(s) == pattern(t)."},{"note":"Kết thúc: trả đúng nếu hai pattern trùng nhau."}],"anim":false},{"name":"So độ dài set","time":"O(n)","space":"O(n)","idea":"Điều kiện cần và đủ: len(set(s)) == len(set(t)) == len(set(zip(s,t))).","code":"def is_isomorphic(s, t):\n    return len(set(zip(s, t))) == len(set(s)) == len(set(t))","static":["Điều kiện đẳng cấu: số ký tự phân biệt của s bằng của t.","Tính len(set(zip(s, t))): số cặp ghép (s[i], t[i]) không trùng.","So sánh ba số: len(set(zip)) == len(set(s)) == len(set(t)).","Ví dụ 'egg','add': 2 == 2 == 2 → true; 'foo','bar': 2 != 3 → false."],"_pno":"40","steps":[{"note":"Điều kiện đẳng cấu: số ký tự phân biệt của s bằng của t."},{"note":"Tính len(set(zip(s, t))): số cặp ghép (s[i], t[i]) không trùng."},{"note":"So sánh ba số: len(set(zip)) == len(set(s)) == len(set(t))."},{"note":"Ví dụ 'egg','add': 2 == 2 == 2 → true; 'foo','bar': 2 != 3 → false."}],"anim":false}],"thinking":{"forward":"Hai dict ánh xạ hai chiều: ký tự→ký tự.","reverse":"Cần hai chuỗi cùng cấu trúc → ánh xạ từng cặp ký tự phải nhất quán."},"note":"Hashmap: quy về tra cứu O(1)."},{"no":"41","title":"Word Pattern","cat":"Hashmap","diff":"Easy","statement":"Xem pattern (toàn ký tự, có thể phân biệt) có khớp ánh xạ đều đặn tới các từ không.","examples":"pattern=\"abba\", s=\"dog cat cat dog\" → true · \"abba\",\"dog cat cat fish\" → false","keyIdea":"Giống Isomorphic nhưng với các từ thay cho ký tự — cần hai chiều ánh xạ.","approaches":[{"name":"Hai dict ánh xạ","time":"O(n)","space":"O(n)","idea":"words = s.split(); nếu độ dài khác → false; ánh xạ ký tự↔từ hai chiều.","code":"def word_pattern(pattern, s):\n    words = s.split()\n    if len(pattern) != len(words): return False\n    a = {}; b = {}\n    for p, w in zip(pattern, words):\n        if p in a and a[p] != w: return False\n        if w in b and b[w] != p: return False\n        a[p] = w; b[w] = p\n    return True","static":["Tách s thành danh sách từ words = s.split().","Nếu len(pattern) != len(words) → false ngay.","Duyệt cặp (p, w) = zip(pattern, words): ánh xạ hai chiều p→w và w→p.","Nếu p đã gán tới từ khác w, hoặc w đã gán tới ký tự khác p → false.","Hết cặp mà không vi phạm → true.","Ví dụ 'abba' + 'dog cat cat dog' → true; 'dog cat cat fish' → false."],"_pno":"41","steps":[{"note":"Tách s thành danh sách từ words = s.split()."},{"note":"Nếu len(pattern) != len(words) → false ngay."},{"note":"Duyệt cặp (p, w) = zip(pattern, words): ánh xạ hai chiều p→w và w→p."},{"note":"Nếu p đã gán tới từ khác w, hoặc w đã gán tới ký tự khác p → false."},{"note":"Hết cặp mà không vi phạm → true."},{"note":"Ví dụ 'abba' + 'dog cat cat dog' → true; 'dog cat cat fish' → false."}],"anim":false},{"name":"So set","time":"O(n)","space":"O(n)","idea":"Độ dài bằng nhau và số ánh xạ ký tự↔từ bằng đủ.","code":"def word_pattern(pattern, s):\n    words = s.split()\n    return len(pattern) == len(words) and len(set(zip(pattern, words))) == len(set(pattern)) == len(set(words))","static":["Tách s thành words = s.split(); đếm số từ.","Điều kiện cần: len(pattern) == len(words).","Đếm số cặp ghép (pattern[i], words[i]) phân biệt qua set.","Khớp đủ khi len(set(zip)) == len(set(pattern)) == len(set(words)).","Ví dụ 'abba' + 'dog cat cat dog' → 2 == 2 == 2 → true."],"_pno":"41","steps":[{"note":"Tách s thành words = s.split(); đếm số từ."},{"note":"Điều kiện cần: len(pattern) == len(words)."},{"note":"Đếm số cặp ghép (pattern[i], words[i]) phân biệt qua set."},{"note":"Khớp đủ khi len(set(zip)) == len(set(pattern)) == len(set(words))."},{"note":"Ví dụ 'abba' + 'dog cat cat dog' → 2 == 2 == 2 → true."}],"anim":false},{"name":"encode+decode","time":"O(n)","space":"O(n)","idea":"Mã pattern và chuỗi thành chuỗi SỐ theo vị trí đầu rồi so sánh.","code":"def enc(seq):\n    d = {}; out = []\n    for x in seq:\n        if x not in d: d[x] = len(d)\n        out.append(d[x])\n    return out\ndef word_pattern(pattern, s):\n    return enc(pattern) == enc(s.split())","static":["Hàm enc(seq) gán mỗi phần tử một mã số theo lần xuất hiện đầu tiên.","Quét seq: nếu x chưa có trong d thì gán d[x] = len(d); thêm d[x] vào out.","Mã hoá pattern và words = s.split() thành hai chuỗi số.","So sánh: enc(pattern) == enc(words) — cùng hình dạng lặp lại.","Ví dụ 'abba' → [0,1,1,0], 'dog cat cat dog' → [0,1,1,0] → true."],"_pno":"41","steps":[{"note":"Hàm enc(seq) gán mỗi phần tử một mã số theo lần xuất hiện đầu tiên."},{"note":"Quét seq: nếu x chưa có trong d thì gán d[x] = len(d); thêm d[x] vào out."},{"note":"Mã hoá pattern và words = s.split() thành hai chuỗi số."},{"note":"So sánh: enc(pattern) == enc(words) — cùng hình dạng lặp lại."},{"note":"Ví dụ 'abba' → [0,1,1,0], 'dog cat cat dog' → [0,1,1,0] → true."}],"anim":false}],"thinking":{"forward":"Đối chiếu pattern với từ theo dict hai chiều.","reverse":"Cần pattern khớp danh sách từ → cùng một token phải cùng một từ."},"note":"Hashmap: quy về tra cứu O(1)."},{"no":"42","title":"Valid Anagram","cat":"Hashmap","diff":"Easy","statement":"Xem t có phải hoán vị ký tự của s không.","examples":"s=\"anagram\", t=\"nagaram\" → true · s=\"rat\", t=\"car\" → false","keyIdea":"Hai chuỗi là anagram ⇔ cùng tần suất ký tự.","approaches":[{"name":"So Counter","time":"O(n)","space":"O(1)","idea":"đếm tần suất cả hai và so.","code":"from collections import Counter\ndef is_anagram(s, t):\n    return Counter(s) == Counter(t)","static":["Counter(s) đếm tần suất ký tự của s.","Counter(t) đếm tần suất ký tự của t.","Hai chuỗi là anagram ⇔ hai bộ đếm bằng nhau.","Ví dụ 'anagram'/'nagaram' cùng {'a':3,'n':1,'g':1,'r':1,'m':1} → true."],"_pno":"42","steps":[{"note":"Counter(s) đếm tần suất ký tự của s."},{"note":"Counter(t) đếm tần suất ký tự của t."},{"note":"Hai chuỗi là anagram ⇔ hai bộ đếm bằng nhau."},{"note":"Ví dụ 'anagram'/'nagaram' cùng {'a':3,'n':1,'g':1,'r':1,'m':1} → true."}],"anim":false},{"name":"Sort cả hai","time":"O(n·log n)","space":"O(n)","idea":"sắp xếp rồi so bằng nhau — chậm hơn nhưng rất dễ chứng minh.","code":"def is_anagram(s, t):\n    return sorted(s) == sorted(t)","static":["Sắp xếp các ký tự của s thành danh sách có thứ tự.","Sắp xếp các ký tự của t thành danh sách có thứ tự.","Hai chuỗi là anagram ⇔ hai danh sách đã sắp bằng nhau.","Ví dụ sorted('anagram') == sorted('nagaram') → true."],"_pno":"42","steps":[{"note":"Sắp xếp các ký tự của s thành danh sách có thứ tự."},{"note":"Sắp xếp các ký tự của t thành danh sách có thứ tự."},{"note":"Hai chuỗi là anagram ⇔ hai danh sách đã sắp bằng nhau."},{"note":"Ví dụ sorted('anagram') == sorted('nagaram') → true."}],"anim":false},{"name":"Mảng đếm 26 chữ","time":"O(n)","space":"O(1)","idea":"Khởi tạo mảng 26 phần tử. với s cộng, với t trừ; cuối cùng toàn 0.","code":"def is_anagram(s, t):\n    if len(s) != len(t): return False\n    cnt = [0]*26\n    for a, b in zip(s, t):\n        cnt[ord(a)-97] += 1\n        cnt[ord(b)-97] -= 1\n    return all(x == 0 for x in cnt)","static":["Khởi tạo cnt = [0]*26 đại diện cho 26 chữ cái.","Với mỗi cặp (a, b) = zip(s, t): cnt[a] += 1 và cnt[b] -= 1.","Sau khi duyệt hết: nếu mọi phần tử của cnt bằng 0 → anagram.","Vì len(s) phải bằng len(t) mới có thể là anagram, kiểm tra trước.","Ví dụ 'anagram'/'nagaram': các phép cộng/trừ khử nhau hết → true."],"_pno":"42","steps":[{"note":"Khởi tạo cnt = [0]*26 đại diện cho 26 chữ cái."},{"note":"Với mỗi cặp (a, b) = zip(s, t): cnt[a] += 1 và cnt[b] -= 1."},{"note":"Sau khi duyệt hết: nếu mọi phần tử của cnt bằng 0 → anagram."},{"note":"Vì len(s) phải bằng len(t) mới có thể là anagram, kiểm tra trước."},{"note":"Ví dụ 'anagram'/'nagaram': các phép cộng/trừ khử nhau hết → true."}],"anim":false}],"thinking":{"forward":"Mực nước tại cột i = min(maxTrái, maxPhải) - height[i] (nếu dương).","reverse":"Cần nước đọng → với mỗi cột chỉ phụ thuộc tường cao nhất hai bên, dùng prefix/suffix max."},"note":"Hai chuỗi là anagram ⇔ cùng tần suất ký tự."},{"no":"43","title":"Group Anagrams","cat":"Hashmap","diff":"Medium","statement":"Nhóm các chuỗi anagram lại với nhau (thứ tự nhóm/trong nhóm tự do).","examples":"[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"] → [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]","keyIdea":"Mọi anagram có cùng 'chữ ký' — dùng chữ ký làm key để gom nhóm.","approaches":[{"name":"Sort từ làm key","time":"O(n·k·log k)","space":"O(n·k)","idea":"key = ''.join(sorted(word)); gom vào dict[key].","code":"from collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        d[''.join(sorted(w))].append(w)\n    return list(d.values())","tcex":{"input":{"strs":["eat","tea","tan","ate","nat","bat"]},"kind":"hash","display":"d","ptrs":["w"],"expected":[["eat","tea","ate"],["tan","nat"],["bat"]],"anim":true},"_pno":"43","steps":[{"note":"d = defaultdict(list)","line":3,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Khởi tạo defaultdict(list): key mới tự tạo danh sách rỗng để append ngay."},{"note":"for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"hash":{},"explain":"Duyệt từng từ — key băm là chuỗi ký tự đã sắp xếp, chuẩn hoá mọi anagram."},{"ptr":{"w":"eat"},"note":"w→eat — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat sắp thành 'aet' — từ đầu tiên nên tạo nhóm mới chứa eat."},{"ptr":{"w":"eat"},"note":"w→eat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp lấy từ kế tiếp trong strs."},{"ptr":{"w":"tea"},"note":"w→tea — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea sắp cũng ra 'aet' → trùng key với eat, gom chung một nhóm anagram."},{"ptr":{"w":"tea"},"note":"w→tea — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Vòng lặp lấy từ kế tiếp."},{"ptr":{"w":"tan"},"note":"w→tan — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan sắp thành 'ant' — key mới, mở nhóm riêng cho họ tan/nat."},{"ptr":{"w":"tan"},"note":"w→tan — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Vòng lặp lấy từ kế tiếp."},{"ptr":{"w":"ate"},"note":"w→ate — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate sắp ra 'aet' → gia nhập nhóm eat/tea: cùng bộ ký tự là cùng anagram."},{"ptr":{"w":"ate"},"note":"w→ate — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Vòng lặp lấy từ kế tiếp."},{"ptr":{"w":"nat"},"note":"w→nat — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat sắp ra 'ant' → trùng key với tan, vào chung nhóm."},{"ptr":{"w":"nat"},"note":"w→nat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Vòng lặp lấy từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — d[''.join(sorted(w))].append(w)","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat sắp thành 'abt' — key mới lần cuối, nhóm đơn chỉ có bat."},{"ptr":{"w":"bat"},"note":"w→bat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Vòng lặp lấy từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — return list(d.values()) — Kết thúc — đáp án: [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']] ✓ (khớp kỳ vọng)","line":6,"array":["eat","tea","tan","ate","nat","bat"],"end":true,"answer":[["eat","tea","ate"],["tan","nat"],["bat"]],"explain":"Trả list(d.values()): mỗi danh sách là một nhóm anagram — khớp kỳ vọng."}],"anim":true},{"name":"Bộ đếm ký tự làm key","time":"O(n·k)","space":"O(n·k)","idea":"key = tuple(count của 26 chữ) — không cần sort; anagram luôn cùng tuple.","code":"from collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        cnt = [0]*26\n        for ch in w: cnt[ord(ch)-97] += 1\n        d[tuple(cnt)].append(w)\n    return list(d.values())","tcex":{"input":{"strs":["eat","tea","tan","ate","nat","bat"]},"kind":"hash","display":"d","ptrs":["w"],"expected":[["eat","tea","ate"],["tan","nat"],["bat"]],"anim":true},"_pno":"43","steps":[{"note":"d = defaultdict(list)","line":3,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Khởi tạo defaultdict — key sẽ là bộ đếm 26 chữ cái thay vì chuỗi sort."},{"note":"for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"hash":{},"explain":"Duyệt từng từ w trong strs."},{"ptr":{"w":"eat"},"note":"w→eat — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: tạo cnt=26 ô đếm tần suất — khởi đầu mọi ô = 0."},{"ptr":{"w":"eat"},"note":"w→eat — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: tăng ô e,a,t lên 1 — đếm xong mà không cần sắp xếp."},{"ptr":{"w":"eat"},"note":"w→eat — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: tuple(cnt) làm key — anagram luôn cho cùng một bộ đếm."},{"ptr":{"w":"eat"},"note":"w→eat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"tea"},"note":"w→tea — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: dựng lại cnt mới — mỗi từ phải đếm từ đầu, không cộng dồn."},{"ptr":{"w":"tea"},"note":"w→tea — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: đếm t,e,a — kết quả y hệt eat: bằng chứng cùng ký tự."},{"ptr":{"w":"tea"},"note":"w→tea — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: trùng key với eat nên gom vào chung một nhóm."},{"ptr":{"w":"tea"},"note":"w→tea — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"tan"},"note":"w→tan — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: dựng cnt mới."},{"ptr":{"w":"tan"},"note":"w→tan — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: đếm t,a,n — khác bộ đếm của eat/tea → key mới."},{"ptr":{"w":"tan"},"note":"w→tan — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: tạo nhóm riêng cho họ 'a,n,t'."},{"ptr":{"w":"tan"},"note":"w→tan — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"ate"},"note":"w→ate — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: dựng cnt mới."},{"ptr":{"w":"ate"},"note":"w→ate — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: đếm a,t,e — lại trùng eat/tea."},{"ptr":{"w":"ate"},"note":"w→ate — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: vào chung nhóm với eat/tea — 3 từ 1 nhóm."},{"ptr":{"w":"ate"},"note":"w→ate — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"nat"},"note":"w→nat — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: dựng cnt mới."},{"ptr":{"w":"nat"},"note":"w→nat — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: đếm n,a,t — trùng tan."},{"ptr":{"w":"nat"},"note":"w→nat — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: gia nhập nhóm tan."},{"ptr":{"w":"nat"},"note":"w→nat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — cnt = [0]*26","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: dựng cnt mới."},{"ptr":{"w":"bat"},"note":"w→bat — for ch in w: cnt[ord(ch)-97] += 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: đếm b,a,t — khác mọi key đã có → nhóm mới."},{"ptr":{"w":"bat"},"note":"w→bat — d[tuple(cnt)].append(w)","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: tạo nhóm đơn cuối cùng."},{"ptr":{"w":"bat"},"note":"w→bat — for w in strs:","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — return list(d.values()) — Kết thúc — đáp án: [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']] ✓ (khớp kỳ vọng)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"end":true,"answer":[["eat","tea","ate"],["tan","nat"],["bat"]],"explain":"Trả list(d.values()): 3 nhóm anagram, khớp kỳ vọng."}],"anim":true},{"name":"Map chữ số nguyên tố","time":"O(n·k)","space":"O(n·k)","idea":"key = tích các số nguyên tố đại diện cho ký tự — chuỗi anagram có tích bằng nhau (dễ va chạm nên ít dùng).","code":"primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]\nfrom collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        k = 1\n        for ch in w: k *= primes[ord(ch)-97]\n        d[k].append(w)\n    return list(d.values())","tcex":{"input":{"strs":["eat","tea","tan","ate","nat","bat"]},"kind":"hash","display":"d","ptrs":["w"],"expected":[["eat","tea","ate"],["tan","nat"],["bat"]],"anim":true},"_pno":"43","steps":[{"note":"d = defaultdict(list)","line":4,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Khởi tạo defaultdict — key sắp là tích các số nguyên tố đại diện chữ cái."},{"note":"for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"hash":{},"explain":"Duyệt từng từ w trong strs."},{"ptr":{"w":"eat"},"note":"w→eat — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: khởi k=1 — tích sẽ nhân dần theo từng chữ cái."},{"ptr":{"w":"eat"},"note":"w→eat — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: nhân primes[điểm e,a,t] — thứ tự không quan trọng vì phép nhân giao hoán."},{"ptr":{"w":"eat"},"note":"w→eat — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"eat: dùng tích k làm key — anagram sinh cùng một tích."},{"ptr":{"w":"eat"},"note":"w→eat — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"tea"},"note":"w→tea — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: k=1 lần nữa."},{"ptr":{"w":"tea"},"note":"w→tea — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: nhân t,a,e — tích bằng eat dù thứ tự khác hẳn."},{"ptr":{"w":"tea"},"note":"w→tea — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tea: trùng key → chung nhóm với eat."},{"ptr":{"w":"tea"},"note":"w→tea — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"tan"},"note":"w→tan — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: khởi k=1."},{"ptr":{"w":"tan"},"note":"w→tan — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: nhân t,a,n — tích mới khác họ eat."},{"ptr":{"w":"tan"},"note":"w→tan — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"tan: mở nhóm riêng."},{"ptr":{"w":"tan"},"note":"w→tan — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"ate"},"note":"w→ate — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: khởi k=1."},{"ptr":{"w":"ate"},"note":"w→ate — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: nhân a,t,e — tích lại khớp eat/tea."},{"ptr":{"w":"ate"},"note":"w→ate — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"ate: vào chung nhóm với eat/tea."},{"ptr":{"w":"ate"},"note":"w→ate — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"nat"},"note":"w→nat — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: khởi k=1."},{"ptr":{"w":"nat"},"note":"w→nat — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: nhân n,a,t — khớp tích của tan."},{"ptr":{"w":"nat"},"note":"w→nat — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"nat: gia nhập nhóm tan."},{"ptr":{"w":"nat"},"note":"w→nat — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — k = 1","line":6,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: khởi k=1."},{"ptr":{"w":"bat"},"note":"w→bat — for ch in w: k *= primes[ord(ch)-97]","line":7,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: nhân b,a,t — tích mới (có thừa số 2) → nhóm đơn."},{"ptr":{"w":"bat"},"note":"w→bat — d[k].append(w)","line":8,"array":["eat","tea","tan","ate","nat","bat"],"explain":"bat: tạo nhóm cuối cùng."},{"ptr":{"w":"bat"},"note":"w→bat — for w in strs:","line":5,"array":["eat","tea","tan","ate","nat","bat"],"explain":"Quay lại vòng lặp cho từ kế tiếp."},{"ptr":{"w":"bat"},"note":"w→bat — return list(d.values()) — Kết thúc — đáp án: [['eat', 'tea', 'ate'], ['tan', 'nat'], ['bat']] ✓ (khớp kỳ vọng)","line":9,"array":["eat","tea","tan","ate","nat","bat"],"end":true,"answer":[["eat","tea","ate"],["tan","nat"],["bat"]],"explain":"Trả 3 nhóm anagram — cách này dễ va chạm số lớn nên ít dùng trong thực tế."}],"anim":true}],"thinking":{"forward":"Nhóm theo key chuẩn hoá (sort hoặc đếm chữ cái).","reverse":"Cần gom các từ anagram → cùng một key chuẩn hoá."},"note":"Mọi anagram có cùng 'chữ ký' — dùng chữ ký làm key để gom nhóm."},{"no":"44","title":"Two Sum","cat":"Hashmap","diff":"Easy","statement":"Tìm chỉ số hai phần tử cộng lại bằng target (được giả định có đúng một đáp án).","examples":"nums=[2,7,11,15], target=9 → [0,1]","keyIdea":"Với mỗi số, cần đối số = target − số đó; tra nhanh xem đã gặp chưa bằng dict.","approaches":[{"name":"Một lượt + dict bù","time":"O(n)","space":"O(n)","idea":"Duyệt; nếu target−num có trong dict → trả chỉ số; ngược lại lưu num→index.","code":"def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        if target - x in seen:\n            return [seen[target - x], i]\n        seen[x] = i\n    return []","tcex":{"input":{"nums":[2,7,11,15],"target":9},"kind":"hash","display":"seen","ptrs":["i"],"expected":[0,1],"anim":true},"_pno":"44","steps":[{"note":"seen = {}","line":2,"array":[2,7,11,15],"explain":"seen={} — lưu giá trị đã gặp kèm chỉ số, tra 'phần bù' trong O(1)."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,11,15],"hash":{},"explain":"Duyệt từng phần tử với chỉ số i."},{"ptr":{"i":0},"note":"i→0 — if target - x in seen:","line":4,"array":[2,7,11,15],"explain":"i=0, x=2: cần bù 9−2=7, chưa có 7 trong seen → chưa tìm thấy."},{"ptr":{"i":0},"note":"i→0 — seen[x] = i","line":6,"array":[2,7,11,15],"explain":"Lưu 2→0: nếu sau này gặp 7 sẽ biết cặp (2,7) ngay."},{"ptr":{"i":0},"note":"i→0 — for i, x in enumerate(nums):","line":3,"array":[2,7,11,15],"explain":"Tiếp tục vòng lặp sang phần tử kế."},{"ptr":{"i":1},"note":"i→1 — if target - x in seen:","line":4,"array":[2,7,11,15],"explain":"i=1, x=7: bù 9−7=2 — vừa lưu 2 tại chỉ số 0 → tìm thấy cặp."},{"ptr":{"i":1},"note":"i→1 — return [seen[target - x], i] — Kết thúc — đáp án: [0, 1] ✓ (khớp kỳ vọng)","line":5,"array":[2,7,11,15],"end":true,"answer":[0,1],"explain":"Trả [seen[2], 1] = [0,1] — hai vị trí cộng đúng bằng 9."}],"anim":true},{"name":"Hai lượt dict","time":"O(n)","space":"O(n)","idea":"Xây toàn bộ dict trước, rồi tìm — dễ đọc hơn, thêm 1 lượt quét.","code":"def two_sum(nums, target):\n    d = {x: i for i, x in enumerate(nums)}\n    for i, x in enumerate(nums):\n        j = d.get(target - x)\n        if j is not None and i != j: return [i, j]\n    return []","tcex":{"input":{"nums":[2,7,11,15],"target":9},"kind":"hash","display":"d","ptrs":["i"],"expected":[0,1],"anim":true},"_pno":"44","steps":[{"ptr":{"i":0},"note":"i→0 — d = {x: i for i, x in enumerate(nums)}","line":2,"array":[2,7,11,15],"explain":"i=0: xây toàn bộ d={x:i} — lưu hết giá trị kèm chỉ số trước khi tìm."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,11,15],"hash":{"2":0,"7":1,"11":2,"15":3},"explain":"Dict đầy đủ: 2→0, 7→1, 11→2, 15→3 — mọi tra cứu sau đó O(1)."},{"ptr":{"i":0},"note":"i→0 — j = d.get(target - x)","line":4,"array":[2,7,11,15],"explain":"i=0, x=2: j=d.get(9−2)=d.get(7)=1 — tìm thấy phần bù trong dict."},{"ptr":{"i":0},"note":"i→0 — if j is not None and i != j: return [i, j] — Kết thúc — đáp án: [0, 1] ✓ (khớp kỳ vọng)","line":5,"array":[2,7,11,15],"end":true,"answer":[0,1],"explain":"i≠j (0≠1) → trả [0,1]; hai lượt dễ đọc nhưng quét mảng 2 lần."}],"anim":true},{"name":"Vét cạn","time":"O(n²)","space":"O(1)","idea":"Thử mọi cặp — dùng làm khởi điểm giải thích rồi tối ưu.","code":"def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []","tcex":{"input":{"nums":[2,7,11,15],"target":9},"kind":"array","display":"nums","ptrs":["i","j"],"expected":[0,1],"anim":true},"_pno":"44","steps":[{"note":"for i in range(len(nums)):","line":2,"array":[2,7,11,15],"explain":"Vòng ngoài chọn phần tử thứ i làm ứng viên đầu của cặp."},{"ptr":{"i":0},"note":"i→0 — for j in range(i+1, len(nums)):","line":3,"array":[2,7,11,15],"explain":"Vòng trong thử mọi j>i — mỗi cặp so đúng một lần, không lặp (i,j) đảo."},{"read":[{"target":0,"value":2},{"target":1,"value":7}],"ptr":{"i":0,"j":1},"note":"So sánh 2 vs 7; i→0; j→1 — if nums[i] + nums[j] == target:","line":4,"array":[2,7,11,15],"explain":"i=0, j=1: 2+7=9 đúng target — tìm thấy ngay cặp đầu tiên."},{"ptr":{"i":0,"j":1},"note":"i→0; j→1 — return [i, j] — Kết thúc — đáp án: [0, 1] ✓ (khớp kỳ vọng)","line":5,"array":[2,7,11,15],"end":true,"answer":[0,1],"explain":"Trả [0,1]. O(n²) chậm nhưng là nền để tối ưu bằng dict ở các cách sau."}],"anim":true}],"thinking":{"forward":"Với mỗi x, tra cứu target-x trong dict.","reverse":"Cần cặp tổng target → mỗi phần tử cần biết bù trừ đã gặp chưa."},"note":"Với mỗi số, cần đối số = target − số đó; tra nhanh xem đã gặp chưa bằng dict."},{"no":"45","title":"Happy Number","cat":"Hashmap","diff":"Easy","statement":"'Hạnh phúc' nếu lặp tổng bình phương chữ số rồi về 1 (nếu vòng lặp không 1 thì không hạnh phúc).","examples":"19 → true (19→82→68→100→1) · 2 → false","keyIdea":"Chuỗi số hoặc hội tụ về 1, hoặc rơi vào chu kỳ — dùng set nhớ các số đã gặp để phát hiện vòng lặp.","approaches":[{"name":"Set phát hiện vòng lặp","time":"O(log n)","space":"O(log n)","idea":"Lặp tính tổng bình phương chữ số; nếu gặp lại → false, về 1 → true.","code":"def is_happy(n):\n    seen = set()\n    def ssum(x): return sum(int(d)**2 for d in str(x))\n    while n != 1:\n        if n in seen: return False\n        seen.add(n)\n        n = ssum(n)\n    return True","static":["Định nghĩa ssum(x) = tổng bình phương các chữ số của x.","Lặp: nếu n đã từng xuất hiện trong seen → vòng lặp, trả false.","Thêm n vào seen, tính n = ssum(n).","Nếu n về 1 → hạnh phúc, trả true.","Ví dụ 19 → 82 → 68 → 100 → 1 → true; 2 rơi vào chu kỳ → false."],"_pno":"45","steps":[{"note":"Định nghĩa ssum(x) = tổng bình phương các chữ số của x."},{"note":"Lặp: nếu n đã từng xuất hiện trong seen → vòng lặp, trả false."},{"note":"Thêm n vào seen, tính n = ssum(n)."},{"note":"Nếu n về 1 → hạnh phúc, trả true."},{"note":"Ví dụ 19 → 82 → 68 → 100 → 1 → true; 2 rơi vào chu kỳ → false."}],"anim":false},{"name":"Con trỏ thỏ rùa (Floyd)","time":"O(log n)","space":"O(1)","idea":"Dùng fast/slow để phát hiện chu kỳ không cần set — mẫu phát hiện vòng thường gặp.","code":"def is_happy(n):\n    def ssum(x): return sum(int(d)**2 for d in str(x))\n    slow = n; fast = ssum(n)\n    while fast != 1 and slow != fast:\n        slow = ssum(slow)\n        fast = ssum(ssum(fast))\n    return fast == 1","static":["Khởi tạo slow = n, fast = ssum(n) (thỏ và rùa).","Mỗi bước: slow tiến 1, fast tiến 2 (ssum hai lần).","Nếu fast về 1 → hạnh phúc.","Nếu slow == fast (gặp nhau) → có chu kỳ, không hạnh phúc.","Ví dụ 19: không gặp chu kỳ, về 1 → true."],"_pno":"45","steps":[{"note":"Khởi tạo slow = n, fast = ssum(n) (thỏ và rùa)."},{"note":"Mỗi bước: slow tiến 1, fast tiến 2 (ssum hai lần)."},{"note":"Nếu fast về 1 → hạnh phúc."},{"note":"Nếu slow == fast (gặp nhau) → có chu kỳ, không hạnh phúc."},{"note":"Ví dụ 19: không gặp chu kỳ, về 1 → true."}],"anim":false},{"name":"Giới hạn 100 bước","time":"O(1)","space":"O(1)","idea":"Thực tế chuỗi happy chỉ quanh quẩn trong một miền hữu hạn; đủ 100 bước là biết.","code":"def is_happy(n):\n    for _ in range(100):\n        n = sum(int(d)**2 for d in str(n))\n        if n == 1: return True\n    return False","static":["Lặp tối đa 100 bước — miền giá trị happy bị chặn.","Mỗi bước: n = tổng bình phương các chữ số của n.","Nếu n == 1 trước khi hết 100 bước → hạnh phúc.","Hết 100 bước mà không về 1 → false.","Ví dụ 19 hội tụ về 1 sau 4 bước → true; 2 thì không."],"_pno":"45","steps":[{"note":"Lặp tối đa 100 bước — miền giá trị happy bị chặn."},{"note":"Mỗi bước: n = tổng bình phương các chữ số của n."},{"note":"Nếu n == 1 trước khi hết 100 bước → hạnh phúc."},{"note":"Hết 100 bước mà không về 1 → false."},{"note":"Ví dụ 19 hội tụ về 1 sau 4 bước → true; 2 thì không."}],"anim":false}],"thinking":{"forward":"BFS theo \"tầng nhảy\": mỗi tầng mở rộng tới xa nhất, đếm tầng.","reverse":"Cần số nhảy tối thiểu → khi nào hết phạm vi tầng hiện tại mới cần nhảy thêm một lần."},"note":"Chuỗi số hoặc hội tụ về 1, hoặc rơi vào chu kỳ — dùng set nhớ các số đã gặp để phát hiện vòng lặp."},{"no":"46","title":"Contains Duplicate II","cat":"Hashmap","diff":"Easy","statement":"Có tồn tại hai chỉ số i≠j sao cho nums[i]==nums[j] và |i−j| ≤ k?","examples":"nums=[1,2,3,1], k=3 → true · nums=[1,0,1,1], k=1 → true · nums=[1,2,3,1,2,3], k=2 → false","keyIdea":"Nhớ vị trí xuất hiện gần nhất của mỗi giá trị; nếu trong phạm vi k → true.","approaches":[{"name":"Dict vị trí gần nhất","time":"O(n)","space":"O(n)","idea":"Với mỗi i: nếu x đã thấy và i−last ≤ k → true; cập nhật last[x]=i.","code":"def contains_nearby_duplicate(nums, k):\n    last = {}\n    for i, x in enumerate(nums):\n        if x in last and i - last[x] <= k: return True\n        last[x] = i\n    return False","tcex":{"input":{"nums":[1,2,3,1],"k":3},"kind":"hash","display":"last","ptrs":["i"],"expected":true,"anim":true},"_pno":"46","steps":[{"note":"last = {}","line":2,"array":[1,2,3,1],"explain":"last={} — nhớ vị trí xuất hiện GẦN NHẤT của từng giá trị."},{"note":"for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"hash":{},"explain":"Duyệt mảng, mỗi bước chỉ hỏi: lần trước x ở đâu, cách i bao xa?"},{"ptr":{"i":0},"note":"i→0 — if x in last and i - last[x] <= k: return True","line":4,"array":[1,2,3,1],"explain":"i=0, x=1: last chưa có 1 → không trùng."},{"ptr":{"i":0},"note":"i→0 — last[x] = i","line":5,"array":[1,2,3,1],"explain":"Lưu last[1]=0 — đánh dấu 1 từng xuất hiện tại chỉ số 0."},{"ptr":{"i":0},"note":"i→0 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử kế."},{"ptr":{"i":1},"note":"i→1 — if x in last and i - last[x] <= k: return True","line":4,"array":[1,2,3,1],"explain":"i=1, x=2: chưa thấy 2 → không trùng."},{"ptr":{"i":1},"note":"i→1 — last[x] = i","line":5,"array":[1,2,3,1],"explain":"Lưu last[2]=1."},{"ptr":{"i":1},"note":"i→1 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử kế."},{"ptr":{"i":2},"note":"i→2 — if x in last and i - last[x] <= k: return True","line":4,"array":[1,2,3,1],"explain":"i=2, x=3: chưa thấy 3 → không trùng."},{"ptr":{"i":2},"note":"i→2 — last[x] = i","line":5,"array":[1,2,3,1],"explain":"Lưu last[3]=2."},{"ptr":{"i":2},"note":"i→2 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử cuối."},{"ptr":{"i":3},"note":"i→3 — if x in last and i - last[x] <= k: return True — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":4,"array":[1,2,3,1],"end":true,"answer":true,"explain":"i=3, x=1: last[1]=0, khoảng cách 3−0=3 ≤ k=3 → có cặp trùng → True."}],"anim":true},{"name":"Cửa sổ kích thước k","time":"O(n)","space":"O(min(n,k))","idea":"Giữ set các phần tử trong cửa sổ [i−k, i]; nếu trùng trong set → true; xoá phần tử ngoài cửa sổ.","code":"def contains_nearby_duplicate(nums, k):\n    win = set()\n    for i, x in enumerate(nums):\n        if x in win: return True\n        win.add(x)\n        if len(win) > k: win.remove(nums[i - k])\n    return False","tcex":{"input":{"nums":[1,2,3,1],"k":3},"kind":"set","display":"win","ptrs":["i"],"expected":true,"anim":true},"_pno":"46","steps":[{"note":"win = set()","line":2,"array":[1,2,3,1],"explain":"win=set() — chỉ chứa các giá trị trong cửa sổ [i−k, i] hiện tại."},{"note":"for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"set":[],"explain":"Duyệt từng i; kiểm tra trùng bằng set tra O(1)."},{"ptr":{"i":0},"note":"i→0 — if x in win: return True","line":4,"array":[1,2,3,1],"explain":"i=0: win đang rỗng → không trùng."},{"ptr":{"i":0},"note":"i→0 — win.add(x)","line":5,"array":[1,2,3,1],"explain":"Thêm 1 vào cửa sổ."},{"ptr":{"i":0},"note":"i→0 — if len(win) > k: win.remove(nums[i - k])","line":6,"array":[1,2,3,1],"explain":"len(win)=1 ≤ k=3 → chưa cần xoá phần tử ngoài cửa sổ."},{"ptr":{"i":0},"note":"i→0 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử kế."},{"ptr":{"i":1},"note":"i→1 — if x in win: return True","line":4,"array":[1,2,3,1],"explain":"i=1: 2 chưa có trong win → không trùng."},{"ptr":{"i":1},"note":"i→1 — win.add(x)","line":5,"array":[1,2,3,1],"explain":"Thêm 2."},{"ptr":{"i":1},"note":"i→1 — if len(win) > k: win.remove(nums[i - k])","line":6,"array":[1,2,3,1],"explain":"len(win)=2 ≤ 3 → cửa sổ vẫn vừa khung."},{"ptr":{"i":1},"note":"i→1 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử kế."},{"ptr":{"i":2},"note":"i→2 — if x in win: return True","line":4,"array":[1,2,3,1],"explain":"i=2: 3 chưa có → không trùng."},{"ptr":{"i":2},"note":"i→2 — win.add(x)","line":5,"array":[1,2,3,1],"explain":"Thêm 3."},{"ptr":{"i":2},"note":"i→2 — if len(win) > k: win.remove(nums[i - k])","line":6,"array":[1,2,3,1],"explain":"len(win)=3 = k → vừa đủ, chưa xoá."},{"ptr":{"i":2},"note":"i→2 — for i, x in enumerate(nums):","line":3,"array":[1,2,3,1],"explain":"Tiếp tục duyệt phần tử cuối."},{"ptr":{"i":3},"note":"i→3 — if x in win: return True — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":4,"array":[1,2,3,1],"end":true,"answer":true,"explain":"i=3: 1 ĐÃ có trong win (cách 3 ≤ k) → trùng → True."}],"anim":true}],"thinking":{"forward":"Lưu vị trí gần nhất mỗi giá trị, so khoảng cách k.","reverse":"Cần trùng trong khoảng k → chỉ cần vị trí gần nhất."},"note":"Nhớ vị trí xuất hiện gần nhất của mỗi giá trị; nếu trong phạm vi k → true."},{"no":"47","title":"Longest Consecutive Sequence","cat":"Hashmap","diff":"Medium","statement":"Tìm độ dài chuỗi số liên tiếp dài nhất (các số không cần kề nhau trong mảng). O(n) bắt buộc.","examples":"[100,4,200,1,3,2] → 4 ([1,2,3,4]) · [0,3,7,2,5,8,4,6,0,1] → 9","keyIdea":"Đưa mọi số vào set; chỉ bắt đầu đếm từ số KHÔNG có số liền trước (n−1 ∉ set).","approaches":[{"name":"Set + bắt đầu từ đầu chuỗi","time":"O(n)","space":"O(n)","idea":"Với mỗi x mà x−1 không có trong set, đếm dài chuỗi tăng dần. Mỗi số duyệt tối đa 1 lần làm 'đầu'.","code":"def longest_consecutive(nums):\n    s = set(nums); best = 0\n    for x in s:\n        if x - 1 not in s:\n            y = x + 1\n            while y in s: y += 1\n            best = max(best, y - x)\n    return best","tcex":{"input":{"nums":[100,4,200,1,3,2]},"kind":"set","display":"s","ptrs":["x","y"],"expected":4,"anim":true},"_pno":"47","steps":[{"note":"s = set(nums); best = 0","line":2,"array":[100,4,200,1,3,2],"explain":"s=set(nums) loại trùng; best=0 — tra 'có tồn tại' mất O(1)."},{"note":"for x in s:","line":3,"array":[100,4,200,1,3,2],"set":[1,2,3,4,100,200],"explain":"Duyệt từng x trong set."},{"ptr":{"x":1},"note":"x→1 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=1: 1−1=0 không có trong s → 1 là ĐẦU của chuỗi liên tiếp."},{"ptr":{"x":1},"note":"x→1 — y = x + 1","line":5,"array":[100,4,200,1,3,2],"explain":"Bắt đầu đếm từ y=x+1=2."},{"ptr":{"x":1,"y":2},"note":"x→1; y→2 — while y in s: y += 1","line":6,"array":[100,4,200,1,3,2],"explain":"2,3,4 đều có trong s → y tăng tới 5 (không có 5): chuỗi dài 5−1=4."},{"ptr":{"x":1,"y":5},"note":"x→1; y→5 — best = max(best, y - x)","line":7,"array":[100,4,200,1,3,2],"explain":"best=max(0,4)=4 — lưu kỷ lục chuỗi 1→4."},{"ptr":{"x":1,"y":5},"note":"x→1; y→5 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế trong set."},{"ptr":{"x":2,"y":5},"note":"x→2; y→5 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=2: 2−1=1 CÓ trong s → không phải đầu chuỗi, bỏ qua để tránh đếm lại."},{"ptr":{"x":2,"y":5},"note":"x→2; y→5 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"x=2 chỉ là phần đuôi của chuỗi đã đếm."},{"ptr":{"x":3,"y":5},"note":"x→3; y→5 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=3: 2 có trong s → bỏ qua — chỉ làm việc tại đầu chuỗi."},{"ptr":{"x":3,"y":5},"note":"x→3; y→5 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"x=3 đã nằm trong chuỗi của 1, không đếm lại."},{"ptr":{"x":100,"y":5},"note":"x→100; y→5 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=100: 99 không có → 100 là đầu chuỗi mới."},{"ptr":{"x":100,"y":5},"note":"x→100; y→5 — y = x + 1","line":5,"array":[100,4,200,1,3,2],"explain":"Bắt đầu đếm y=101."},{"ptr":{"x":100,"y":101},"note":"x→100; y→101 — while y in s: y += 1","line":6,"array":[100,4,200,1,3,2],"explain":"101 không có trong s → chuỗi chỉ gồm {100}, dài 101−100=1."},{"ptr":{"x":100,"y":101},"note":"x→100; y→101 — best = max(best, y - x)","line":7,"array":[100,4,200,1,3,2],"explain":"best=max(4,1)=4 — chuỗi đơn không phá kỷ lục."},{"ptr":{"x":100,"y":101},"note":"x→100; y→101 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":4,"y":101},"note":"x→4; y→101 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=4: 3 có trong s → không phải đầu, bỏ."},{"ptr":{"x":4,"y":101},"note":"x→4; y→101 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"x=4 đã được đếm trong chuỗi của 1."},{"ptr":{"x":200,"y":101},"note":"x→200; y→101 — if x - 1 not in s:","line":4,"array":[100,4,200,1,3,2],"explain":"x=200: 199 không có → đầu chuỗi mới."},{"ptr":{"x":200,"y":101},"note":"x→200; y→101 — y = x + 1","line":5,"array":[100,4,200,1,3,2],"explain":"Bắt đầu đếm y=201."},{"ptr":{"x":200,"y":201},"note":"x→200; y→201 — while y in s: y += 1","line":6,"array":[100,4,200,1,3,2],"explain":"201 không có → chuỗi {200} dài 1."},{"ptr":{"x":200,"y":201},"note":"x→200; y→201 — best = max(best, y - x)","line":7,"array":[100,4,200,1,3,2],"explain":"best vẫn 4."},{"ptr":{"x":200,"y":201},"note":"x→200; y→201 — for x in s:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt — không còn phần tử nào."},{"ptr":{"x":200,"y":201},"note":"x→200; y→201 — return best — Kết thúc — đáp án: 4 ✓ (khớp kỳ vọng)","line":8,"array":[100,4,200,1,3,2],"end":true,"answer":4,"explain":"Trả best=4: chuỗi liên tiếp dài nhất là 1→2→3→4."}],"anim":true},{"name":"Left∪right gộp (DS mang tính hướng dẫn)","time":"O(n)","space":"O(n)","idea":"Duy trì độ dài hai đầu mỗi đoạn liên tục trong dict; khi nối hai đoạn lại cập nhật hai biên.","code":"def longest_consecutive(nums):\n    d = {}; best = 0\n    for x in nums:\n        if x in d: continue\n        left = d.get(x - 1, 0); right = d.get(x + 1, 0)\n        total = left + right + 1\n        d[x] = d[x - left] = d[x + right] = total\n        best = max(best, total)\n    return best","tcex":{"input":{"nums":[100,4,200,1,3,2]},"kind":"hash","display":"d","ptrs":["x"],"expected":4,"anim":true},"_pno":"47","steps":[{"note":"d = {}; best = 0","line":2,"array":[100,4,200,1,3,2],"explain":"d={} ghi độ dài đoạn liên tục tại hai biên mỗi đoạn; best=0."},{"note":"for x in nums:","line":3,"array":[100,4,200,1,3,2],"hash":{},"explain":"Duyệt từng x trong mảng."},{"ptr":{"x":100},"note":"x→100 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=100: chưa có trong d → tiến hành nối đoạn."},{"ptr":{"x":100},"note":"x→100 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"99 và 101 đều không có → left=right=0."},{"ptr":{"x":100},"note":"x→100 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total = 0+0+1 = 1 — đoạn chỉ gồm chính 100."},{"ptr":{"x":100},"note":"x→100 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"Ghi d[100]=1 tại cả hai biên (trùng nhau)."},{"ptr":{"x":100},"note":"x→100 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best=max(0,1)=1."},{"ptr":{"x":100},"note":"x→100 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":4},"note":"x→4 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=4: chưa có → xử lý."},{"ptr":{"x":4},"note":"x→4 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"3 và 5 không có → left=right=0."},{"ptr":{"x":4},"note":"x→4 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total=1 — đoạn {4} đơn lẻ."},{"ptr":{"x":4},"note":"x→4 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"d[4]=1."},{"ptr":{"x":4},"note":"x→4 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best=max(1,1)=1."},{"ptr":{"x":4},"note":"x→4 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":200},"note":"x→200 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=200: chưa có → xử lý."},{"ptr":{"x":200},"note":"x→200 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"199,201 không có → left=right=0."},{"ptr":{"x":200},"note":"x→200 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total=1."},{"ptr":{"x":200},"note":"x→200 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"d[200]=1."},{"ptr":{"x":200},"note":"x→200 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best=max(1,1)=1."},{"ptr":{"x":200},"note":"x→200 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":1},"note":"x→1 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=1: chưa có → xử lý."},{"ptr":{"x":1},"note":"x→1 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"d.get(0)=0; d.get(2)=0 → left=right=0."},{"ptr":{"x":1},"note":"x→1 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total=1 — đoạn {1}."},{"ptr":{"x":1},"note":"x→1 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"d[1]=1."},{"ptr":{"x":1},"note":"x→1 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best vẫn 1."},{"ptr":{"x":1},"note":"x→1 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":3},"note":"x→3 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=3: chưa có → xử lý."},{"ptr":{"x":3},"note":"x→3 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"left=d.get(2)=0; right=d.get(4)=1 — bên phải đã có đoạn {4}."},{"ptr":{"x":3},"note":"x→3 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total=0+1+1=2 — 3 nối với đoạn {4} thành {3,4}."},{"ptr":{"x":3},"note":"x→3 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"Ghi d[3]=d[2]=d[4]=2 tại hai biên 3 và 4."},{"ptr":{"x":3},"note":"x→3 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best=max(1,2)=2."},{"ptr":{"x":3},"note":"x→3 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt phần tử kế."},{"ptr":{"x":2},"note":"x→2 — if x in d: continue","line":4,"array":[100,4,200,1,3,2],"explain":"x=2: chưa có → xử lý."},{"ptr":{"x":2},"note":"x→2 — left = d.get(x - 1, 0); right = d.get(x + 1, 0)","line":5,"array":[100,4,200,1,3,2],"explain":"left=d.get(1)=1; right=d.get(3)=2 — cả hai bên đều là đoạn."},{"ptr":{"x":2},"note":"x→2 — total = left + right + 1","line":6,"array":[100,4,200,1,3,2],"explain":"total=1+2+1=4 — 2 nối {1} và {3,4} thành chuỗi 1→4."},{"ptr":{"x":2},"note":"x→2 — d[x] = d[x - left] = d[x + right] = total","line":7,"array":[100,4,200,1,3,2],"explain":"Cập nhật d[2]=d[1]=d[4]=4 tại hai biên xa nhất 1 và 4."},{"ptr":{"x":2},"note":"x→2 — best = max(best, total)","line":8,"array":[100,4,200,1,3,2],"explain":"best=max(2,4)=4."},{"ptr":{"x":2},"note":"x→2 — for x in nums:","line":3,"array":[100,4,200,1,3,2],"explain":"Quay lại duyệt — hết mảng."},{"ptr":{"x":2},"note":"x→2 — return best — Kết thúc — đáp án: 4 ✓ (khớp kỳ vọng)","line":9,"array":[100,4,200,1,3,2],"end":true,"answer":4,"explain":"Trả best=4: chuỗi 1→2→3→4 dài 4 — đúng và chỉ tốn O(n)."}],"anim":true},{"name":"Sort (vi phạm O(n))","time":"O(n·log n)","space":"O(1)","idea":"Sort rồi duyệt đếm đoạn tăng liên tiếp — dễ nhưng không thoả O(n) nên chỉ để so sánh.","code":"def longest_consecutive(nums):\n    if not nums: return 0\n    nums.sort(); best = cur = 1\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i-1]: continue\n        if nums[i] == nums[i-1] + 1: cur += 1\n        else: cur = 1\n        best = max(best, cur)\n    return best","tcex":{"input":{"nums":[100,4,200,1,3,2]},"kind":"array","display":"nums","ptrs":["i"],"expected":4,"anim":true},"_pno":"47","steps":[{"note":"if not nums: return 0","line":2,"array":[100,4,200,1,3,2],"explain":"Mảng rỗng thì trả 0 — chặn biên trước khi truy cập nums."},{"note":"nums.sort(); best = cur = 1","line":3,"array":[100,4,200,1,3,2],"explain":"Sort để số liên tiếp đứng cạnh nhau; best=cur=1."},{"note":"for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Duyệt từ chỉ số 1, so với phần tử trước."},{"read":[{"target":1,"value":2},{"target":0,"value":1}],"ptr":{"i":1},"note":"So sánh 2 vs 1; i→1 — if nums[i] == nums[i-1]: continue","line":5,"array":[1,2,3,4,100,200],"explain":"i=1: 2≠1 → không trùng, sang kiểm tra liên tiếp."},{"read":[{"target":1,"value":2},{"target":0,"value":1}],"ptr":{"i":1},"note":"So sánh 2 vs 1; i→1 — if nums[i] == nums[i-1] + 1: cur += 1","line":6,"array":[1,2,3,4,100,200],"explain":"i=1: 2 = 1+1 → cur=2: đoạn {1,2} đang dài 2."},{"ptr":{"i":1},"note":"i→1 — best = max(best, cur)","line":8,"array":[1,2,3,4,100,200],"explain":"best=max(1,2)=2."},{"ptr":{"i":1},"note":"i→1 — for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Quay lại vòng lặp."},{"read":[{"target":2,"value":3},{"target":1,"value":2}],"ptr":{"i":2},"note":"So sánh 3 vs 2; i→2 — if nums[i] == nums[i-1]: continue","line":5,"array":[1,2,3,4,100,200],"explain":"i=2: 3≠2 → không trùng."},{"read":[{"target":2,"value":3},{"target":1,"value":2}],"ptr":{"i":2},"note":"So sánh 3 vs 2; i→2 — if nums[i] == nums[i-1] + 1: cur += 1","line":6,"array":[1,2,3,4,100,200],"explain":"i=2: 3 = 2+1 → cur=3."},{"ptr":{"i":2},"note":"i→2 — best = max(best, cur)","line":8,"array":[1,2,3,4,100,200],"explain":"best=max(2,3)=3."},{"ptr":{"i":2},"note":"i→2 — for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Quay lại vòng lặp."},{"read":[{"target":3,"value":4},{"target":2,"value":3}],"ptr":{"i":3},"note":"So sánh 4 vs 3; i→3 — if nums[i] == nums[i-1]: continue","line":5,"array":[1,2,3,4,100,200],"explain":"i=3: 4≠3 → không trùng."},{"read":[{"target":3,"value":4},{"target":2,"value":3}],"ptr":{"i":3},"note":"So sánh 4 vs 3; i→3 — if nums[i] == nums[i-1] + 1: cur += 1","line":6,"array":[1,2,3,4,100,200],"explain":"i=3: 4 = 3+1 → cur=4."},{"ptr":{"i":3},"note":"i→3 — best = max(best, cur)","line":8,"array":[1,2,3,4,100,200],"explain":"best=max(3,4)=4."},{"ptr":{"i":3},"note":"i→3 — for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Quay lại vòng lặp."},{"read":[{"target":4,"value":100},{"target":3,"value":4}],"ptr":{"i":4},"note":"So sánh 100 vs 4; i→4 — if nums[i] == nums[i-1]: continue","line":5,"array":[1,2,3,4,100,200],"explain":"i=4: 100≠4 → không trùng."},{"read":[{"target":4,"value":100},{"target":3,"value":4}],"ptr":{"i":4},"note":"So sánh 100 vs 4; i→4 — if nums[i] == nums[i-1] + 1: cur += 1","line":6,"array":[1,2,3,4,100,200],"explain":"i=4: 100 ≠ 4+1 → đứt chuỗi."},{"ptr":{"i":4},"note":"i→4 — else: cur = 1","line":7,"array":[1,2,3,4,100,200],"explain":"cur=1 — cắt, bắt đầu đoạn mới tại 100."},{"ptr":{"i":4},"note":"i→4 — best = max(best, cur)","line":8,"array":[1,2,3,4,100,200],"explain":"best=max(4,1)=4."},{"ptr":{"i":4},"note":"i→4 — for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Quay lại vòng lặp."},{"read":[{"target":5,"value":200},{"target":4,"value":100}],"ptr":{"i":5},"note":"So sánh 200 vs 100; i→5 — if nums[i] == nums[i-1]: continue","line":5,"array":[1,2,3,4,100,200],"explain":"i=5: 200≠100 → không trùng."},{"read":[{"target":5,"value":200},{"target":4,"value":100}],"ptr":{"i":5},"note":"So sánh 200 vs 100; i→5 — if nums[i] == nums[i-1] + 1: cur += 1","line":6,"array":[1,2,3,4,100,200],"explain":"i=5: 200 ≠ 100+1 → đứt tiếp."},{"ptr":{"i":5},"note":"i→5 — else: cur = 1","line":7,"array":[1,2,3,4,100,200],"explain":"cur=1 — đoạn {200}."},{"ptr":{"i":5},"note":"i→5 — best = max(best, cur)","line":8,"array":[1,2,3,4,100,200],"explain":"best=max(4,1)=4."},{"ptr":{"i":5},"note":"i→5 — for i in range(1, len(nums)):","line":4,"array":[1,2,3,4,100,200],"explain":"Quay lại vòng lặp."},{"ptr":{"i":5},"note":"i→5 — return best — Kết thúc — đáp án: 4 ✓ (khớp kỳ vọng)","line":9,"array":[1,2,3,4,100,200],"end":true,"answer":4,"explain":"Trả best=4 — sort O(n log n) vi phạm yêu cầu O(n) nên chỉ để so sánh."}],"anim":true}],"thinking":{"forward":"Bắt đầu đếm từ đầu chuỗi (số không có tiền thân) trong set.","reverse":"Cần chuỗi liên tiếp dài nhất → chỉ khởi động đếm từ điểm khởi đầu."},"note":"Đưa mọi số vào set; chỉ bắt đầu đếm từ số KHÔNG có số liền trước (n−1 ∉ set)."}]};
+
+function el(tag, cls, text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+/* highlight Python giản lược */
+const KW=new Set("def return if elif else for while in not and or None True False break continue pass import from as with class lambda".split(" "));
+function hlpy(code){
+  // token hoá: comment, string, số, keyword, còn lại giữ nguyên
+  let out="",i=0;
+  const seg=code;
+  while(i<seg.length){
+    const rest=seg.slice(i);
+    let m=rest.match(/^#.*/);
+    if(m){out+='<span class="c">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^("""[\s\S]*?"""|'''[\s\S]*?'''|"[^"\n]*"|'[^'\n]*')/);
+    if(m){out+='<span class="s">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^\d+(\.\d+)?/);
+    if(m){out+='<span class="n">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^[A-Za-z_][A-Za-z0-9_]*/);
+    if(m){const w=m[0];out+=KW.has(w)?'<span class="k">'+w+'</span>':esc(w);i+=w.length;continue}
+    out+=esc(rest[0]);i++;
+  }
+  return out;
+}
+
+/* ---------- Player v2 (animation thủ công, đa cấu trúc) ---------- */
+const isNodeTarget=t=>t&&typeof t==="object"&&"node" in t;
+function _pickKind(step){
+  if(step.mat!==undefined)return "mat";
+  if(step.ll!==undefined)return "ll";
+  if(step.tree!==undefined)return "tree";
+  if(step.stack!==undefined)return "stack";
+  if(step.hash!==undefined)return "hash";
+  if(step.set!==undefined)return "set";
+  return "array";
+}
+class Player{
+  constructor(host,steps,cfg){
+    this.host=host;this.steps=steps;this.cfg=cfg||{};this.idx=0;
+    this.ctl=el("div","ctl");
+    this.note=el("p","note","");
+    this.wrap=el("div","cells-wrap");
+    this.box=el("div","cells");this.ptrLayer=el("div","ptrs");
+    this.wrap.appendChild(this.box);this.wrap.appendChild(this.ptrLayer);
+    this.auxBox=el("div","aux");this.auxBox.style.display="none";
+    this.cellEls=[];this.ptrEls=new Map();this.nodeEls=new Map();this.rowEls=[];this.hashEls=[];this.hideCache=new Map();
+    // detect kind ổn định từ step đầu có dữ liệu
+    this.kind=_pickKind(steps[0]);
+    for(const st of steps){const k=_pickKind(st);if(k!=="array"){this.kind=k;break}}
+    this.buildCells();this.buildPtrs();this.buildControls();
+    // code pane: hiển thị code + sáng dòng hiện tại (nếu step có line)
+    this.codePane=null;
+    if(this._hasLines()){this.buildCodePane()}
+    this.stepTo(0);
+    host.innerHTML="";host.appendChild(this.ctl);host.appendChild(this.note);host.appendChild(this.wrap);host.appendChild(this.auxBox);
+    if(this.codePane)host.appendChild(this.codePane);
+  }
+  _hasLines(){for(const s of this.steps){if(s.line!==undefined&&s.line>0)return true}return false}
+  buildCodePane(){
+    const pre=el("pre","code pane");
+    // gắn code nếu cfg.code truyền
+    const code=this.cfg&&this.cfg.code;
+    if(code)pre.innerHTML=hlpy(code);
+    else{pre.textContent="(code đang chạy — bật cfg.code để hiển thị)";pre.style.color="var(--mut)";pre.style.fontSize="12px"}
+    this.codePane=pre;
+    this.lineEls=[];
+    if(code){pre.innerHTML=hlpy(code);this.lineEls=[...pre.querySelectorAll("div,span")]}
+  }
+  renderCode(s){
+    if(!this.codePane)return;
+    // bỏ highlight cũ
+    this.lineEls.forEach(l=>{l.classList&&l.classList.remove("curline")});
+    const ln=s.line;
+    if(!ln)return;
+    // tìm dòng thứ ln trong code pane — cách đơn giản: đánh dấu theo vị trí
+    const pre=this.codePane;
+    // chia theo dòng text
+    const htmlLines=pre.innerHTML.split("\n");
+    // xây bản đồ: dòng thứ k → index thẻ chứa
+    if(!this._lineIdx){this._lineIdx={};const all=pre.querySelectorAll("span,div");let k=0;for(let idx=0;idx<all.length;idx++){const t=all[idx];this._lineIdx[k++]=t}}
+    const elx=this._lineIdx[ln-1]||this._lineIdx[0];
+    if(elx){elx.classList&&elx.classList.add("curline");elx.scrollIntoView&&elx.scrollIntoView({block:"nearest"})}
+  }
+  /* ---------- dựng khung ---------- */
+  buildCells(){
+    const k=this.kind;
+    if(k==="mat"){ // cần đủ số hàng từ mọi step
+      const rows=Math.max(...this.steps.map(s=>s.mat?s.mat.length:0));
+      for(let r=0;r<rows;r++){
+        const rd=el("div","mrow");
+        const cols=Math.max(...this.steps.map(s=>s.mat&&s.mat[r]?s.mat[r].length:0));
+        for(let c=0;c<cols;c++){
+          const d=el("div","cell mcell");
+          d.appendChild(el("span","cv",""));
+          d.appendChild(el("span","ci",r+","+c));
+          rd.appendChild(d);this.cellEls.push(d);
+        }
+        this.box.appendChild(rd);
+      }
+      this.box.classList.add("mat");return;
+    }
+    if(k==="stack"){
+      this.box.classList.add("stack");
+      this.stackRow=el("div","stack-row");
+      this.stackRow.appendChild(this.box);
+      this.stackPtrs=el("div","stack-ptrs");
+      this.stackRow.appendChild(this.stackPtrs);
+      this.wrap.appendChild(this.stackRow);
+      this.topLabel=el("div","topb","top");this.box.appendChild(this.topLabel);
+      return;
+    }
+    if(k==="hash"){this.box.classList.add("hash");return}
+    if(k==="set"){this.box.classList.add("set");return}
+    if(k==="ll"||k==="tree"){
+      this.box.classList.add(k==="tree"?"tree":"ll");
+      this.tbox=el("div","tbox");this.tbox.appendChild(this.box);this.wrap.appendChild(this.tbox);
+      return;
+    }
+    // array: dựng từ step đầu
+    const c0=this.steps[0];
+    const cells=(c0.array||c0.cells||[]);
+    cells.forEach((c,i)=>{
+      const d=el("div","cell");
+      const v=typeof c==="object"?c.value:c;
+      if(c&&c.keep)d.classList.add("keep");
+      if(c&&c.dead)d.classList.add("dead");
+      if(c&&c.zone==="tail")d.classList.add("tail");
+      d.appendChild(el("span","cv",v));
+      d.appendChild(el("span","ci",String(i)));
+      this.box.appendChild(d);this.cellEls.push(d);
+    });
+  }
+  buildPtrs(){
+    const names=new Set();
+    this.steps.forEach(s=>{if(s.ptr)Object.keys(s.ptr).forEach(x=>names.add(x));});
+    names.forEach(n=>{const p=el("span","ptr",n);p.style.display="none";this.ptrLayer.appendChild(p);this.ptrEls.set(n,p)});
+  }
+  buildControls(){
+    const mk=(t,fn,title)=>{const b=el("button","btn",t);b.title=title||"";b.onclick=fn;this.ctl.appendChild(b);return b};
+    mk("⏮",()=>this.stepTo(0),"Về đầu");
+    mk("◀",()=>this.stepTo(this.idx-1),"Lùi 1 bước");
+    mk(">",()=>this.stepTo(this.idx+1),"Tiến 1 bước");
+    mk("⏭",()=>this.stepTo(this.steps.length-1),"Tới kết quả");
+    this.counter=el("span","sp","");this.ctl.appendChild(this.counter);
+    this.range=el("input","rng");this.range.type="range";this.range.min=0;this.range.max=Math.max(0,this.steps.length-1);this.range.value=0;
+    this.range.oninput=()=>this.stepTo(+this.range.value);this.ctl.appendChild(this.range);
+    // keyboard: ← → Home End khi host được focus
+    this._kd=e=>{
+      if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+      if(e.key==="ArrowLeft"){this.stepTo(this.idx-1);e.preventDefault()}
+      else if(e.key==="ArrowRight"){this.stepTo(this.idx+1);e.preventDefault()}
+      else if(e.key==="Home"){this.stepTo(0);e.preventDefault()}
+      else if(e.key==="End"){this.stepTo(this.steps.length-1);e.preventDefault()}
+    };
+    this.host.addEventListener("keydown",this._kd);
+    this.host.tabIndex=0;
+  }
+  /* ---------- highlight helpers ---------- */
+  _markTarget(target,cls){
+    // target: [i] | [r,c] | {node:id} | node-id | string-key (hash)
+    if(!target)return null;
+    let idx=-1,elx=null;
+    if(Array.isArray(target)){
+      if(this.kind==="mat"){const[r,c]=target;const cols=this._matCols();idx=r*cols+c}
+      else idx=target[0];
+    }else if(typeof target==="object"&&target.node!==undefined)idx=target.node;
+    else if(typeof target==="number")idx=target;
+    else if(typeof target==="string"&&this.kind==="hash"){
+      for(let i=0;i<this.hashEls.length;i++){
+        const hk=this.hashEls[i].querySelector(".hk");
+        if(hk&&hk.textContent===target){idx=i;break}
+      }
+    }
+    if(idx<0)return null;
+    const ce=this.cellEls[idx];
+    if(ce)ce.classList.add(cls);
+    const ne=this.nodeEls.get(idx);
+    if(ne)ne.classList.add(cls);
+    return ce||ne||null;
+  }
+  _matCols(){
+    let max=0;
+    for(const s of this.steps)if(s.mat)max=Math.max(max,...s.mat.map(r=>r.length));
+    return max;
+  }
+  /* ---------- render dữ liệu node (ll/tree) ---------- */
+  renderNodes(s){
+    const data=s[this.kind];
+    if(!data||!data.nodes){if(this.box)this.box.innerHTML="";this.nodeEls.clear();return}
+    if(this.kind==="ll"){
+      this._renderLL(data);
+    }else{
+      this._renderTree(data);
+    }
+    this._applyNodeHighlights(s);
+  }
+  _renderLL(data){
+    /* dãy node nằm ngang: node đứng yên, cập nhật giá trị + độ rộng value */
+    if(!this.llRow){this.llRow=el("div","llrow");this.box.appendChild(this.llRow)}
+    this.llRow.innerHTML="";this.nodeEls.clear();
+    let cur=data.head!==undefined?data.head:data.root;
+    const seen=new Set();
+    let guard=0;
+    while(cur!==null&&cur!==undefined&&!seen.has(cur)&&guard++<100){
+      seen.add(cur);
+      const nd=data.nodes[cur];if(!nd)break;
+      const nodeEl=el("div","node");
+      nodeEl.appendChild(el("span","cv",String(nd.value)));
+      nodeEl.appendChild(el("span","nid",String(cur)));
+      this.llRow.appendChild(nodeEl);this.nodeEls.set(cur,nodeEl);
+      const nxt=nd.next;
+      if(nxt!==null&&nxt!==undefined){const a=el("span","arrow","→");this.llRow.appendChild(a)}
+      cur=nxt;
+    }
+  }
+  _renderTree(data){
+    /* cây: BFS → lưới; node ở hàng = depth, cột = thứ tự trái→phải; cạnh vẽ bằng SVG */
+    if(!this.tgrid){
+      this.tgrid=el("div","tgrid");
+      this.box.appendChild(this.tgrid);
+      this.svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      this.svg.style.position="absolute";this.svg.style.top="0";this.svg.style.left="0";this.svg.style.overflow="visible";
+      this.tgrid.appendChild(this.svg);
+    }
+    const depth={},pos={};
+    const bfs=(()=>{
+      const root=data.root;
+      if(root===null||root===undefined||root===-1)return;
+      const layer=[[root,0,0]];
+      depth[root]=0;pos[root]=0;
+      while(layer.length){
+        const item=layer.shift();
+        const id=item[0],d=item[1],p=item[2];
+        const nd=data.nodes[id];if(!nd)continue;
+        const step=(nd.left!==null&&nd.left!==undefined&&nd.left!==-1)?1:0;
+        const child=d+1;
+        if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1){
+          depth[nd.left]=child;pos[nd.left]=p;
+          layer.push([nd.left,child,p]);
+        }
+        if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1){
+          depth[nd.right]=child;pos[nd.right]=p+step;
+          layer.push([nd.right,child,p+step]);
+        }
+      }
+    })();
+    const H=Object.keys(depth).reduce((mx,id)=>Math.max(mx,depth[id]+1),0)||0;
+    const W=Object.keys(pos).reduce((mx,id)=>Math.max(mx,pos[id]+1),0)||0;
+    const L=H>0?90:72,Wd=W>0?88:72;
+    this.tgrid.style.gridTemplateColumns="repeat("+Math.max(1,W)+",88px)";
+    /* tạo/cập nhật node theo id */
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      if(nd.vis===false){const old=this.nodeEls.get(+id);if(old)old.style.display="none";continue}
+      let n=this.nodeEls.get(+id);
+      if(!n){
+        n=el("div","node tnd");
+        n.appendChild(el("span","cv",""));
+        n.appendChild(el("span","nid",""));
+        n.appendChild(el("span","nstate",""));
+        n.appendChild(el("span","nst",""));
+        this.nodeEls.set(+id,n);
+        this.tgrid.insertBefore(n,this.svg);
+      }
+      n.querySelector(".cv").textContent=String(nd.value);
+      // ẩn id BFS — narrative dùng GIÁ TRỊ làm nhận diện, id chỉ gây nhầm
+      n.querySelector(".nid").textContent="";
+      const st=n.querySelector(".nstate");
+      if(nd.state!==undefined&&nd.state!==null&&nd.state!==""){st.textContent=String(nd.state);st.style.display=""}
+      else st.style.display="none";
+      n.style.gridRow=(depth[+id]!==undefined?depth[+id]:0)+1;
+      n.style.gridColumn=(pos[+id]!==undefined?pos[+id]:0)+1;
+      n.style.display="";
+    }
+    /* ẩn node cũ không còn trong dữ liệu */
+    this.nodeEls.forEach((n,id)=>{
+      if(!(id in data.nodes))n.style.display="none";
+    });
+    /* dây nối cha→con (SVG) */
+    const arcs=[];
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      const px=(pos[+id]||0)*Wd+44,py=(depth[+id]||0)*L+44;
+      if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1&&data.nodes[nd.left]){
+        const lx=(pos[nd.left]||0)*Wd+44,ly=(depth[nd.left]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+lx+" "+ly);
+      }
+      if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1&&data.nodes[nd.right]){
+        const rx=(pos[nd.right]||0)*Wd+44,ry=(depth[nd.right]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+rx+" "+ry);
+      }
+    }
+    const tw=Math.max(88,(W-1)*Wd+88),th=Math.max(88,(H-1)*L+88);
+    this.svg.setAttribute("width",tw);
+    this.svg.setAttribute("height",th);
+    this.svg.setAttribute("viewBox","0 0 "+tw+" "+th);
+    this.svg.innerHTML=arcs.map(d=>"<path d='"+d+"' stroke='#2f3c5c' stroke-width='2' fill='none'/>").join("");
+    this.box.style.minWidth=tw+"px";
+  }
+  _swapPairs(s){
+    if(!s.swap)return[];
+    const pairs=Array.isArray(s.swap)&&s.swap.length&&Array.isArray(s.swap[0])?s.swap:[s.swap];
+    return pairs.filter(p=>p&&p.length===2);
+  }
+  _applyNodeHighlights(s){
+    this.nodeEls.forEach(n=>{n.classList.remove("rd","wr","sw","act");const b=n.querySelector(".nst");if(b)b.style.display="none"});
+    // badge "đọc"/"ghi" trên node đang tương tác (tree/ll)
+    if(s.read)[].concat(s.read).forEach(r=>{
+      const hit=this._markTarget(r.target,"rd");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="đọc";b.style.display=""}}
+    });
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake){
+      const hit=this._markTarget(s.write.dest,"wr");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="ghi";b.style.display=""}}
+    }
+    this._swapPairs(s).forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    // ptr → node-id: highlight + badge trên node
+    if(s.ptr&&this.kind!=="array"&&this.kind!=="mat"){
+      const names=Object.keys(s.ptr);
+      const active=new Set();
+      Object.values(s.ptr).forEach((v,vi)=>{
+        const id=typeof v==="number"?v:(isNodeTarget(v)?v.node:-1);
+        if(id<0)return;
+        active.add(id);
+        const n=this.nodeEls.get(id);
+        if(n)n.classList.add("act");
+        let b=n&&n.querySelector(".ptr-tag");
+        if(n&&!b){b=el("span","ptr-tag",names[vi]||"?");b.style.cssText="position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap";n.appendChild(b)}
+        if(b)b.textContent=names[vi]||"?";
+      });
+      /* ẩn badge của node không còn con trỏ */
+      this.nodeEls.forEach((n,id)=>{
+        if(active.has(id))return;
+        const b=n.querySelector(".ptr-tag");
+        if(b)b.style.display="none";
+      });
+    }
+  }
+  /* ---------- render dữ liệu cell (array/mat/stack/hash/set) ---------- */
+  renderCells(s){
+    this.cellEls.forEach(x=>x.classList.remove("rd","wr","sw","act"));
+    if(this.kind==="mat"){
+      const cols=this._matCols();
+      if(s.mat)s.mat.forEach((row,r)=>row.forEach((v,c)=>{const i=r*cols+c;const ce=this.cellEls[i];if(ce){const cv=ce.querySelector(".cv");if(cv)cv.textContent=String(v)}}));
+      // write colored → tô xanh lục cho đúng ô
+      this.cellEls.forEach(x=>x.classList.remove("colored"));
+      if(s.write&&s.write.dest&&Array.isArray(s.write.dest)&&s.write.colored){
+        const[r,c]=s.write.dest;const ce=this.cellEls[r*cols+c];
+        if(ce)ce.classList.add("colored");
+      }
+    }else if(this.kind==="array"){
+      const src=s.display||s.array;
+      if(Array.isArray(src))src.forEach((v,p)=>{const cv=this.cellEls[p]&&this.cellEls[p].querySelector(".cv");if(cv&&cv.textContent!==String(v))cv.textContent=v});
+    }else if(this.kind==="stack"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=Array.isArray(s.stack)?s.stack:[];
+      arr.forEach(v=>{const d=el("div","cell scol");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+      this.box.appendChild(this.topLabel);
+    }else if(this.kind==="hash"){
+      this.box.innerHTML="";this.cellEls=[];this.hashEls=[];
+      const pairs=typeof s.hash==="object"&&!Array.isArray(s.hash)?Object.entries(s.hash):s.hash||[];
+      pairs.forEach(([k,v])=>{const hp=el("div","hpair");hp.appendChild(el("span","hk",k));hp.appendChild(el("span","hv",v));this.cellEls.push(hp);this.hashEls.push(hp);this.box.appendChild(hp)});
+    }else if(this.kind==="set"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=s.set||[];
+      arr.forEach(v=>{const d=el("div","sbadge");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+    }
+    // highlight cell
+    if(s.read)[].concat(s.read).forEach(r=>{this._markTarget(r.target,"rd")});
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+    const swapPairs=this._swapPairs(s);
+    swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    if(s.cells)s.cells.forEach((c,i)=>{if(c&&c.active&&this.cellEls[i])this.cellEls[i].classList.add("act")});
+    // stack: highlight top (ô cuối) + con trỏ dọc bên phải
+    if(this.kind==="stack"){
+      const top=this.cellEls[this.cellEls.length-1];
+      if(top)top.classList.add("top");
+      this.renderStackPtrs(s);
+      return;
+    }
+    // hash highlight theo cặp
+    if(this.kind==="hash"){
+      this.hashEls.forEach(x=>x.classList.remove("rd","wr","sw"));
+      if(s.read)[].concat(s.read).forEach(r=>{const c=this._markTarget(r.target,"rd");if(c&&c.classList)c.classList.add("rd")});
+      if(s.write&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+      swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    }
+    // ptr trên cell: định vị
+    this.ptrEls.forEach(p=>{p.style.display="none";p.style.top="1px"});
+    if(s.ptr&&(this.kind==="array"||this.kind==="mat")){
+      let n=0;
+      const names=Object.keys(s.ptr);
+      Object.values(s.ptr).forEach(pos=>{
+        const nm=names[n++]||"?";
+        const p=this.ptrEls.get(nm);if(!p)return;
+        p.style.display="block";
+        if(Array.isArray(pos)&&this.kind==="mat"){
+          const[r,c]=pos;p.style.left=(c*44+8)+"px";p.style.top=(r*40+1)+"px";
+        }
+        else if(typeof pos==="number")p.style.left=(pos*49+8)+"px";
+      });
+    }
+  }
+  renderStackPtrs(s){
+    if(!this.stackPtrs)return;
+    this.stackPtrs.innerHTML="";
+    if(!s.ptr)return;
+    Object.keys(s.ptr).forEach(name=>{
+      const pos=s.ptr[name];
+      const tag=el("span","sph");
+      tag.appendChild(el("span","ptr-tag",name));
+      this.stackPtrs.appendChild(tag);
+    });
+  }
+  /* ---------- aux (mảng phụ bên cạnh, vd nums2 / rotated) ---------- */
+  renderAux(s){
+    const a=s.aux;
+    this.auxBox.style.display=a?"flex":"none";
+    this.auxBox.innerHTML="";
+    if(!a)return;
+    const rows=Array.isArray(a)?a:[a];
+    rows.forEach(aux=>{
+      const lbl=el("span","alabel",aux.label||"aux");
+      this.auxBox.appendChild(lbl);
+      const vals=aux.values||[];
+      const ac=el("div","acells");
+      const amap=[];
+      vals.forEach(v=>{
+        const d=el("div","acell");
+        d.appendChild(el("span","cv",String(v)));
+        ac.appendChild(d);amap.push(d);
+      });
+      this.auxBox.appendChild(ac);
+      const tgt=pos=>Array.isArray(pos)&&pos.length===1?pos[0]:(typeof pos==="number"?pos:-1);
+      const hlAux=(i,cls)=>{if(i>=0&&i<amap.length)amap[i].classList.add(cls)};
+      if(s.read)[].concat(s.read).forEach(r=>{if(r&&!isNodeTarget(r.target))hlAux(tgt(r.target),"rd")});
+      if(s.write&&!s.write.bake&&!isNodeTarget(s.write.dest))hlAux(tgt(s.write.dest),"wr");
+      if(s.swap)[].concat(s.swap).forEach(pair=>{if(pair&&pair.length)[0,1].forEach(k=>{if(!isNodeTarget(pair[k]))hlAux(tgt(pair[k]),"sw")})});
+    });
+  }
+  /* ---------- note + end ---------- */
+  renderNote(s){
+    // ưu tiên narrative (explain) do content viết; fallback note động
+    const txt = (s.explain && s.explain.trim()) ? s.explain : s.note;
+    this.note.textContent=txt;
+    this.note.classList.toggle("fin",!!s.end);
+    const old=this.host.querySelector(".result");if(old)old.remove();
+    if(s.end){const r=el("span","result",s.k!==undefined?" · k = "+s.k:(s.answer!==undefined?" · đáp án: "+s.answer:""));if(r.textContent)this.note.appendChild(r)}
+  }
+  stepTo(i){
+    this.idx=Math.max(0,Math.min(this.steps.length-1,i));
+    const s=this.steps[this.idx];
+    if(this.kind==="ll"||this.kind==="tree")this.renderNodes(s);
+    else this.renderCells(s);
+    this.renderAux(s);
+    this.renderCode(s);
+    this.renderNote(s);
+    this.counter.textContent=(this.idx+1)+" / "+this.steps.length;
+    this.range.value=this.idx;
+  }
+}
+
+/* ---------- renderer ---------- */
+function render(){
+  if(!DATA){document.getElementById("content").textContent="(Dữ liệu chưa được nhúng — chạy build script trước)";return}
+  const g=DATA.group;
+  document.title=g.title+" — Top Interview 150";
+  document.getElementById("grpChip").textContent=g.count+" bài";
+  document.getElementById("grpTitle").textContent=g.title;
+  document.getElementById("grpDesc").textContent=g.desc||"";
+  const toc=document.getElementById("toc");
+  toc.innerHTML="";
+  DATA.problems.forEach(p=>{
+    const a=el("a","grp");a.href="#p"+p.no;
+    a.appendChild(el("span","ic",p.done?"✅":"📄"));
+    const d=el("span");d.appendChild(el("b","",p.no+" · "+p.title));
+    d.appendChild(el("small","",p.cat+" · "+p.diff));
+    a.appendChild(d);toc.appendChild(a);
+  });
+  const main=document.getElementById("content");
+  main.innerHTML="";
+  DATA.problems.forEach(p=>main.appendChild(renderProblem(p)));
+  const foot=document.getElementById("foot");
+  foot.textContent="Top Interview 150 · "+g.title+" · nội dung tiếng Việt · giải Python có test thật · tạo 2026-08-15";
+}
+function renderProblem(p){
+  const s=el("section","card");s.id="p"+p.no;
+  const top=el("div","sec-top");
+  top.appendChild(el("h2","",p.no+" · "+p.title));
+  top.appendChild(el("span","tag "+(p.diff||"easy").toLowerCase(),p.diff||"Easy"));
+  top.appendChild(el("span","tag",p.cat));
+  s.appendChild(top);
+  s.appendChild(el("p","stmt",p.statement));
+  if(p.examples)s.appendChild(el("p","ex",p.examples));
+  if(p.keyIdea)s.appendChild(el("div","idea ✨ Ý tưởng chính: "+p.keyIdea));
+  p.approaches.forEach((ap,i)=>{
+    const sol=el("div","sol");
+    const h=el("h4");
+    h.appendChild(el("span","",["①","②","③"][i]+" "+ap.name));
+    if(ap.time&&ap.space)h.appendChild(el("span","meta",ap.time+" · "+ap.space));
+    sol.appendChild(h);
+    if(ap.idea)sol.appendChild(el("p","stmt",ap.idea));
+    if(ap.code){const pre=el("pre","code");pre.innerHTML=hlpy(ap.code);sol.appendChild(pre)}
+    if(ap.steps){
+      if(ap.anim){const run=el("div","run");sol.appendChild(run);requestAnimationFrame(()=>new Player(run,ap.steps,{problem:p.no,approach:ap.name,code:ap.code}))}
+      else{
+        sol.appendChild(el("p","steps-desc","Các bước (tự luyện: che code rồi viết lại):"));
+        const box=el("div","steps");
+        ap.steps.forEach((st,j)=>{const l=el("div","step-line");l.appendChild(el("span","sno",String(j+1)));l.appendChild(el("span","",st.note));box.appendChild(l)});
+        sol.appendChild(box);
+      }
+    }
+    s.appendChild(sol);
+  });
+  return s;
+}
+document.addEventListener("DOMContentLoaded",render);
+</script>
+<script>
+/*__PLAYER_PATCH__*/
+</script>
+</body>
+</html>

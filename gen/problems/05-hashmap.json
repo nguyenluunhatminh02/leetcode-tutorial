@@ -1,0 +1,687 @@
+{
+  "desc": "Đổi thời gian lấy bộ nhớ: dùng hash để tra cứu O(1). Nhóm này là trái tim của 'đếm và so trạng thái'.",
+  "problems": [
+    {
+      "no": "383",
+      "title": "Ransom Note",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Xem có thể viết ransomNote từ các ký tự magazine (mỗi ký tự dùng tối đa 1 lần).",
+      "examples": "ransomNote=\"a\", magazine=\"b\" → false · \"aa\",\"aab\" → true",
+      "keyIdea": "Đếm tần suất ký tự của magazine, trừ dần theo ransomNote.",
+      "approaches": [
+        {
+          "name": "Counter trừ",
+          "time": "O(n+m)",
+          "space": "O(1)",
+          "idea": "dùng Counter(magazine); với mỗi ký tự trong ransomNote, nếu thiếu → false, ngược lại giảm 1.",
+          "code": "from collections import Counter\ndef can_construct(ransomNote, magazine):\n    c = Counter(magazine)\n    for ch in ransomNote:\n        if c[ch] <= 0: return False\n        c[ch] -= 1\n    return True",
+          "static": [
+            "Counter(magazine) đếm từng ký tự",
+            "Với mỗi ký tự trong ransomNote: trừ 1 khỏi counter",
+            "Nếu counter[ch] < 0 → không đủ chữ → false",
+            "Đi hết ransomNote → true"
+          ]
+        },
+        {
+          "name": "So sánh Counter",
+          "time": "O(n+m)",
+          "space": "O(1)",
+          "idea": "kết quả đúng khi mọi tần suất trong ransomNote ≤ tần suất tương ứng trong magazine.",
+          "code": "from collections import Counter\ndef can_construct(ransomNote, magazine):\n    a, b = Counter(ransomNote), Counter(magazine)\n    return all(b[ch] >= a[ch] for ch in a)",
+          "static": [
+            "Counter(ransomNote) đếm nhu cầu; Counter(magazine) đếm nguồn cung.",
+            "Với mỗi ký tự ch trong ransomNote: so tần suất hai bên.",
+            "Hợp lệ khi b[ch] >= a[ch] cho mọi ch — nguồn cung đủ nhu cầu.",
+            "Ví dụ 'aa' với 'aab': b['a']=2 >= a['a']=2 → true."
+          ]
+        },
+        {
+          "name": "replace 1 lần",
+          "time": "O(m·n)",
+          "space": "O(1)",
+          "idea": "Với mỗi ký tự, thay 1 lần xuất hiện bằng rỗng trong bản sao magazine.",
+          "code": "def can_construct(ransomNote, magazine):\n    m = magazine\n    for ch in ransomNote:\n        if ch not in m: return False\n        m = m.replace(ch, '', 1)\n    return True",
+          "static": [
+            "Bắt đầu với bản sao m = magazine.",
+            "Với mỗi ký tự ch trong ransomNote: nếu ch không còn trong m → false.",
+            "Nếu có, xoá đúng một lần xuất hiện của ch trong m (replace 1 lần).",
+            "Đi hết ransomNote mà luôn tìm được → true. O(m·n) vì replace quét lại m."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Đếm tần suất chữ cái trong magazine, trừ dần khi dùng cho ransomNote.",
+        "reverse": "Cần đủ chữ để viết ransomNote → mỗi ký tự trong ransomNote phải có trong magazine với số lượng còn đủ."
+      },
+      "note": "Chuỗi ký tự — dùng Counter (đếm tần suất) thay vì mảng."
+    },
+    {
+      "no": "40",
+      "title": "Isomorphic Strings",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Hai chuỗi đẳng cấu (isomorphic) nếu có phép thay ký tự 1-1 ánh xạ s → t.",
+      "examples": "\"egg\"→\"add\" true · \"foo\"→\"bar\" false · \"paper\"→\"title\" true",
+      "keyIdea": "Ánh xạ hai chiều: mỗi ký tự s phải luôn khớp 1 ký tự t và ngược lại.",
+      "approaches": [
+        {
+          "name": "Hai dict ánh xạ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "map_sx và map_tx: nếu đã gán mà khác → false; nếu cả hai chưa gán thì gán cả hai chiều.",
+          "code": "def is_isomorphic(s, t):\n    a = {}; b = {}\n    for x, y in zip(s, t):\n        if x in a and a[x] != y: return False\n        if y in b and b[y] != x: return False\n        a[x] = y; b[y] = x\n    return True",
+          "static": [
+            "Khởi tạo hai dict ánh xạ a (s→t) và b (t→s).",
+            "Với mỗi cặp ký tự (x, y) = zip(s, t):",
+            "Nếu x đã được ánh xạ tới ký tự khác y → hai chuỗi không đẳng cấu.",
+            "Nếu y đã được ánh xạ ngược tới ký tự khác x → không đẳng cấu.",
+            "Ngược lại gán cả hai chiều: a[x] = y và b[y] = x.",
+            "Duyệt hết mà không vi phạm → hai chuỗi đẳng cấu (true).",
+            "Ví dụ 'egg'→'add' đúng, 'foo'→'bar' sai vì o phải ánh xạ 1-1."
+          ]
+        },
+        {
+          "name": "Chuẩn hoá pattern",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Mã mỗi ký tự bằng vị trí xuất hiện đầu tiên; hai chuỗi cùng pattern → đẳng cấu.",
+          "code": "def pattern(s):\n    first, out = {}, []\n    for i, ch in enumerate(s):\n        if ch not in first: first[ch] = i\n        out.append(first[ch])\n    return out\ndef is_isomorphic(s, t):\n    return pattern(s) == pattern(t)",
+          "static": [
+            "Định nghĩa hàm pattern: mã mỗi ký tự bằng vị trí xuất hiện đầu tiên của nó.",
+            "Quét chuỗi, lần đầu gặp ký tự thì ghi first[ch] = i; luôn thêm first[ch] vào out.",
+            "Sinh pattern số: ví dụ 'egg' → [0, 1, 1], 'add' → [0, 1, 1].",
+            "Hai chuỗi đẳng cấu khi và chỉ khi pattern(s) == pattern(t).",
+            "Kết thúc: trả đúng nếu hai pattern trùng nhau."
+          ]
+        },
+        {
+          "name": "So độ dài set",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Điều kiện cần và đủ: len(set(s)) == len(set(t)) == len(set(zip(s,t))).",
+          "code": "def is_isomorphic(s, t):\n    return len(set(zip(s, t))) == len(set(s)) == len(set(t))",
+          "static": [
+            "Điều kiện đẳng cấu: số ký tự phân biệt của s bằng của t.",
+            "Tính len(set(zip(s, t))): số cặp ghép (s[i], t[i]) không trùng.",
+            "So sánh ba số: len(set(zip)) == len(set(s)) == len(set(t)).",
+            "Ví dụ 'egg','add': 2 == 2 == 2 → true; 'foo','bar': 2 != 3 → false."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Hai dict ánh xạ hai chiều: ký tự→ký tự.",
+        "reverse": "Cần hai chuỗi cùng cấu trúc → ánh xạ từng cặp ký tự phải nhất quán."
+      },
+      "note": "Hashmap: quy về tra cứu O(1)."
+    },
+    {
+      "no": "41",
+      "title": "Word Pattern",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Xem pattern (toàn ký tự, có thể phân biệt) có khớp ánh xạ đều đặn tới các từ không.",
+      "examples": "pattern=\"abba\", s=\"dog cat cat dog\" → true · \"abba\",\"dog cat cat fish\" → false",
+      "keyIdea": "Giống Isomorphic nhưng với các từ thay cho ký tự — cần hai chiều ánh xạ.",
+      "approaches": [
+        {
+          "name": "Hai dict ánh xạ",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "words = s.split(); nếu độ dài khác → false; ánh xạ ký tự↔từ hai chiều.",
+          "code": "def word_pattern(pattern, s):\n    words = s.split()\n    if len(pattern) != len(words): return False\n    a = {}; b = {}\n    for p, w in zip(pattern, words):\n        if p in a and a[p] != w: return False\n        if w in b and b[w] != p: return False\n        a[p] = w; b[w] = p\n    return True",
+          "static": [
+            "Tách s thành danh sách từ words = s.split().",
+            "Nếu len(pattern) != len(words) → false ngay.",
+            "Duyệt cặp (p, w) = zip(pattern, words): ánh xạ hai chiều p→w và w→p.",
+            "Nếu p đã gán tới từ khác w, hoặc w đã gán tới ký tự khác p → false.",
+            "Hết cặp mà không vi phạm → true.",
+            "Ví dụ 'abba' + 'dog cat cat dog' → true; 'dog cat cat fish' → false."
+          ]
+        },
+        {
+          "name": "So set",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Độ dài bằng nhau và số ánh xạ ký tự↔từ bằng đủ.",
+          "code": "def word_pattern(pattern, s):\n    words = s.split()\n    return len(pattern) == len(words) and len(set(zip(pattern, words))) == len(set(pattern)) == len(set(words))",
+          "static": [
+            "Tách s thành words = s.split(); đếm số từ.",
+            "Điều kiện cần: len(pattern) == len(words).",
+            "Đếm số cặp ghép (pattern[i], words[i]) phân biệt qua set.",
+            "Khớp đủ khi len(set(zip)) == len(set(pattern)) == len(set(words)).",
+            "Ví dụ 'abba' + 'dog cat cat dog' → 2 == 2 == 2 → true."
+          ]
+        },
+        {
+          "name": "encode+decode",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Mã pattern và chuỗi thành chuỗi SỐ theo vị trí đầu rồi so sánh.",
+          "code": "def enc(seq):\n    d = {}; out = []\n    for x in seq:\n        if x not in d: d[x] = len(d)\n        out.append(d[x])\n    return out\ndef word_pattern(pattern, s):\n    return enc(pattern) == enc(s.split())",
+          "static": [
+            "Hàm enc(seq) gán mỗi phần tử một mã số theo lần xuất hiện đầu tiên.",
+            "Quét seq: nếu x chưa có trong d thì gán d[x] = len(d); thêm d[x] vào out.",
+            "Mã hoá pattern và words = s.split() thành hai chuỗi số.",
+            "So sánh: enc(pattern) == enc(words) — cùng hình dạng lặp lại.",
+            "Ví dụ 'abba' → [0,1,1,0], 'dog cat cat dog' → [0,1,1,0] → true."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Đối chiếu pattern với từ theo dict hai chiều.",
+        "reverse": "Cần pattern khớp danh sách từ → cùng một token phải cùng một từ."
+      },
+      "note": "Hashmap: quy về tra cứu O(1)."
+    },
+    {
+      "no": "42",
+      "title": "Valid Anagram",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Xem t có phải hoán vị ký tự của s không.",
+      "examples": "s=\"anagram\", t=\"nagaram\" → true · s=\"rat\", t=\"car\" → false",
+      "keyIdea": "Hai chuỗi là anagram ⇔ cùng tần suất ký tự.",
+      "approaches": [
+        {
+          "name": "So Counter",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "đếm tần suất cả hai và so.",
+          "code": "from collections import Counter\ndef is_anagram(s, t):\n    return Counter(s) == Counter(t)",
+          "static": [
+            "Counter(s) đếm tần suất ký tự của s.",
+            "Counter(t) đếm tần suất ký tự của t.",
+            "Hai chuỗi là anagram ⇔ hai bộ đếm bằng nhau.",
+            "Ví dụ 'anagram'/'nagaram' cùng {'a':3,'n':1,'g':1,'r':1,'m':1} → true."
+          ]
+        },
+        {
+          "name": "Sort cả hai",
+          "time": "O(n·log n)",
+          "space": "O(n)",
+          "idea": "sắp xếp rồi so bằng nhau — chậm hơn nhưng rất dễ chứng minh.",
+          "code": "def is_anagram(s, t):\n    return sorted(s) == sorted(t)",
+          "static": [
+            "Sắp xếp các ký tự của s thành danh sách có thứ tự.",
+            "Sắp xếp các ký tự của t thành danh sách có thứ tự.",
+            "Hai chuỗi là anagram ⇔ hai danh sách đã sắp bằng nhau.",
+            "Ví dụ sorted('anagram') == sorted('nagaram') → true."
+          ]
+        },
+        {
+          "name": "Mảng đếm 26 chữ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Khởi tạo mảng 26 phần tử. với s cộng, với t trừ; cuối cùng toàn 0.",
+          "code": "def is_anagram(s, t):\n    if len(s) != len(t): return False\n    cnt = [0]*26\n    for a, b in zip(s, t):\n        cnt[ord(a)-97] += 1\n        cnt[ord(b)-97] -= 1\n    return all(x == 0 for x in cnt)",
+          "static": [
+            "Khởi tạo cnt = [0]*26 đại diện cho 26 chữ cái.",
+            "Với mỗi cặp (a, b) = zip(s, t): cnt[a] += 1 và cnt[b] -= 1.",
+            "Sau khi duyệt hết: nếu mọi phần tử của cnt bằng 0 → anagram.",
+            "Vì len(s) phải bằng len(t) mới có thể là anagram, kiểm tra trước.",
+            "Ví dụ 'anagram'/'nagaram': các phép cộng/trừ khử nhau hết → true."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Mực nước tại cột i = min(maxTrái, maxPhải) - height[i] (nếu dương).",
+        "reverse": "Cần nước đọng → với mỗi cột chỉ phụ thuộc tường cao nhất hai bên, dùng prefix/suffix max."
+      },
+      "note": "Hai chuỗi là anagram ⇔ cùng tần suất ký tự."
+    },
+    {
+      "no": "43",
+      "title": "Group Anagrams",
+      "cat": "Hashmap",
+      "diff": "Medium",
+      "statement": "Nhóm các chuỗi anagram lại với nhau (thứ tự nhóm/trong nhóm tự do).",
+      "examples": "[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"] → [[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]",
+      "keyIdea": "Mọi anagram có cùng 'chữ ký' — dùng chữ ký làm key để gom nhóm.",
+      "approaches": [
+        {
+          "name": "Sort từ làm key",
+          "time": "O(n·k·log k)",
+          "space": "O(n·k)",
+          "idea": "key = ''.join(sorted(word)); gom vào dict[key].",
+          "code": "from collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        d[''.join(sorted(w))].append(w)\n    return list(d.values())",
+          "tcex": {
+            "input": {
+              "strs": [
+                "eat",
+                "tea",
+                "tan",
+                "ate",
+                "nat",
+                "bat"
+              ]
+            },
+            "kind": "hash",
+            "display": "d",
+            "ptrs": [
+              "w"
+            ],
+            "expected": [
+              [
+                "eat",
+                "tea",
+                "ate"
+              ],
+              [
+                "tan",
+                "nat"
+              ],
+              [
+                "bat"
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Bộ đếm ký tự làm key",
+          "time": "O(n·k)",
+          "space": "O(n·k)",
+          "idea": "key = tuple(count của 26 chữ) — không cần sort; anagram luôn cùng tuple.",
+          "code": "from collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        cnt = [0]*26\n        for ch in w: cnt[ord(ch)-97] += 1\n        d[tuple(cnt)].append(w)\n    return list(d.values())",
+          "tcex": {
+            "input": {
+              "strs": [
+                "eat",
+                "tea",
+                "tan",
+                "ate",
+                "nat",
+                "bat"
+              ]
+            },
+            "kind": "hash",
+            "display": "d",
+            "ptrs": [
+              "w"
+            ],
+            "expected": [
+              [
+                "eat",
+                "tea",
+                "ate"
+              ],
+              [
+                "tan",
+                "nat"
+              ],
+              [
+                "bat"
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Map chữ số nguyên tố",
+          "time": "O(n·k)",
+          "space": "O(n·k)",
+          "idea": "key = tích các số nguyên tố đại diện cho ký tự — chuỗi anagram có tích bằng nhau (dễ va chạm nên ít dùng).",
+          "code": "primes = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101]\nfrom collections import defaultdict\ndef group_anagrams(strs):\n    d = defaultdict(list)\n    for w in strs:\n        k = 1\n        for ch in w: k *= primes[ord(ch)-97]\n        d[k].append(w)\n    return list(d.values())",
+          "tcex": {
+            "input": {
+              "strs": [
+                "eat",
+                "tea",
+                "tan",
+                "ate",
+                "nat",
+                "bat"
+              ]
+            },
+            "kind": "hash",
+            "display": "d",
+            "ptrs": [
+              "w"
+            ],
+            "expected": [
+              [
+                "eat",
+                "tea",
+                "ate"
+              ],
+              [
+                "tan",
+                "nat"
+              ],
+              [
+                "bat"
+              ]
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Nhóm theo key chuẩn hoá (sort hoặc đếm chữ cái).",
+        "reverse": "Cần gom các từ anagram → cùng một key chuẩn hoá."
+      },
+      "note": "Mọi anagram có cùng 'chữ ký' — dùng chữ ký làm key để gom nhóm."
+    },
+    {
+      "no": "44",
+      "title": "Two Sum",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Tìm chỉ số hai phần tử cộng lại bằng target (được giả định có đúng một đáp án).",
+      "examples": "nums=[2,7,11,15], target=9 → [0,1]",
+      "keyIdea": "Với mỗi số, cần đối số = target − số đó; tra nhanh xem đã gặp chưa bằng dict.",
+      "approaches": [
+        {
+          "name": "Một lượt + dict bù",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Duyệt; nếu target−num có trong dict → trả chỉ số; ngược lại lưu num→index.",
+          "code": "def two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        if target - x in seen:\n            return [seen[target - x], i]\n        seen[x] = i\n    return []",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "hash",
+            "display": "seen",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              0,
+              1
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Hai lượt dict",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Xây toàn bộ dict trước, rồi tìm — dễ đọc hơn, thêm 1 lượt quét.",
+          "code": "def two_sum(nums, target):\n    d = {x: i for i, x in enumerate(nums)}\n    for i, x in enumerate(nums):\n        j = d.get(target - x)\n        if j is not None and i != j: return [i, j]\n    return []",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "hash",
+            "display": "d",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              0,
+              1
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Vét cạn",
+          "time": "O(n²)",
+          "space": "O(1)",
+          "idea": "Thử mọi cặp — dùng làm khởi điểm giải thích rồi tối ưu.",
+          "code": "def two_sum(nums, target):\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "j"
+            ],
+            "expected": [
+              0,
+              1
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Với mỗi x, tra cứu target-x trong dict.",
+        "reverse": "Cần cặp tổng target → mỗi phần tử cần biết bù trừ đã gặp chưa."
+      },
+      "note": "Với mỗi số, cần đối số = target − số đó; tra nhanh xem đã gặp chưa bằng dict."
+    },
+    {
+      "no": "45",
+      "title": "Happy Number",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "'Hạnh phúc' nếu lặp tổng bình phương chữ số rồi về 1 (nếu vòng lặp không 1 thì không hạnh phúc).",
+      "examples": "19 → true (19→82→68→100→1) · 2 → false",
+      "keyIdea": "Chuỗi số hoặc hội tụ về 1, hoặc rơi vào chu kỳ — dùng set nhớ các số đã gặp để phát hiện vòng lặp.",
+      "approaches": [
+        {
+          "name": "Set phát hiện vòng lặp",
+          "time": "O(log n)",
+          "space": "O(log n)",
+          "idea": "Lặp tính tổng bình phương chữ số; nếu gặp lại → false, về 1 → true.",
+          "code": "def is_happy(n):\n    seen = set()\n    def ssum(x): return sum(int(d)**2 for d in str(x))\n    while n != 1:\n        if n in seen: return False\n        seen.add(n)\n        n = ssum(n)\n    return True",
+          "static": [
+            "Định nghĩa ssum(x) = tổng bình phương các chữ số của x.",
+            "Lặp: nếu n đã từng xuất hiện trong seen → vòng lặp, trả false.",
+            "Thêm n vào seen, tính n = ssum(n).",
+            "Nếu n về 1 → hạnh phúc, trả true.",
+            "Ví dụ 19 → 82 → 68 → 100 → 1 → true; 2 rơi vào chu kỳ → false."
+          ]
+        },
+        {
+          "name": "Con trỏ thỏ rùa (Floyd)",
+          "time": "O(log n)",
+          "space": "O(1)",
+          "idea": "Dùng fast/slow để phát hiện chu kỳ không cần set — mẫu phát hiện vòng thường gặp.",
+          "code": "def is_happy(n):\n    def ssum(x): return sum(int(d)**2 for d in str(x))\n    slow = n; fast = ssum(n)\n    while fast != 1 and slow != fast:\n        slow = ssum(slow)\n        fast = ssum(ssum(fast))\n    return fast == 1",
+          "static": [
+            "Khởi tạo slow = n, fast = ssum(n) (thỏ và rùa).",
+            "Mỗi bước: slow tiến 1, fast tiến 2 (ssum hai lần).",
+            "Nếu fast về 1 → hạnh phúc.",
+            "Nếu slow == fast (gặp nhau) → có chu kỳ, không hạnh phúc.",
+            "Ví dụ 19: không gặp chu kỳ, về 1 → true."
+          ]
+        },
+        {
+          "name": "Giới hạn 100 bước",
+          "time": "O(1)",
+          "space": "O(1)",
+          "idea": "Thực tế chuỗi happy chỉ quanh quẩn trong một miền hữu hạn; đủ 100 bước là biết.",
+          "code": "def is_happy(n):\n    for _ in range(100):\n        n = sum(int(d)**2 for d in str(n))\n        if n == 1: return True\n    return False",
+          "static": [
+            "Lặp tối đa 100 bước — miền giá trị happy bị chặn.",
+            "Mỗi bước: n = tổng bình phương các chữ số của n.",
+            "Nếu n == 1 trước khi hết 100 bước → hạnh phúc.",
+            "Hết 100 bước mà không về 1 → false.",
+            "Ví dụ 19 hội tụ về 1 sau 4 bước → true; 2 thì không."
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "BFS theo \"tầng nhảy\": mỗi tầng mở rộng tới xa nhất, đếm tầng.",
+        "reverse": "Cần số nhảy tối thiểu → khi nào hết phạm vi tầng hiện tại mới cần nhảy thêm một lần."
+      },
+      "note": "Chuỗi số hoặc hội tụ về 1, hoặc rơi vào chu kỳ — dùng set nhớ các số đã gặp để phát hiện vòng lặp."
+    },
+    {
+      "no": "46",
+      "title": "Contains Duplicate II",
+      "cat": "Hashmap",
+      "diff": "Easy",
+      "statement": "Có tồn tại hai chỉ số i≠j sao cho nums[i]==nums[j] và |i−j| ≤ k?",
+      "examples": "nums=[1,2,3,1], k=3 → true · nums=[1,0,1,1], k=1 → true · nums=[1,2,3,1,2,3], k=2 → false",
+      "keyIdea": "Nhớ vị trí xuất hiện gần nhất của mỗi giá trị; nếu trong phạm vi k → true.",
+      "approaches": [
+        {
+          "name": "Dict vị trí gần nhất",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Với mỗi i: nếu x đã thấy và i−last ≤ k → true; cập nhật last[x]=i.",
+          "code": "def contains_nearby_duplicate(nums, k):\n    last = {}\n    for i, x in enumerate(nums):\n        if x in last and i - last[x] <= k: return True\n        last[x] = i\n    return False",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                1
+              ],
+              "k": 3
+            },
+            "kind": "hash",
+            "display": "last",
+            "ptrs": [
+              "i"
+            ],
+            "expected": true,
+            "anim": true
+          }
+        },
+        {
+          "name": "Cửa sổ kích thước k",
+          "time": "O(n)",
+          "space": "O(min(n,k))",
+          "idea": "Giữ set các phần tử trong cửa sổ [i−k, i]; nếu trùng trong set → true; xoá phần tử ngoài cửa sổ.",
+          "code": "def contains_nearby_duplicate(nums, k):\n    win = set()\n    for i, x in enumerate(nums):\n        if x in win: return True\n        win.add(x)\n        if len(win) > k: win.remove(nums[i - k])\n    return False",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                1
+              ],
+              "k": 3
+            },
+            "kind": "set",
+            "display": "win",
+            "ptrs": [
+              "i"
+            ],
+            "expected": true,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Lưu vị trí gần nhất mỗi giá trị, so khoảng cách k.",
+        "reverse": "Cần trùng trong khoảng k → chỉ cần vị trí gần nhất."
+      },
+      "note": "Nhớ vị trí xuất hiện gần nhất của mỗi giá trị; nếu trong phạm vi k → true."
+    },
+    {
+      "no": "47",
+      "title": "Longest Consecutive Sequence",
+      "cat": "Hashmap",
+      "diff": "Medium",
+      "statement": "Tìm độ dài chuỗi số liên tiếp dài nhất (các số không cần kề nhau trong mảng). O(n) bắt buộc.",
+      "examples": "[100,4,200,1,3,2] → 4 ([1,2,3,4]) · [0,3,7,2,5,8,4,6,0,1] → 9",
+      "keyIdea": "Đưa mọi số vào set; chỉ bắt đầu đếm từ số KHÔNG có số liền trước (n−1 ∉ set).",
+      "approaches": [
+        {
+          "name": "Set + bắt đầu từ đầu chuỗi",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Với mỗi x mà x−1 không có trong set, đếm dài chuỗi tăng dần. Mỗi số duyệt tối đa 1 lần làm 'đầu'.",
+          "code": "def longest_consecutive(nums):\n    s = set(nums); best = 0\n    for x in s:\n        if x - 1 not in s:\n            y = x + 1\n            while y in s: y += 1\n            best = max(best, y - x)\n    return best",
+          "tcex": {
+            "input": {
+              "nums": [
+                100,
+                4,
+                200,
+                1,
+                3,
+                2
+              ]
+            },
+            "kind": "set",
+            "display": "s",
+            "ptrs": [
+              "x",
+              "y"
+            ],
+            "expected": 4,
+            "anim": true
+          }
+        },
+        {
+          "name": "Left∪right gộp (DS mang tính hướng dẫn)",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Duy trì độ dài hai đầu mỗi đoạn liên tục trong dict; khi nối hai đoạn lại cập nhật hai biên.",
+          "code": "def longest_consecutive(nums):\n    d = {}; best = 0\n    for x in nums:\n        if x in d: continue\n        left = d.get(x - 1, 0); right = d.get(x + 1, 0)\n        total = left + right + 1\n        d[x] = d[x - left] = d[x + right] = total\n        best = max(best, total)\n    return best",
+          "tcex": {
+            "input": {
+              "nums": [
+                100,
+                4,
+                200,
+                1,
+                3,
+                2
+              ]
+            },
+            "kind": "hash",
+            "display": "d",
+            "ptrs": [
+              "x"
+            ],
+            "expected": 4,
+            "anim": true
+          }
+        },
+        {
+          "name": "Sort (vi phạm O(n))",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Sort rồi duyệt đếm đoạn tăng liên tiếp — dễ nhưng không thoả O(n) nên chỉ để so sánh.",
+          "code": "def longest_consecutive(nums):\n    if not nums: return 0\n    nums.sort(); best = cur = 1\n    for i in range(1, len(nums)):\n        if nums[i] == nums[i-1]: continue\n        if nums[i] == nums[i-1] + 1: cur += 1\n        else: cur = 1\n        best = max(best, cur)\n    return best",
+          "tcex": {
+            "input": {
+              "nums": [
+                100,
+                4,
+                200,
+                1,
+                3,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 4,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Bắt đầu đếm từ đầu chuỗi (số không có tiền thân) trong set.",
+        "reverse": "Cần chuỗi liên tiếp dài nhất → chỉ khởi động đếm từ điểm khởi đầu."
+      },
+      "note": "Đưa mọi số vào set; chỉ bắt đầu đếm từ số KHÔNG có số liền trước (n−1 ∉ set)."
+    }
+  ]
+}

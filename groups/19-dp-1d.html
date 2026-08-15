@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Top Interview 150 — Học theo nhóm</title>
+<style>
+:root{
+  --bg:#0d1017; --panel:#141926; --panel2:#1a2130; --ink:#eaf0f8; --mut:#8f9ab2;
+  --line:#242c3e; --acc:#7aa2ff; --acc2:#38d3f0; --ok:#3ddc97; --warn:#ffb454; --bad:#ff6b81;
+  --inksoft:#c9d2e3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);background-image:radial-gradient(#1d2434 1px,transparent 1px);background-size:26px 26px;font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+a{color:var(--acc)}
+a:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 90px}
+.hero{padding:10px 0 20px;border-bottom:1px solid var(--line);margin-bottom:26px}
+.chip{display:inline-block;padding:3px 12px;border-radius:999px;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);background:var(--panel);margin:2px 6px 0 0}
+.hero h1{font-size:27px;margin:10px 0 8px;text-wrap:balance}
+.hero p{color:var(--mut);margin:6px 0 0;max-width:850px}
+
+/* ---------- index / toc ---------- */
+.grp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0 28px}
+.grp{text-decoration:none;color:inherit;border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:10px 12px;display:flex;gap:10px;align-items:center;transition:border-color .15s}
+.grp:hover{border-color:var(--acc)}
+.grp .ic{font-size:20px}
+.grp b{font-size:14px}
+.grp small{display:block;color:var(--mut);font-size:11.5px}
+
+/* ---------- problem ---------- */
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;margin:30px 0;scroll-margin-top:16px}
+.sec-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sec-top h2{margin:0;font-size:21px;text-wrap:balance}
+.tag{font-size:12px;letter-spacing:.04em;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--mut)}
+.tag.easy{color:#a7f3d0;border-color:#14532d;background:#052e16}
+.tag.medium{color:#fde68a;border-color:#78350f;background:#2c1a05}
+.tag.hard{color:#fecaca;border-color:#7f1d1d;background:#2a0a0a}
+.stmt{color:var(--inksoft);margin:12px 0 4px;line-height:1.7}
+.ex{color:var(--mut);font-size:14px}
+code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b0e16;border:1px solid var(--line);border-radius:6px;padding:1px 5px;color:var(--acc2)}
+.idea{background:#101a2e;border-left:3px solid var(--acc2);border-radius:0 12px 12px 0;padding:11px 15px;margin:13px 0;font-size:14.5px;color:var(--inksoft)}
+
+/* ---------- solution ---------- */
+.sol{border-top:1px dashed var(--line);margin-top:22px;padding-top:18px}
+.sol h4{font-size:16px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-wrap:balance}
+.sol h5{font-size:14.5px;margin:14px 0 6px;color:var(--acc2)}
+.meta{font-size:13px;color:var(--mut)}
+.pill{display:inline-block;padding:3px 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-size:12.5px;margin-right:8px;margin-bottom:4px}
+.pill b{color:var(--acc)}
+pre.code{background:#0b0e16;border:1px solid var(--line);border-radius:13px;padding:14px 16px;overflow-x:auto;font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:9px 0}
+pre.code .k{color:#c792ea} pre.code .f{color:#82aaff} pre.code .n{color:#f78c6c}
+pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code .o{color:#89ddff}
+.steps-desc{color:var(--mut);font-size:14px;margin:8px 0}
+
+/* ---------- static steps ---------- */
+.steps{display:flex;flex-direction:column;gap:7px;margin:10px 0}
+.step-line{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:13.5px;color:var(--inksoft)}
+.step-line .sno{color:var(--acc2);font-weight:700;font-variant-numeric:tabular-nums;min-width:22px}
+
+/* ---------- interactive player ---------- */
+.run{border:1px solid var(--line);border-radius:13px;background:var(--panel2);padding:13px 15px;margin:11px 0}
+.ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:5px 11px;font-size:14px;transition:.12s}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.sp{font-size:13px;color:var(--mut);margin-right:6px;font-variant-numeric:tabular-nums}
+.rng{flex:1;min-width:130px;accent-color:var(--acc)}
+.note{font-size:14px;color:var(--inksoft);margin:0 0 9px;min-height:21px}
+.note.fin{color:var(--ok)}
+.cells-wrap{position:relative;padding:13px 4px 4px;min-height:56px}
+.cells{display:flex;gap:7px;flex-wrap:wrap}
+.cell{position:relative;width:42px;height:40px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.cell.dead{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.05) 6px 12px);border-style:dashed;color:#5b6377}
+.cell.keep{background:#153a2b;border-color:#2f7d5a;color:#d1fae5}
+.cell.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.cell.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.cell.sw{background:#4c1120;border-color:var(--bad)}
+.cell.act{background:#33250a;border-color:var(--warn)}
+.ci{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:10px;color:#5b6377;font-variant-numeric:tabular-nums}
+/* ---------- player v2: mat / node (ll/tree) / stack / hash / set / aux ---------- */
+.run:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+/* mat */
+.cells.mat{flex-direction:column;gap:6px;flex-wrap:nowrap;width:max-content}
+.mrow{display:flex;gap:6px}
+.cell.mcell{width:38px;height:34px;font-size:13px;border-radius:6px}
+.cell.tail{border-style:dashed;color:#7d8aa5}
+.cell.colored{background:#12402c;border-color:var(--ok)}
+/* stack */
+.cells.stack{flex-direction:column-reverse;align-items:center;gap:6px;width:78px;border:1.5px solid #39415c;border-top:none;border-radius:0 0 10px 10px;padding:10px 8px 7px;background:#0f1522;min-height:66px}
+.cell.scol{width:56px;height:34px;font-size:13px;border-radius:6px}
+.cell.top{border-color:var(--warn)}
+.topb{font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--warn);margin-top:3px;text-transform:uppercase}
+.stack-row{display:flex;gap:12px;align-items:stretch}
+.stack-ptrs{display:flex;flex-direction:column-reverse;justify-content:flex-start;gap:6px;padding:10px 0 7px}
+.sph{min-height:40px;display:flex;align-items:center}
+.ptr-tag{font-size:10.5px;font-weight:700;color:var(--acc2);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:1px 6px;white-space:nowrap}
+/* ll + tree: node dùng chung */
+.cells.tree,.cells.ll{display:block}
+.tbox{position:relative;overflow-x:auto;padding:14px 0 20px}
+.tgrid{position:relative;display:grid;margin:0 auto}
+.tgrid svg{position:absolute;top:0;left:0;pointer-events:none;overflow:visible}
+.llrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.node{position:relative;min-width:46px;height:40px;padding:0 8px;border:1.5px solid #39415c;border-radius:9px;background:#141828;display:grid;place-items:center;transition:background .18s,border-color .18s;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.node.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.node.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.node.sw{background:#4c1120;border-color:var(--bad)}
+.node.act{background:#33250a;border-color:var(--warn)}
+.node.tnd{width:44px;height:44px;min-width:44px;border-radius:50%;justify-self:center;align-self:center}
+.nid{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:9.5px;color:#5b6377;font-variant-numeric:tabular-nums}
+.nstate{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9px;background:#1b2740;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--acc2);white-space:nowrap;z-index:2}
+.arrow{color:var(--mut);font-size:16px;font-weight:700;padding:0 2px;align-self:center}
+/* hash */
+.cells.hash{flex-direction:column;gap:5px;width:max-content}
+.hpair{display:flex;align-items:center;gap:8px;border:1px solid #2a3550;border-radius:8px;background:#101828;padding:2px 4px;transition:background .18s,border-color .18s}
+.hpair.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.hpair.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.hpair.sw{background:#4c1120;border-color:var(--bad)}
+.hk{min-width:42px;text-align:center;font-weight:700;color:var(--acc);font-size:12.5px;background:#16203a;border-radius:6px;padding:2px 6px}
+.hv{font-weight:600;font-size:13.5px;padding:2px 7px;font-variant-numeric:tabular-nums;min-width:24px;color:var(--inksoft)}
+/* set */
+.cells.set{gap:6px;flex-wrap:wrap}
+.sbadge{border:1px solid #3a4560;border-radius:999px;background:#101828;padding:4px 13px;font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums}
+.sbadge.rd{background:#4a2c10;border-color:var(--warn);animation:pulse .5s}
+.sbadge.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
+.sbadge.sw{background:#4c1120;border-color:var(--bad)}
+/* aux */
+.aux{display:flex;align-items:center;gap:9px;margin-top:8px;flex-wrap:wrap}
+.alabel{font-size:11px;color:var(--mut);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.acells{display:flex;gap:5px}
+.acell{min-width:30px;height:26px;border:1px solid #3a4560;border-radius:6px;background:#121a2a;display:grid;place-items:center;font-size:12.5px;font-weight:600;padding:0 7px;font-variant-numeric:tabular-nums;transition:background .18s,border-color .18s}
+.acell.rd{background:#4a2c10;border-color:var(--warn)}
+.acell.wr{background:#1a2f5c;border-color:var(--acc)}
+.acell.sw{background:#4c1120;border-color:var(--bad)}
+.note .result{color:var(--acc2);font-weight:700}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+.ptrs{position:absolute;inset:0;pointer-events:none}
+.ptr{position:absolute;top:1px;font-size:11px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:5px;padding:1px 6px;white-space:nowrap}
+@media (max-width:640px){.wrap{padding:14px 10px 70px}section.card{padding:16px 12px}.cell{width:36px;height:34px}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+/* code pane + dòng đang chạy */
+pre.code.pane{position:relative;margin:8px 0;border-left:3px solid var(--acc2);font-size:12.5px;max-height:180px;overflow-y:auto}
+pre.code .curline{background:rgba(122,162,255,.14);box-shadow:inset 3px 0 0 var(--acc);border-radius:3px}
+pre.code.pane .curline{background:rgba(122,162,255,.16)}
+/* region (khung vùng hoạt động) */
+.region{position:absolute;border:2px dashed var(--acc2);border-radius:8px;pointer-events:none;opacity:.55;transition:all .15s;z-index:2}
+
+/* badge đọc/ghi trên node cây */
+.nst{position:absolute;top:-9px;right:-12px;font-size:9px;font-weight:700;background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:0 4px;color:var(--acc2);z-index:4;display:none}
+.node.rd .nst{display:block;border-color:var(--warn);color:var(--warn);background:#33250a}
+.node.wr .nst{display:block;border-color:var(--acc);color:var(--acc);background:#0b1e2b}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div>
+    <span class="chip">Top Interview 150</span>
+    <span class="chip" id="grpChip"></span>
+    <span class="chip">Python · tiếng Việt</span>
+  </div>
+  <h1 id="grpTitle"></h1>
+  <p id="grpDesc"></p>
+</header>
+<nav class="toc" id="toc"></nav>
+<main id="content"></main>
+<footer id="foot"></footer>
+</div>
+
+<script>
+"use strict";
+/*
+ * traces150.js — trace animation cho các bài ngoài 6 bài gốc (Top Interview 150).
+ * Nguyên tắc như traces.js: mỗi hàm nhận input, trả mảng step {note, cells, array, read, write, swap, ptr, ptrNames, end}.
+ * Bước 1 làm quen với 4 thuật toán kinh điển.
+ */
+'use strict';
+
+function at150(arr, i) { return { target: [i], value: arr[i] }; }
+
+/* ============ 121 Best Time to Buy and Sell Stock ============ */
+function trace_stock(input) {
+  const { prices } = input;
+  const steps = [];
+  let buy = prices[0], profit = 0;
+  const push = (note, patch, end) => {
+    const cells = prices.map((v, idx) => ({ value: v, keep: idx === 0 ? false : false }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: buy = prices[0] = ${buy}, max profit = 0. Duyệt từ ngày 1.`, { ptr: { buy: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] < buy) {
+      buy = prices[i];
+      push(`prices[${i}] = ${prices[i]} < buy ${prices[i - 1] > prices[i] ? '(giảm so với trước)' : ''} → cập nhật buy = ${prices[i]} (mua rẻ hơn, bỏ qua mức lời cũ chưa tốt hơn).`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    } else {
+      const p = prices[i] - buy;
+      const better = p > profit;
+      profit = Math.max(profit, p);
+      push(`prices[${i}] = ${prices[i]} ≥ buy ${buy} → lời nếu bán ở đây = ${p}. ${better ? 'Cập nhật max profit = ' + p + '!' : 'Chưa hơn max profit hiện tại (' + profit + ').'}`,
+        { read: at150(prices, i), ptr: { buy: i, i }, ptrNames: ['buy', 'i'] });
+    }
+  }
+  push(`Xong: max profit = ${profit} (mua ở ${buy}, các ngày sau là nơi bán tối ưu).`, {}, true);
+  return steps;
+}
+
+/* ============ 122 Best Time to Buy and Sell Stock II ============ */
+function trace_stock_ii(input) {
+  const { prices } = input;
+  const steps = [];
+  let profit = 0, last = prices[0];
+  const push = (note, patch, end) => {
+    const cells = prices.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: prices.slice() }, patch, end ? { end: true, answer: profit } : {}));
+  };
+  push(`init: profit = 0, last = prices[0] = ${last}.`, { ptr: { last: 0, i: 0 } });
+  for (let i = 1; i < prices.length; i++) {
+    if (prices[i] > last) {
+      profit += prices[i] - last;
+      push(`prices[${i}] = ${prices[i]} > ${last} → gom ${prices[i] - last} (bán ngay lập tức). profit = ${profit}.`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    } else {
+      push(`prices[${i}] = ${prices[i]} ≤ ${last} → không giao dịch (chờ giá lên).`,
+        { read: at150(prices, i), ptr: { last: i, i }, ptrNames: ['last', 'i'] });
+    }
+    last = prices[i];
+  }
+  push(`Xong: tổng lợi nhuận ${profit} — cộng dồn MỌI bước tăng liên tiếp.`, {}, true);
+  return steps;
+}
+
+/* ============ 15 3Sum ============ */
+function trace_3sum(input) {
+  const { nums } = input;
+  const a = nums.slice().sort((x, y) => x - y);
+  const res = [];
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = a.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: a.slice() }, patch, end ? { end: true, answer: res.length + ' bộ ba' } : {}));
+  };
+  push('Sắp xếp mảng để dùng hai con trỏ.', {});
+  for (let i = 0; i < a.length - 2; i++) {
+    if (i > 0 && a[i] === a[i - 1]) { push(`a[${i}] = ${a[i]} trùng a[${i - 1}] → bỏ qua để tránh bộ ba trùng.`, { ptr: { i }, ptrNames: ['i'] }); continue; }
+    let lo = i + 1, hi = a.length - 1;
+    push(`Cố định a[${i}] = ${a[i]}; lo = ${lo}, hi = ${hi}. Tìm cặp (lo, hi) sao cho tổng = 0.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+    while (lo < hi) {
+      const s = a[i] + a[lo] + a[hi];
+      if (s === 0) {
+        res.push([a[i], a[lo], a[hi]]);
+        push(`tổng ${a[i]} + ${a[lo]} + ${a[hi]} = 0 → ghi nhận bộ ba.`, { read: [at150(a, i), at150(a, lo), at150(a, hi)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+        const x = a[lo], y = a[hi];
+        while (lo < hi && a[lo] === x) lo++;
+        while (lo < hi && a[hi] === y) hi--;
+        push(`Nhảy qua các giá trị trùng (lo → ${lo}, hi → ${hi}) để không lặp bộ ba.`, { ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else if (s < 0) {
+        lo++;
+        push(`tổng = ${s} < 0 → tăng lo lên ${lo} (cần tổng lớn hơn).`, { read: [at150(a, lo - 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      } else {
+        hi--;
+        push(`tổng = ${s} > 0 → giảm hi xuống ${hi} (cần tổng nhỏ hơn).`, { read: [at150(a, hi + 1)], ptr: { i, lo, hi }, ptrNames: ['i', 'lo', 'hi'] });
+      }
+    }
+  }
+  push(`Xong: ${res.length} bộ ba`, {}, true);
+  return steps;
+}
+
+/* ============ 11 Container With Most Water ============ */
+function trace_container(input) {
+  const { height } = input;
+  const steps = [];
+  let l = 0, r = height.length - 1, best = 0;
+  const push = (note, patch, end) => {
+    const cells = height.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: height.slice() }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Hai con trỏ: l = ${l}, r = ${r}. Diện tích = chiều cao thấp hơn × khoảng cách.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const w = r - l;
+    const area = Math.min(height[l], height[r]) * w;
+    best = Math.max(best, area);
+    const goLeft = height[l] < height[r];
+    push(`Cặp (${l}, ${r}): diện tích = ${Math.min(height[l], height[r])} × ${w} = ${area} → best = ${best}. ${goLeft ? 'Cạnh trái thấp hơn → dịch l++' : 'Cạnh phải thấp hơn → dịch r--'} (giữ cạnh cao hơn để còn triển vọng).`,
+      { read: [at150(height, l), at150(height, r)], ptr: { l: l + (goLeft ? 1 : 0), r: r - (goLeft ? 0 : 1) }, ptrNames: ['l', 'r'] });
+    if (goLeft) l++; else r--;
+  }
+  push(`Xong: thể tích nước tối đa = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 3 Longest Substring Without Repeating Characters ============ */
+function trace_longest_substr(input) {
+  const { s } = input;
+  const steps = [];
+  let l = 0, best = 0;
+  const seen = new Map();
+  const push = (note, patch, end) => {
+    const cells = s.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: s.split('') }, patch, end ? { end: true, answer: best } : {}));
+  };
+  push(`Cửa sổ [l, r): ký tự trong cửa sổ đều là duy nhất. best = 0.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < s.length; r++) {
+    const c = s[r];
+    if (seen.has(c) && seen.get(c) >= l) {
+      const old = l;
+      l = seen.get(c) + 1;
+      push(`Gặp '${c}' đã xuất hiện ở vị trí ${seen.get(c)} (đang trong cửa sổ) → dịch l từ ${old} lên ${l}.`,
+        { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+    seen.set(c, r);
+    best = Math.max(best, r - l + 1);
+    push(`Thêm '${c}' vào cửa sổ [${l}, ${r}]. best = ${best} (đoạn dài nhất không trùng).`,
+      { read: at150(s.split(''), r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+  }
+  push(`Xong: độ dài lớn nhất = ${best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 209 Minimum Size Subarray Sum ============ */
+function trace_min_subarray(input) {
+  const { nums, target } = input;
+  const steps = [];
+  let l = 0, sum = 0, best = Infinity;
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice() }, patch, end ? { end: true, answer: best === Infinity ? 0 : best } : {}));
+  };
+  push(`Cửa sổ [l, r): sum = tổng trong cửa sổ. Mở rộng r khi sum < ${target}, thu hẹp l khi sum ≥ ${target}.`, { ptr: { l, r: 0 }, ptrNames: ['l', 'r'] });
+  for (let r = 0; r < nums.length; r++) {
+    sum += nums[r];
+    push(`Thêm nums[${r}] = ${nums[r]} → sum = ${sum}.`, { read: at150(nums, r), ptr: { l, r }, ptrNames: ['l', 'r'] });
+    while (sum >= target && l <= r) {
+      const len = r - l + 1;
+      best = Math.min(best, len);
+      const removed = nums[l];
+      push(`sum ${sum} ≥ ${target} → cửa sổ [${l}, ${r}] dài ${len} hợp lệ. best = ${best}. Thu hẹp l (bỏ ${removed}).`,
+        { read: at150(nums, l), ptr: { l: l + 1, r }, ptrNames: ['l', 'r'] });
+      sum -= removed;
+      l++;
+    }
+  }
+  push(`Xong: chiều dài ngắn nhất = ${best === Infinity ? 0 : best}.`, {}, true);
+  return steps;
+}
+
+/* ============ 238 Product of Array Except Self ============ */
+function trace_product_except_self(input) {
+  const { nums } = input;
+  const steps = [];
+  const n = nums.length;
+  const res = new Array(n).fill(1);
+  const push = (note, patch, end) => {
+    const cells = nums.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: nums.slice(), aux: { label: 'ans', values: res.slice() } }, patch, end ? { end: true, answer: res.slice() } : {}));
+  };
+  push('Ý tưởng: ans[i] = tích các phần tử bên trái × tích các phần tử bên phải. Duyệt 2 lần.', { aux: { label: 'ans', values: res.slice() } });
+  let left = 1;
+  for (let i = 0; i < n; i++) {
+    res[i] = left;
+    push(`Lượt trái: ans[${i}] = tích các phần tử nhỏ hơn ${i} = ${left}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    left *= nums[i];
+  }
+  let right = 1;
+  for (let i = n - 1; i >= 0; i--) {
+    res[i] *= right;
+    push(`Lượt phải: ans[${i}] *= tích các phần tử lớn hơn ${i} = ${right} → ${res[i]}.`, { read: at150(nums, i), aux: { label: 'ans', values: res.slice() } });
+    right *= nums[i];
+  }
+  push(`Xong: ans = ${res.join(', ')}. Mỗi ans[i] = tích mọi phần tử trừ nums[i] — O(1) phụ.`, {}, true);
+  return steps;
+}
+
+/* ============ 125 Valid Palindrome ============ */
+function trace_valid_palindrome(input) {
+  const { s } = input;
+  const text = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const steps = [];
+  const push = (note, patch, end) => {
+    const cells = text.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: text.split('') }, patch, end ? { end: true, answer: true } : {}));
+  };
+  push(`Lọc chuỗi: giữ chữ & số, viết thường → '${text}'. Giờ kiểm tra palindrome bằng hai con trỏ.`,
+    { ptr: { l: 0, r: text.length - 1 }, ptrNames: ['l', 'r'] });
+  let l = 0, r = text.length - 1;
+  while (l < r) {
+    if (text[l] !== text[r]) {
+      push(`'${text[l]}' ≠ '${text[r]}' → KHÔNG phải palindrome.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      steps[steps.length - 1].answer = false;
+      return steps;
+    }
+    push(`'${text[l]}' = '${text[r]}' → tiếp tục thu hẹp.`, { read: [at150(text.split(''), l), at150(text.split(''), r)], ptr: { l: l + 1, r: r - 1 }, ptrNames: ['l', 'r'] });
+    l++; r--;
+  }
+  push('Hai con trỏ gặp nhau → chuỗi là palindrome.', {}, true);
+  return steps;
+}
+
+/* ============ 392 Is Subsequence ============ */
+function trace_is_subsequence(input) {
+  const { s, t } = input;
+  const steps = [];
+  let i = 0, j = 0;
+  const push = (note, patch, end) => {
+    const cells = t.split('').map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: t.split('') }, patch, end ? { end: true, answer: i === s.length } : {}));
+  };
+  push(`Tìm ${s.length ? "mọi ký tự của '"+s+"'" : 'chuỗi rỗng'} trong '${t}' theo thứ tự. i = con trỏ s, j = con trỏ t.`,
+    { ptr: { i, j }, ptrNames: ['i', 'j'] });
+  while (i < s.length && j < t.length) {
+    if (s[i] === t[j]) {
+      push(`s[${i}] = '${s[i]}' trùng t[${j}] → khớp! i++, j++.`, { read: at150(t.split(''), j), ptr: { i: i + 1, j: j + 1 }, ptrNames: ['i', 'j'] });
+      i++; j++;
+    } else {
+      push(`s[${i}] = '${s[i]}' ≠ t[${j}] = '${t[j]}' → chỉ tăng j (bỏ qua ký tự trong t).`,
+        { read: at150(t.split(''), j), ptr: { i, j: j + 1 }, ptrNames: ['i', 'j'] });
+      j++;
+    }
+  }
+  push(i === s.length ? `Đã khớp toàn bộ '${s}' → subsequence.` : `Hết t trước khi khớp hết → không phải subsequence.`, {}, true);
+  return steps;
+}
+
+/* ============ 167 Two Sum II - Input Array Is Sorted ============ */
+function trace_two_sum_ii(input) {
+  const { numbers, target } = input;
+  const steps = [];
+  let l = 0, r = numbers.length - 1;
+  const push = (note, patch, end) => {
+    const cells = numbers.map((v) => ({ value: v }));
+    steps.push(Object.assign({ note, cells, array: numbers.slice() }, patch, end ? { end: true, answer: [l + 1, r + 1] } : {}));
+  };
+  push(`Mảng đã sắp tăng → bắt đầu l = 0, r = ${r}. Tổng hiện tại: ${numbers[l] + numbers[r]}.`, { ptr: { l, r }, ptrNames: ['l', 'r'] });
+  while (l < r) {
+    const s = numbers[l] + numbers[r];
+    if (s === target) {
+      push(`Tổng ${numbers[l]} + ${numbers[r]} = ${target} → đáp án 1-indexed: [${l + 1}, ${r + 1}].`,
+        { read: [at150(numbers, l), at150(numbers, r)], ptr: { l, r }, ptrNames: ['l', 'r'] }, true);
+      return steps;
+    } else if (s < target) {
+      l++;
+      push(`Tổng ${s} < ${target} → tăng l lên ${l} (cần tổng lớn hơn; mảng tăng nên chỉ còn hướng này).`,
+        { read: [at150(numbers, l - 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    } else {
+      r--;
+      push(`Tổng ${s} > ${target} → giảm r xuống ${r}.`,
+        { read: [at150(numbers, r + 1)], ptr: { l, r }, ptrNames: ['l', 'r'] });
+    }
+  }
+  push('Không tìm thấy cặp.', {}, true);
+  return steps;
+}
+
+/* ============ EXPORT ============ */
+const TRACES150 = {
+  '125-valid-palindrome': { fn: trace_valid_palindrome, input: { s: 'A man, a plan, a canal: Panama' } },
+  '392-is-subsequence': { fn: trace_is_subsequence, input: { s: 'abc', t: 'ahbgdc' } },
+  '167-two-sum-ii-input-array-is-sorted': { fn: trace_two_sum_ii, input: { numbers: [2, 7, 11, 15], target: 9 } },
+  '121-best-time-to-buy-and-sell-stock': { fn: trace_stock, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '122-best-time-to-buy-and-sell-stock-ii': { fn: trace_stock_ii, input: { prices: [7, 1, 5, 3, 6, 4] } },
+  '15-3sum': { fn: trace_3sum, input: { nums: [-1, 0, 1, 2, -1, -4] } },
+  '11-container-with-most-water': { fn: trace_container, input: { height: [1, 8, 6, 2, 5, 4, 8, 3, 7] } },
+  '3-longest-substring-without-repeating-characters': { fn: trace_longest_substr, input: { s: 'abcabcbb' } },
+  '209-minimum-size-subarray-sum': { fn: trace_min_subarray, input: { nums: [2, 3, 1, 2, 4, 3], target: 7 } },
+  '238-product-of-array-except-self': { fn: trace_product_except_self, input: { nums: [1, 2, 3, 4] } },
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = { TRACES150 };
+globalThis.TRACES150 = TRACES150;
+/* phần dữ liệu DATA được chèn vào đây bởi build script */
+const DATA = {"group":{"title":"Quy hoạch động 1 chiều","count":5,"desc":"Quy hoạch động 1 chiều: xác định trạng thái dp[i], quan hệ truy hồi, và cách tối ưu bộ nhớ xuống O(1) khi chỉ cần vài giá trị gần nhất."},"problems":[{"no":"70","title":"Climbing Stairs","cat":"1D DP","diff":"Easy","statement":"Leo n bậc; mỗi lần 1 hoặc 2 bậc. Số cách?","examples":"n=2 → 2 · n=3 → 3","keyIdea":"dp[i] = dp[i-1] + dp[i-2]; chính là Fibonacci.","approaches":[{"name":"DP O(1) bộ nhớ","time":"O(n)","space":"O(1)","idea":"a, b = 1, 1; for i in range(2, n+1): a, b = b, a+b.","code":"def climb_stairs(n):\n    a, b = 1, 1\n    for _ in range(2, n+1):\n        a, b = b, a + b\n    return b","static":["dp[i]=dp[i-1]+dp[i-2] (Fibonacci)","n=4: 1,1,2,3,5 → 5 cách","Giữ 2 biến trượt thay vì cả mảng","Trả về biến cuối"],"tcex":{"input":{"n":5},"kind":"none","expected":8},"_pno":"70","steps":[{"note":"a, b = 1, 1","line":2,"explain":"Cách lên bậc i = cách lên i-1 + cách lên i-2 (Fibonacci). Khởi tạo a=b=1 (bậc 1 có 1 cách, bậc 0 coi 1 cách)."},{"note":"for _ in range(2, n+1):","line":3,"explain":"Vòng lặp từ bậc 2 tới n."},{"note":"a, b = b, a + b","line":4,"explain":"Trượt: a,b = b, a+b — bậc 2: a=1,b=2."},{"note":"for _ in range(2, n+1):","line":3,"explain":"bậc 3: a=2,b=3."},{"note":"a, b = b, a + b","line":4,"explain":"bậc 4: a=3,b=5."},{"note":"for _ in range(2, n+1):","line":3,"explain":"bậc 5: a=5,b=8."},{"note":"a, b = b, a + b","line":4,"explain":"Kết thúc: b=8 — có 8 cách leo 5 bậc."},{"note":"for _ in range(2, n+1):","line":3,"explain":"Cách lên bậc i = cách lên i-1 + cách lên i-2 (Fibonacci). Khởi tạo a=b=1 (bậc 1 có 1 cách, bậc 0 coi 1 cách)."},{"note":"a, b = b, a + b","line":4,"explain":"Vòng lặp từ bậc 2 tới n."},{"note":"for _ in range(2, n+1):","line":3,"explain":"Trượt: a,b = b, a+b — bậc 2: a=1,b=2."},{"note":"return b — Kết thúc — đáp án: 8 ✓ (khớp kỳ vọng)","line":5,"end":true,"answer":8,"explain":"bậc 3: a=2,b=3."}],"anim":true},{"name":"Bảng dp","time":"O(n)","space":"O(n)","idea":"dp[0]=dp[1]=1; dp[i] = dp[i-1]+dp[i-2].","code":"def climb_stairs(n):\n    dp = [0]*(n+1)\n    dp[0] = dp[1] = 1\n    for i in range(2, n+1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]","static":["dp[i]=dp[i-1]+dp[i-2] (Fibonacci)","n=4: 1,1,2,3,5 → 5 cách","Giữ 2 biến trượt thay vì cả mảng","Trả về biến cuối"],"tcex":{"input":{"n":5},"kind":"none","expected":8},"_pno":"70","steps":[{"note":"dp = [0]*(n+1)","line":2,"explain":"dp[i] = số cách leo tới bậc i. Khởi tạo mảng 0."},{"note":"dp[0] = dp[1] = 1","line":3,"explain":"dp[0]=dp[1]=1 — bậc 0 và 1 đều 1 cách."},{"note":"for i in range(2, n+1):","line":4,"explain":"Duyệt i từ 2."},{"note":"dp[i] = dp[i-1] + dp[i-2]","line":5,"explain":"dp[2]=dp[1]+dp[0]=1+1=2."},{"note":"for i in range(2, n+1):","line":4,"explain":"dp[3]=dp[2]+dp[1]=2+1=3."},{"note":"dp[i] = dp[i-1] + dp[i-2]","line":5,"explain":"dp[4]=dp[3]+dp[2]=3+2=5."},{"note":"for i in range(2, n+1):","line":4,"explain":"dp[5]=dp[4]+dp[3]=5+3=8."},{"note":"dp[i] = dp[i-1] + dp[i-2]","line":5,"explain":"Trả dp[5]=8."},{"note":"for i in range(2, n+1):","line":4,"explain":"dp[i] = số cách leo tới bậc i. Khởi tạo mảng 0."},{"note":"dp[i] = dp[i-1] + dp[i-2]","line":5,"explain":"dp[0]=dp[1]=1 — bậc 0 và 1 đều 1 cách."},{"note":"for i in range(2, n+1):","line":4,"explain":"Duyệt i từ 2."},{"note":"return dp[n] — Kết thúc — đáp án: 8 ✓ (khớp kỳ vọng)","line":6,"end":true,"answer":8,"explain":"dp[2]=dp[1]+dp[0]=1+1=2."}],"anim":true},{"name":"Công thức/tuple","time":"O(n)","space":"O(1)","idea":"reduce tuple (a,b) → (b, a+b) — style hàm thuần.","code":"from functools import reduce\ndef climb_stairs(n):\n    return reduce(lambda ab, _: (ab[1], ab[0] + ab[1]), range(n), (1, 1))[0]","static":["dp[i]=dp[i-1]+dp[i-2] (Fibonacci)","n=4: 1,1,2,3,5 → 5 cách","Giữ 2 biến trượt thay vì cả mảng","Trả về biến cuối"],"tcex":{"input":{"n":5},"kind":"none","expected":8},"_pno":"70","steps":[{"note":"return reduce(lambda ab, _: (ab[1], ab[0] + ab[1]), range(n), (1, 1))[0] — Kết thúc — đáp án: 8 ✓ (khớp kỳ vọng)","line":3,"end":true,"answer":8,"explain":"Fibonacci trực tiếp: với n=5, F[5]=F[4]+F[3]=5+3=8 cách leo."}],"anim":true}],"thinking":{"forward":"Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.","reverse":"Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."},"note":"Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."},{"no":"198","title":"House Robber","cat":"1D DP","diff":"Medium","statement":"Trộm các nhà (không trộm hai nhà kề nhau) tối đa hoá tổng lấy được.","examples":"[1,2,3,1] → 4 · [2,7,9,3,1] → 12","keyIdea":"dp[i] = max(dp[i-1], dp[i-2] + nums[i]) — nhảy cách 1 hoặc 2.","approaches":[{"name":"Hai biến trượt","time":"O(n)","space":"O(1)","idea":"a = dp[i-2], b = dp[i-1]; cur = max(b, a+nums[i]).","code":"def rob(nums):\n    a = b = 0\n    for x in nums:\n        a, b = b, max(b, a + x)\n    return b","tcex":{"input":{"nums":[2,7,9,3,1]},"kind":"array","display":"nums","expected":12},"_pno":"198","steps":[{"note":"a = b = 0","line":2,"array":[2,7,9,3,1],"explain":"Không được lấy 2 nhà kề. dp[i]=max(dp[i-1], dp[i-2]+nums[i]). Khởi tạo prev_best=0, cur=0."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"Xét từng nhà: 2 → quyết định cướp (0+2) hay không cướp (0) → cur=2."},{"note":"a, b = b, max(b, a + x)","line":4,"array":[2,7,9,3,1],"explain":"7: max(2, 0+7)=7 → cướp nhà 2 tốt hơn."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"9: max(7, 2+9)=11 → cướp nhà 1 và 3."},{"note":"a, b = b, max(b, a + x)","line":4,"array":[2,7,9,3,1],"explain":"3: max(11, 7+3)=11."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"1: max(11, 11+1)=12 → đáp án 12."},{"note":"a, b = b, max(b, a + x)","line":4,"array":[2,7,9,3,1],"explain":"Không được lấy 2 nhà kề. dp[i]=max(dp[i-1], dp[i-2]+nums[i]). Khởi tạo prev_best=0, cur=0."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"Xét từng nhà: 2 → quyết định cướp (0+2) hay không cướp (0) → cur=2."},{"note":"a, b = b, max(b, a + x)","line":4,"array":[2,7,9,3,1],"explain":"7: max(2, 0+7)=7 → cướp nhà 2 tốt hơn."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"9: max(7, 2+9)=11 → cướp nhà 1 và 3."},{"note":"a, b = b, max(b, a + x)","line":4,"array":[2,7,9,3,1],"explain":"3: max(11, 7+3)=11."},{"note":"for x in nums:","line":3,"array":[2,7,9,3,1],"explain":"1: max(11, 11+1)=12 → đáp án 12."},{"note":"return b — Kết thúc — đáp án: 12 ✓ (khớp kỳ vọng)","line":5,"array":[2,7,9,3,1],"end":true,"answer":12}],"anim":true},{"name":"Bảng dp","time":"O(n)","space":"O(n)","idea":"dp[i] = max(dp[i-1], dp[i-2] + nums[i]).","code":"def rob(nums):\n    n = len(nums)\n    if n == 1: return nums[0]\n    dp = [0]*n\n    dp[0] = nums[0]; dp[1] = max(nums[0], nums[1])\n    for i in range(2, n):\n        dp[i] = max(dp[i-1], dp[i-2] + nums[i])\n    return dp[-1]","tcex":{"input":{"nums":[2,7,9,3,1]},"kind":"array","display":"nums","expected":12},"static":["dp[i]=max(dp[i-1], dp[i-2]+nums[i])","[2,7,9,3,1]: dp=[0,2,7,11,11,12]","Không lấy 2 nhà liền nhau","Trả dp[n]"],"_pno":"198","steps":[{"note":"n = len(nums)","line":2,"array":[2,7,9,3,1],"explain":"dp[i]=max(dp[i-1], dp[i-2]+nums[i]) — lấy nhà i hay bỏ qua."},{"note":"if n == 1: return nums[0]","line":3,"array":[2,7,9,3,1],"explain":"dp[0]=2 (chỉ nhà đầu)."},{"note":"dp = [0]*n","line":4,"array":[2,7,9,3,1],"explain":"dp[1]=max(2,7)=7 (chọn nhà 2)."},{"read":[{"target":0,"value":2},{"target":0,"value":2},{"target":1,"value":7}],"note":"So sánh 2 vs 2 — dp[0] = nums[0]; dp[1] = max(nums[0], nums[1])","line":5,"array":[2,7,9,3,1],"explain":"dp[2]=max(7, 2+9)=11 (nhà 1+3)."},{"note":"for i in range(2, n):","line":6,"array":[2,7,9,3,1],"explain":"dp[3]=max(11, 7+3)=11."},{"read":[{"target":2,"value":9}],"note":"Đọc 9 — dp[i] = max(dp[i-1], dp[i-2] + nums[i])","line":7,"array":[2,7,9,3,1],"explain":"dp[4]=max(11, 11+1)=12."},{"note":"for i in range(2, n):","line":6,"array":[2,7,9,3,1],"explain":"Trả dp[4]=12."},{"read":[{"target":3,"value":3}],"note":"Đọc 3 — dp[i] = max(dp[i-1], dp[i-2] + nums[i])","line":7,"array":[2,7,9,3,1],"explain":"dp[i]=max(dp[i-1], dp[i-2]+nums[i]) — lấy nhà i hay bỏ qua."},{"note":"for i in range(2, n):","line":6,"array":[2,7,9,3,1],"explain":"dp[0]=2 (chỉ nhà đầu)."},{"read":[{"target":4,"value":1}],"note":"Đọc 1 — dp[i] = max(dp[i-1], dp[i-2] + nums[i])","line":7,"array":[2,7,9,3,1],"explain":"dp[1]=max(2,7)=7 (chọn nhà 2)."},{"note":"for i in range(2, n):","line":6,"array":[2,7,9,3,1],"explain":"dp[2]=max(7, 2+9)=11 (nhà 1+3)."},{"note":"return dp[-1] — Kết thúc — đáp án: 12 ✓ (khớp kỳ vọng)","line":8,"array":[2,7,9,3,1],"end":true,"answer":12,"explain":"dp[3]=max(11, 7+3)=11."}],"anim":true},{"name":"Chẵn/lẻ tích luỹ","time":"O(n)","space":"O(1)","idea":"Giữ tổng lấy từ hai dãy lệch pha; mỗi bước cập nhật max — bản gọn.","code":"def rob(nums):\n    even = odd = 0\n    for i, x in enumerate(nums):\n        if i % 2: odd = max(even, odd + x)\n        else: even = max(odd, even + x)\n    return max(even, odd)","tcex":{"input":{"nums":[2,7,9,3,1]},"kind":"array","display":"nums","expected":12},"_pno":"198","steps":[{"note":"even = odd = 0","line":2,"array":[2,7,9,3,1],"explain":"Tách cướp nhà chẵn/lẻ nhưng phải so sánh để giữ bên tốt hơn khi cần."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1],"explain":"Nhà 0 (2): even=2, odd=0."},{"note":"if i % 2: odd = max(even, odd + x)","line":4,"array":[2,7,9,3,1],"explain":"Nhà 1 (7): odd=max(0, even+7)? thực tế odd=7."},{"note":"else: even = max(odd, even + x)","line":5,"array":[2,7,9,3,1],"explain":"Nhà 2 (9): even=max(even, odd+9)=11."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1],"explain":"Nhà 3 (3): odd=max(odd, even+3)=11."},{"note":"if i % 2: odd = max(even, odd + x)","line":4,"array":[2,7,9,3,1],"explain":"Nhà 4 (1): even=max(11, odd+1)=11? thực tế max(11,12)=12."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1],"explain":"Đáp án max(even, odd)=12."},{"note":"if i % 2: odd = max(even, odd + x)","line":4,"array":[2,7,9,3,1],"explain":"Tách cướp nhà chẵn/lẻ nhưng phải so sánh để giữ bên tốt hơn khi cần."},{"note":"else: even = max(odd, even + x)","line":5,"array":[2,7,9,3,1],"explain":"Nhà 0 (2): even=2, odd=0."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1],"explain":"Nhà 1 (7): odd=max(0, even+7)? thực tế odd=7."},{"note":"if i % 2: odd = max(even, odd + x)","line":4,"array":[2,7,9,3,1],"explain":"Nhà 2 (9): even=max(even, odd+9)=11."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1],"explain":"Nhà 3 (3): odd=max(odd, even+3)=11."},{"note":"if i % 2: odd = max(even, odd + x)","line":4,"array":[2,7,9,3,1],"explain":"Nhà 4 (1): even=max(11, odd+1)=11? thực tế max(11,12)=12."},{"note":"else: even = max(odd, even + x)","line":5,"array":[2,7,9,3,1],"explain":"Đáp án max(even, odd)=12."},{"note":"for i, x in enumerate(nums):","line":3,"array":[2,7,9,3,1]},{"note":"return max(even, odd) — Kết thúc — đáp án: 12 ✓ (khớp kỳ vọng)","line":6,"array":[2,7,9,3,1],"end":true,"answer":12}],"anim":true}],"thinking":{"forward":"Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.","reverse":"Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."},"note":"Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."},{"no":"139","title":"Word Break","cat":"1D DP","diff":"Medium","statement":"Xem s có thể tách thành các từ trong wordDict (dùng lại thoải mái) không.","examples":"s='leetcode', wordDict=['leet','code'] → true · 'catsandog' với ['cats','dog','sand','and','cat'] → false","keyIdea":"dp[i] = s[:i] tách được?; dp[i] đúng nếu tồn tại j<i: dp[j] và s[j:i] trong dict.","approaches":[{"name":"DP boolean theo tiền tố","time":"O(n²)","space":"O(n)","idea":"dp[0]=True; với i: nếu dp[j] và s[j:i] ∈ dict thì dp[i]=True.","code":"def word_break(s, wordDict):\n    words = set(wordDict)\n    n = len(s)\n    dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]","static":["dp[i]=true nếu tiền tố [0..i) tách được","s='leetcode': dp[0]=true","dp[4] khi 'leet' trong dict → true","dp[len]=true → có word break"],"tcex":{"input":{"s":"leetcode","wordDict":["leet","code"]},"kind":"none","expected":true},"_pno":"139","steps":[{"note":"words = set(wordDict)","line":2,"explain":"dp[i]=true nếu tiền tố s[:i] tách được hết bằng từ trong dict. dp[0]=true."},{"note":"n = len(s)","line":3,"explain":"Với mỗi i (vị trí kết thúc), thử mọi j<i: nếu dp[j] và s[j:i] là từ trong dict → dp[i]=true."},{"note":"dp = [False]*(n+1); dp[0] = True","line":4,"explain":"dp[4]=true vì dp[0] và 'leet' trong dict."},{"note":"for i in range(1, n+1):","line":5,"explain":"Tiếp tục tới i=8: dp[4] true và 'code' trong dict → dp[8]=true."},{"note":"for j in range(i):","line":6,"explain":"Kết quả dp[len]=true → tách được."},{"note":"if dp[j] and s[j:i] in words:","line":7,"explain":"dp[i]=true nếu tiền tố s[:i] tách được hết bằng từ trong dict. dp[0]=true."},{"note":"for j in range(i):","line":6,"explain":"Với mỗi i (vị trí kết thúc), thử mọi j<i: nếu dp[j] và s[j:i] là từ trong dict → dp[i]=true."},{"note":"for i in range(1, n+1):","line":5,"explain":"dp[4]=true vì dp[0] và 'leet' trong dict."},{"note":"for j in range(i):","line":6,"explain":"Tiếp tục tới i=8: dp[4] true và 'code' trong dict → dp[8]=true."},{"note":"if dp[j] and s[j:i] in words:","line":7,"explain":"Kết quả dp[len]=true → tách được."},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"dp[i] = True; break","line":8},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"for i in range(1, n+1):","line":5},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"for j in range(i):","line":6},{"note":"if dp[j] and s[j:i] in words:","line":7},{"note":"dp[i] = True; break","line":8},{"note":"for i in range(1, n+1):","line":5},{"note":"return dp[n] — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":9,"end":true,"answer":true}],"anim":true},{"name":"DP giới hạn độ dài từ","time":"O(n·L)","space":"O(n)","idea":"Chỉ duyệt độ dài tối đa L của từ (nhanh khi từ ngắn).","code":"def word_break(s, wordDict):\n    words = set(wordDict); L = max(map(len, words), default=0)\n    n = len(s); dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(max(0, i-L), i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]","static":["dp[i]=true nếu tiền tố [0..i) tách được","s='leetcode': dp[0]=true","dp[4] khi 'leet' trong dict → true","dp[len]=true → có word break"],"tcex":{"input":{"s":"leetcode","wordDict":["leet","code"]},"kind":"none","expected":true},"_pno":"139","steps":[{"note":"words = set(wordDict); L = max(map(len, words), default=0)","line":2,"explain":"Tối ưu: chỉ thử đoạn con có độ dài ≤ từ dài nhất trong dict (bỏ qua j quá xa)."},{"note":"n = len(s); dp = [False]*(n+1); dp[0] = True","line":3,"explain":"Duyệt i, chỉ xét prefix trong window độ dài maxLen."},{"note":"for i in range(1, n+1):","line":4,"explain":"Nếu s[j:i] trong set từ và dp[j] → dp[i]=true."},{"note":"for j in range(max(0, i-L), i):","line":5,"explain":"Cách này giảm số phép so sánh khi dict từ ngắn."},{"note":"if dp[j] and s[j:i] in words:","line":6,"explain":"Kết thúc dp[len] cho biết có tách được."},{"note":"for j in range(max(0, i-L), i):","line":5,"explain":"Tối ưu: chỉ thử đoạn con có độ dài ≤ từ dài nhất trong dict (bỏ qua j quá xa)."},{"note":"for i in range(1, n+1):","line":4,"explain":"Duyệt i, chỉ xét prefix trong window độ dài maxLen."},{"note":"for j in range(max(0, i-L), i):","line":5,"explain":"Nếu s[j:i] trong set từ và dp[j] → dp[i]=true."},{"note":"if dp[j] and s[j:i] in words:","line":6,"explain":"Cách này giảm số phép so sánh khi dict từ ngắn."},{"note":"for j in range(max(0, i-L), i):","line":5,"explain":"Kết thúc dp[len] cho biết có tách được."},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"dp[i] = True; break","line":7},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"for i in range(1, n+1):","line":4},{"note":"for j in range(max(0, i-L), i):","line":5},{"note":"if dp[j] and s[j:i] in words:","line":6},{"note":"dp[i] = True; break","line":7},{"note":"for i in range(1, n+1):","line":4},{"note":"return dp[n] — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":8,"end":true,"answer":true}],"anim":true},{"name":"BFS cắt từ","time":"O(n²)","space":"O(n)","idea":"coi các vị trí kết thúc từ hợp lệ là các nút có cạnh.","code":"from collections import deque\ndef word_break(s, wordDict):\n    words = set(wordDict); n = len(s)\n    q = deque([0]); seen = {0}\n    while q:\n        i = q.popleft()\n        if i == n: return True\n        for w in words:\n            if s.startswith(w, i) and i+len(w) not in seen:\n                seen.add(i+len(w)); q.append(i+len(w))\n    return False","static":["dp[i]=true nếu tiền tố [0..i) tách được","s='leetcode': dp[0]=true","dp[4] khi 'leet' trong dict → true","dp[len]=true → có word break"],"tcex":{"input":{"s":"leetcode","wordDict":["leet","code"]},"kind":"none","expected":true},"_pno":"139","steps":[{"note":"words = set(wordDict); n = len(s)","line":3,"explain":"BFS trên vị trí: bắt đầu 0, mỗi bước cắt một từ trong dict từ vị trí hiện tại."},{"note":"q = deque([0]); seen = {0}","line":4,"explain":"Từ 0: 'leet' khớp (độ dài 4) → next 4."},{"note":"while q:","line":5,"explain":"Từ 4: 'code' khớp → next 8."},{"note":"i = q.popleft()","line":6,"explain":"Tới vị trí cuối (8) → tách thành công."},{"note":"if i == n: return True","line":7,"explain":"Dùng set visited tránh lặp vị trí."},{"note":"for w in words:","line":8,"explain":"BFS trên vị trí: bắt đầu 0, mỗi bước cắt một từ trong dict từ vị trí hiện tại."},{"note":"if s.startswith(w, i) and i+len(w) not in seen:","line":9,"explain":"Từ 0: 'leet' khớp (độ dài 4) → next 4."},{"note":"seen.add(i+len(w)); q.append(i+len(w))","line":10,"explain":"Từ 4: 'code' khớp → next 8."},{"note":"for w in words:","line":8,"explain":"Tới vị trí cuối (8) → tách thành công."},{"note":"if s.startswith(w, i) and i+len(w) not in seen:","line":9,"explain":"Dùng set visited tránh lặp vị trí."},{"note":"for w in words:","line":8},{"note":"while q:","line":5},{"note":"i = q.popleft()","line":6},{"note":"if i == n: return True","line":7},{"note":"for w in words:","line":8},{"note":"if s.startswith(w, i) and i+len(w) not in seen:","line":9},{"note":"for w in words:","line":8},{"note":"if s.startswith(w, i) and i+len(w) not in seen:","line":9},{"note":"seen.add(i+len(w)); q.append(i+len(w))","line":10},{"note":"for w in words:","line":8},{"note":"while q:","line":5},{"note":"i = q.popleft()","line":6},{"note":"if i == n: return True — Kết thúc — đáp án: True ✓ (khớp kỳ vọng)","line":7,"end":true,"answer":true}],"anim":true}],"thinking":{"forward":"Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.","reverse":"Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."},"note":"Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."},{"no":"322","title":"Coin Change","cat":"1D DP","diff":"Medium","statement":"Số xu tối thiểu để đạt amount với các mệnh giá coins (dùng vô hạn); không được → -1.","examples":"coins=[1,2,5], amount=11 → 3 (5+5+1) · coins=[2], amount=3 → -1","keyIdea":"dp[a] = 1 + min(dp[a−c]) với c ∈ coins; dp[0]=0.","approaches":[{"name":"Bảng dp bottom-up","time":"O(amount·n)","space":"O(amount)","idea":"dp[0]=0; dp[a] = min(dp[a-c]+1) nếu có; kết quả dp[amount] hoặc −1 khi inf.","code":"def coin_change(coins, amount):\n    INF = 10**9\n    dp = [INF]*(amount+1); dp[0] = 0\n    for a in range(1, amount+1):\n        for c in coins:\n            if a >= c:\n                dp[a] = min(dp[a], dp[a-c] + 1)\n    return dp[amount] if dp[amount] != INF else -1","static":["dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins","coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)","dp[vô cực] nếu không đổi được → -1","Duyệt amount tăng dần"],"tcex":{"input":{"coins":[1,2,5],"amount":11},"kind":"none","expected":3},"_pno":"322","steps":[{"note":"INF = 10**9","line":2,"explain":"dp[a]=số xu tối thiểu để tạo tổng a. Khởi tạo vô cực, dp[0]=0."},{"note":"dp = [INF]*(amount+1); dp[0] = 0","line":3,"explain":"Duyệt từng tổng a từ 1."},{"note":"for a in range(1, amount+1):","line":4,"explain":"Với mỗi tổng a, thử từng đồng xu c."},{"note":"for c in coins:","line":5,"explain":"Chỉ xét khi a>=c (không thể dùng xu lớn hơn tổng)."},{"note":"if a >= c:","line":6,"explain":"dp[a]=min(dp[a], dp[a-c]+1) — dùng xu c này thêm 1 đồng."},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7,"explain":"Cập nhật tiếp với xu khác."},{"note":"for c in coins:","line":5,"explain":"... tiếp tục duyệt các tổng."},{"note":"if a >= c:","line":6,"explain":"Cuối dp[amount] hoặc -1 nếu vô cực — số xu tối thiểu."},{"note":"for c in coins:","line":5,"explain":"dp[a]=số xu tối thiểu để tạo tổng a. Khởi tạo vô cực, dp[0]=0."},{"note":"if a >= c:","line":6,"explain":"Duyệt từng tổng a từ 1."},{"note":"for c in coins:","line":5,"explain":"Với mỗi tổng a, thử từng đồng xu c."},{"note":"for a in range(1, amount+1):","line":4,"explain":"Chỉ xét khi a>=c (không thể dùng xu lớn hơn tổng)."},{"note":"for c in coins:","line":5,"explain":"dp[a]=min(dp[a], dp[a-c]+1) — dùng xu c này thêm 1 đồng."},{"note":"if a >= c:","line":6,"explain":"Cập nhật tiếp với xu khác."},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7,"explain":"... tiếp tục duyệt các tổng."},{"note":"for c in coins:","line":5,"explain":"Cuối dp[amount] hoặc -1 nếu vô cực — số xu tối thiểu."},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"if a >= c:","line":6},{"note":"dp[a] = min(dp[a], dp[a-c] + 1)","line":7},{"note":"for c in coins:","line":5},{"note":"for a in range(1, amount+1):","line":4},{"note":"return dp[amount] if dp[amount] != INF else -1 — Kết thúc — đáp án: 3 ✓ (khớp kỳ vọng)","line":8,"end":true,"answer":3}],"anim":true},{"name":"BFS theo tổng","time":"O(amount·n)","space":"O(amount)","idea":"Từ 0, mở rộng bằng các mệnh giá; tầng chạm amount là đáp án.","code":"from collections import deque\ndef coin_change(coins, amount):\n    q = deque([(0, 0)]); seen = {0}\n    while q:\n        a, d = q.popleft()\n        if a == amount: return d\n        for c in coins:\n            na = a + c\n            if na <= amount and na not in seen:\n                seen.add(na); q.append((na, d+1))\n    return -1 if amount else 0","static":["dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins","coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)","dp[vô cực] nếu không đổi được → -1","Duyệt amount tăng dần"],"tcex":{"input":{"coins":[1,2,5],"amount":11},"kind":"none","expected":3},"_pno":"322","steps":[{"note":"q = deque([(0, 0)]); seen = {0}","line":3,"explain":"BFS theo tổng: hàng đợi (tổng, số xu), bắt đầu (0,0)."},{"note":"while q:","line":4,"explain":"Pop (0,0): a=0 chưa bằng amount."},{"note":"a, d = q.popleft()","line":5,"explain":"Thử cộng từng xu: 0+1=1, 0+2=2, 0+5=5."},{"note":"if a == amount: return d","line":6,"explain":"Chưa thấy → thêm vào seen+queue với số xu +1."},{"note":"for c in coins:","line":7,"explain":"BFS tầng 2: pop (1,1), cộng xu..."},{"note":"na = a + c","line":8,"explain":"Nhánh nào chạm amount trước là số xu tối thiểu (BFS duyệt theo tầng)."},{"note":"if na <= amount and na not in seen:","line":9,"explain":"amount=11 đạt qua 5+5+1 = 11 với 3 xu → trả 3."},{"note":"seen.add(na); q.append((na, d+1))","line":10,"explain":"BFS theo tổng: hàng đợi (tổng, số xu), bắt đầu (0,0)."},{"note":"for c in coins:","line":7,"explain":"Pop (0,0): a=0 chưa bằng amount."},{"note":"na = a + c","line":8,"explain":"Thử cộng từng xu: 0+1=1, 0+2=2, 0+5=5."},{"note":"if na <= amount and na not in seen:","line":9,"explain":"Chưa thấy → thêm vào seen+queue với số xu +1."},{"note":"seen.add(na); q.append((na, d+1))","line":10,"explain":"BFS tầng 2: pop (1,1), cộng xu..."},{"note":"for c in coins:","line":7,"explain":"Nhánh nào chạm amount trước là số xu tối thiểu (BFS duyệt theo tầng)."},{"note":"na = a + c","line":8,"explain":"amount=11 đạt qua 5+5+1 = 11 với 3 xu → trả 3."},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"seen.add(na); q.append((na, d+1))","line":10},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d","line":6},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"na = a + c","line":8},{"note":"if na <= amount and na not in seen:","line":9},{"note":"for c in coins:","line":7},{"note":"while q:","line":4},{"note":"a, d = q.popleft()","line":5},{"note":"if a == amount: return d — Kết thúc — đáp án: 3 ✓ (khớp kỳ vọng)","line":6,"end":true,"answer":3}],"anim":true}],"thinking":{"forward":"Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.","reverse":"Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."},"note":"Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."},{"no":"300","title":"Longest Increasing Subsequence","cat":"1D DP","diff":"Medium","statement":"Độ dài dãy con tăng ngặt (không cần liên tiếp) dài nhất.","examples":"[10,9,2,5,3,7,101,18] → 4 ([2,3,7,101]) · [0,1,0,3,2,3] → 4","keyIdea":"dp[i] = LIS kết thúc tại i = 1 + max(dp[j]) với nums[j] < nums[i]. Cải tiến: tails + binary search O(n·log n).","approaches":[{"name":"DP O(n²)","time":"O(n²)","space":"O(n)","idea":"dp[i]: với mỗi j<i có nums[j]<nums[i] thì dp[i] = max(dp[j])+1.","code":"def length_of_lis(nums):\n    dp = [1]*len(nums)\n    for i in range(len(nums)):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp, default=0)","static":["dp[i]=1+max(dp[j]) với j<i và nums[j]<nums[i]","[10,9,2,5,3,7]: dp=[1,1,1,2,2,3]","Kết quả = max(dp)=3","Trả về max(dp) (không nhất thiết cuối)"],"tcex":{"input":{"nums":[10,9,2,5,3,7,101,18]},"kind":"array","display":"nums","expected":4},"_pno":"300","steps":[{"note":"dp = [1]*len(nums)","line":2,"array":[10,9,2,5,3,7,101,18],"explain":"dp[i]=độ dài dãy con tăng kết thúc tại i. Khởi tạo toàn 1."},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18],"explain":"Duyệt i, so với mọi j<i."},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"So nums[j] < nums[i]? nếu đúng thì dp[i]=max(dp[i], dp[j]+1)."},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18],"explain":"nums=[10,9,2,5,3,7,101,18]: dp dần là [1,1,1,2,2,3,4,4]."},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"Đáp án = max(dp) = 4 ([2,3,7,101])."},{"read":[{"target":0,"value":10},{"target":1,"value":9}],"note":"So sánh 10 vs 9 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"dp[i]=độ dài dãy con tăng kết thúc tại i. Khởi tạo toàn 1."},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"Duyệt i, so với mọi j<i."},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18],"explain":"So nums[j] < nums[i]? nếu đúng thì dp[i]=max(dp[i], dp[j]+1)."},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"nums=[10,9,2,5,3,7,101,18]: dp dần là [1,1,1,2,2,3,4,4]."},{"read":[{"target":0,"value":10},{"target":2,"value":2}],"note":"So sánh 10 vs 2 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"Đáp án = max(dp) = 4 ([2,3,7,101])."},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":2,"value":2}],"note":"So sánh 9 vs 2 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":0,"value":10},{"target":3,"value":5}],"note":"So sánh 10 vs 5 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":3,"value":5}],"note":"So sánh 9 vs 5 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":2,"value":2},{"target":3,"value":5}],"note":"So sánh 2 vs 5 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":0,"value":10},{"target":4,"value":3}],"note":"So sánh 10 vs 3 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":4,"value":3}],"note":"So sánh 9 vs 3 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":2,"value":2},{"target":4,"value":3}],"note":"So sánh 2 vs 3 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":3,"value":5},{"target":4,"value":3}],"note":"So sánh 5 vs 3 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":0,"value":10},{"target":5,"value":7}],"note":"So sánh 10 vs 7 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":5,"value":7}],"note":"So sánh 9 vs 7 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":2,"value":2},{"target":5,"value":7}],"note":"So sánh 2 vs 7 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":3,"value":5},{"target":5,"value":7}],"note":"So sánh 5 vs 7 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":4,"value":3},{"target":5,"value":7}],"note":"So sánh 3 vs 7 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":0,"value":10},{"target":6,"value":101}],"note":"So sánh 10 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":6,"value":101}],"note":"So sánh 9 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":2,"value":2},{"target":6,"value":101}],"note":"So sánh 2 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":3,"value":5},{"target":6,"value":101}],"note":"So sánh 5 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":4,"value":3},{"target":6,"value":101}],"note":"So sánh 3 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":5,"value":7},{"target":6,"value":101}],"note":"So sánh 7 vs 101 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":0,"value":10},{"target":7,"value":18}],"note":"So sánh 10 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":1,"value":9},{"target":7,"value":18}],"note":"So sánh 9 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":2,"value":2},{"target":7,"value":18}],"note":"So sánh 2 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":3,"value":5},{"target":7,"value":18}],"note":"So sánh 5 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":4,"value":3},{"target":7,"value":18}],"note":"So sánh 3 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":5,"value":7},{"target":7,"value":18}],"note":"So sánh 7 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"dp[i] = max(dp[i], dp[j] + 1)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"read":[{"target":6,"value":101},{"target":7,"value":18}],"note":"So sánh 101 vs 18 — if nums[j] < nums[i]:","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"for j in range(i):","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"for i in range(len(nums)):","line":3,"array":[10,9,2,5,3,7,101,18]},{"note":"return max(dp, default=0) — Kết thúc — đáp án: 4 ✓ (khớp kỳ vọng)","line":7,"array":[10,9,2,5,3,7,101,18],"end":true,"answer":4}],"anim":true},{"name":"tails + bisect O(n·log n)","time":"O(n·log n)","space":"O(n)","idea":"tails[k] = giá trị nhỏ nhất kết thúc LIS dài k; với mỗi x: tìm chỗ chèn (bisect_left), ghi x ở đó — tails luôn tăng.","code":"from bisect import bisect_left\ndef length_of_lis(nums):\n    tails = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails): tails.append(x)\n        else: tails[i] = x\n    return len(tails)","static":["tails[k]=phần tử nhỏ nhất kết thúc dãy con dài k+1","[10,9,2,5,3,7]: tails=[2,3,7] → len 3","bisect_left tìm vị trí thay thế","Trả len(tails)"],"tcex":{"input":{"nums":[10,9,2,5,3,7,101,18]},"kind":"array","display":"nums","expected":4},"_pno":"300","steps":[{"note":"tails = []","line":3,"array":[10,9,2,5,3,7,101,18],"explain":"tails[k]=phần tử nhỏ nhất kết thúc dãy tăng dài k+1. Duyệt từng x."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"x=10: tails rỗng → append → [10]."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"x=9: bisect_left([10],9)=0 < len → thay tails[0]=9 → [9] (dãy dài 1 tệ hơn nhưng gọn hơn)."},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18],"explain":"x=2: thay tails[0]=2 → [2]."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"x=5: bisect_left([2],5)=1==len → append → [2,5]."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"x=3: thay [2,3]."},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18],"explain":"x=7: append → [2,3,7]."},{"note":"else: tails[i] = x","line":7,"array":[10,9,2,5,3,7,101,18],"explain":"x=101: append → [2,3,7,101] (len 4)."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"x=18: thay → [2,3,7,18], độ dài vẫn 4."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"Đáp án len(tails)=4."},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18],"explain":"tails[k]=phần tử nhỏ nhất kết thúc dãy tăng dài k+1. Duyệt từng x."},{"note":"else: tails[i] = x","line":7,"array":[10,9,2,5,3,7,101,18],"explain":"x=10: tails rỗng → append → [10]."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"x=9: bisect_left([10],9)=0 < len → thay tails[0]=9 → [9] (dãy dài 1 tệ hơn nhưng gọn hơn)."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"x=2: thay tails[0]=2 → [2]."},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18],"explain":"x=5: bisect_left([2],5)=1==len → append → [2,5]."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"x=3: thay [2,3]."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18],"explain":"x=7: append → [2,3,7]."},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18],"explain":"x=101: append → [2,3,7,101] (len 4)."},{"note":"else: tails[i] = x","line":7,"array":[10,9,2,5,3,7,101,18],"explain":"x=18: thay → [2,3,7,18], độ dài vẫn 4."},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18],"explain":"Đáp án len(tails)=4."},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"i = bisect_left(tails, x)","line":5,"array":[10,9,2,5,3,7,101,18]},{"note":"if i == len(tails): tails.append(x)","line":6,"array":[10,9,2,5,3,7,101,18]},{"note":"else: tails[i] = x","line":7,"array":[10,9,2,5,3,7,101,18]},{"note":"for x in nums:","line":4,"array":[10,9,2,5,3,7,101,18]},{"note":"return len(tails) — Kết thúc — đáp án: 4 ✓ (khớp kỳ vọng)","line":8,"array":[10,9,2,5,3,7,101,18],"end":true,"answer":4}],"anim":true}],"thinking":{"forward":"Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.","reverse":"Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."},"note":"Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."}]};
+
+function el(tag, cls, text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n}
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+
+/* highlight Python giản lược */
+const KW=new Set("def return if elif else for while in not and or None True False break continue pass import from as with class lambda".split(" "));
+function hlpy(code){
+  // token hoá: comment, string, số, keyword, còn lại giữ nguyên
+  let out="",i=0;
+  const seg=code;
+  while(i<seg.length){
+    const rest=seg.slice(i);
+    let m=rest.match(/^#.*/);
+    if(m){out+='<span class="c">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^("""[\s\S]*?"""|'''[\s\S]*?'''|"[^"\n]*"|'[^'\n]*')/);
+    if(m){out+='<span class="s">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^\d+(\.\d+)?/);
+    if(m){out+='<span class="n">'+esc(m[0])+'</span>';i+=m[0].length;continue}
+    m=rest.match(/^[A-Za-z_][A-Za-z0-9_]*/);
+    if(m){const w=m[0];out+=KW.has(w)?'<span class="k">'+w+'</span>':esc(w);i+=w.length;continue}
+    out+=esc(rest[0]);i++;
+  }
+  return out;
+}
+
+/* ---------- Player v2 (animation thủ công, đa cấu trúc) ---------- */
+const isNodeTarget=t=>t&&typeof t==="object"&&"node" in t;
+function _pickKind(step){
+  if(step.mat!==undefined)return "mat";
+  if(step.ll!==undefined)return "ll";
+  if(step.tree!==undefined)return "tree";
+  if(step.stack!==undefined)return "stack";
+  if(step.hash!==undefined)return "hash";
+  if(step.set!==undefined)return "set";
+  return "array";
+}
+class Player{
+  constructor(host,steps,cfg){
+    this.host=host;this.steps=steps;this.cfg=cfg||{};this.idx=0;
+    this.ctl=el("div","ctl");
+    this.note=el("p","note","");
+    this.wrap=el("div","cells-wrap");
+    this.box=el("div","cells");this.ptrLayer=el("div","ptrs");
+    this.wrap.appendChild(this.box);this.wrap.appendChild(this.ptrLayer);
+    this.auxBox=el("div","aux");this.auxBox.style.display="none";
+    this.cellEls=[];this.ptrEls=new Map();this.nodeEls=new Map();this.rowEls=[];this.hashEls=[];this.hideCache=new Map();
+    // detect kind ổn định từ step đầu có dữ liệu
+    this.kind=_pickKind(steps[0]);
+    for(const st of steps){const k=_pickKind(st);if(k!=="array"){this.kind=k;break}}
+    this.buildCells();this.buildPtrs();this.buildControls();
+    // code pane: hiển thị code + sáng dòng hiện tại (nếu step có line)
+    this.codePane=null;
+    if(this._hasLines()){this.buildCodePane()}
+    this.stepTo(0);
+    host.innerHTML="";host.appendChild(this.ctl);host.appendChild(this.note);host.appendChild(this.wrap);host.appendChild(this.auxBox);
+    if(this.codePane)host.appendChild(this.codePane);
+  }
+  _hasLines(){for(const s of this.steps){if(s.line!==undefined&&s.line>0)return true}return false}
+  buildCodePane(){
+    const pre=el("pre","code pane");
+    // gắn code nếu cfg.code truyền
+    const code=this.cfg&&this.cfg.code;
+    if(code)pre.innerHTML=hlpy(code);
+    else{pre.textContent="(code đang chạy — bật cfg.code để hiển thị)";pre.style.color="var(--mut)";pre.style.fontSize="12px"}
+    this.codePane=pre;
+    this.lineEls=[];
+    if(code){pre.innerHTML=hlpy(code);this.lineEls=[...pre.querySelectorAll("div,span")]}
+  }
+  renderCode(s){
+    if(!this.codePane)return;
+    // bỏ highlight cũ
+    this.lineEls.forEach(l=>{l.classList&&l.classList.remove("curline")});
+    const ln=s.line;
+    if(!ln)return;
+    // tìm dòng thứ ln trong code pane — cách đơn giản: đánh dấu theo vị trí
+    const pre=this.codePane;
+    // chia theo dòng text
+    const htmlLines=pre.innerHTML.split("\n");
+    // xây bản đồ: dòng thứ k → index thẻ chứa
+    if(!this._lineIdx){this._lineIdx={};const all=pre.querySelectorAll("span,div");let k=0;for(let idx=0;idx<all.length;idx++){const t=all[idx];this._lineIdx[k++]=t}}
+    const elx=this._lineIdx[ln-1]||this._lineIdx[0];
+    if(elx){elx.classList&&elx.classList.add("curline");elx.scrollIntoView&&elx.scrollIntoView({block:"nearest"})}
+  }
+  /* ---------- dựng khung ---------- */
+  buildCells(){
+    const k=this.kind;
+    if(k==="mat"){ // cần đủ số hàng từ mọi step
+      const rows=Math.max(...this.steps.map(s=>s.mat?s.mat.length:0));
+      for(let r=0;r<rows;r++){
+        const rd=el("div","mrow");
+        const cols=Math.max(...this.steps.map(s=>s.mat&&s.mat[r]?s.mat[r].length:0));
+        for(let c=0;c<cols;c++){
+          const d=el("div","cell mcell");
+          d.appendChild(el("span","cv",""));
+          d.appendChild(el("span","ci",r+","+c));
+          rd.appendChild(d);this.cellEls.push(d);
+        }
+        this.box.appendChild(rd);
+      }
+      this.box.classList.add("mat");return;
+    }
+    if(k==="stack"){
+      this.box.classList.add("stack");
+      this.stackRow=el("div","stack-row");
+      this.stackRow.appendChild(this.box);
+      this.stackPtrs=el("div","stack-ptrs");
+      this.stackRow.appendChild(this.stackPtrs);
+      this.wrap.appendChild(this.stackRow);
+      this.topLabel=el("div","topb","top");this.box.appendChild(this.topLabel);
+      return;
+    }
+    if(k==="hash"){this.box.classList.add("hash");return}
+    if(k==="set"){this.box.classList.add("set");return}
+    if(k==="ll"||k==="tree"){
+      this.box.classList.add(k==="tree"?"tree":"ll");
+      this.tbox=el("div","tbox");this.tbox.appendChild(this.box);this.wrap.appendChild(this.tbox);
+      return;
+    }
+    // array: dựng từ step đầu
+    const c0=this.steps[0];
+    const cells=(c0.array||c0.cells||[]);
+    cells.forEach((c,i)=>{
+      const d=el("div","cell");
+      const v=typeof c==="object"?c.value:c;
+      if(c&&c.keep)d.classList.add("keep");
+      if(c&&c.dead)d.classList.add("dead");
+      if(c&&c.zone==="tail")d.classList.add("tail");
+      d.appendChild(el("span","cv",v));
+      d.appendChild(el("span","ci",String(i)));
+      this.box.appendChild(d);this.cellEls.push(d);
+    });
+  }
+  buildPtrs(){
+    const names=new Set();
+    this.steps.forEach(s=>{if(s.ptr)Object.keys(s.ptr).forEach(x=>names.add(x));});
+    names.forEach(n=>{const p=el("span","ptr",n);p.style.display="none";this.ptrLayer.appendChild(p);this.ptrEls.set(n,p)});
+  }
+  buildControls(){
+    const mk=(t,fn,title)=>{const b=el("button","btn",t);b.title=title||"";b.onclick=fn;this.ctl.appendChild(b);return b};
+    mk("⏮",()=>this.stepTo(0),"Về đầu");
+    mk("◀",()=>this.stepTo(this.idx-1),"Lùi 1 bước");
+    mk(">",()=>this.stepTo(this.idx+1),"Tiến 1 bước");
+    mk("⏭",()=>this.stepTo(this.steps.length-1),"Tới kết quả");
+    this.counter=el("span","sp","");this.ctl.appendChild(this.counter);
+    this.range=el("input","rng");this.range.type="range";this.range.min=0;this.range.max=Math.max(0,this.steps.length-1);this.range.value=0;
+    this.range.oninput=()=>this.stepTo(+this.range.value);this.ctl.appendChild(this.range);
+    // keyboard: ← → Home End khi host được focus
+    this._kd=e=>{
+      if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+      if(e.key==="ArrowLeft"){this.stepTo(this.idx-1);e.preventDefault()}
+      else if(e.key==="ArrowRight"){this.stepTo(this.idx+1);e.preventDefault()}
+      else if(e.key==="Home"){this.stepTo(0);e.preventDefault()}
+      else if(e.key==="End"){this.stepTo(this.steps.length-1);e.preventDefault()}
+    };
+    this.host.addEventListener("keydown",this._kd);
+    this.host.tabIndex=0;
+  }
+  /* ---------- highlight helpers ---------- */
+  _markTarget(target,cls){
+    // target: [i] | [r,c] | {node:id} | node-id | string-key (hash)
+    if(!target)return null;
+    let idx=-1,elx=null;
+    if(Array.isArray(target)){
+      if(this.kind==="mat"){const[r,c]=target;const cols=this._matCols();idx=r*cols+c}
+      else idx=target[0];
+    }else if(typeof target==="object"&&target.node!==undefined)idx=target.node;
+    else if(typeof target==="number")idx=target;
+    else if(typeof target==="string"&&this.kind==="hash"){
+      for(let i=0;i<this.hashEls.length;i++){
+        const hk=this.hashEls[i].querySelector(".hk");
+        if(hk&&hk.textContent===target){idx=i;break}
+      }
+    }
+    if(idx<0)return null;
+    const ce=this.cellEls[idx];
+    if(ce)ce.classList.add(cls);
+    const ne=this.nodeEls.get(idx);
+    if(ne)ne.classList.add(cls);
+    return ce||ne||null;
+  }
+  _matCols(){
+    let max=0;
+    for(const s of this.steps)if(s.mat)max=Math.max(max,...s.mat.map(r=>r.length));
+    return max;
+  }
+  /* ---------- render dữ liệu node (ll/tree) ---------- */
+  renderNodes(s){
+    const data=s[this.kind];
+    if(!data||!data.nodes){if(this.box)this.box.innerHTML="";this.nodeEls.clear();return}
+    if(this.kind==="ll"){
+      this._renderLL(data);
+    }else{
+      this._renderTree(data);
+    }
+    this._applyNodeHighlights(s);
+  }
+  _renderLL(data){
+    /* dãy node nằm ngang: node đứng yên, cập nhật giá trị + độ rộng value */
+    if(!this.llRow){this.llRow=el("div","llrow");this.box.appendChild(this.llRow)}
+    this.llRow.innerHTML="";this.nodeEls.clear();
+    let cur=data.head!==undefined?data.head:data.root;
+    const seen=new Set();
+    let guard=0;
+    while(cur!==null&&cur!==undefined&&!seen.has(cur)&&guard++<100){
+      seen.add(cur);
+      const nd=data.nodes[cur];if(!nd)break;
+      const nodeEl=el("div","node");
+      nodeEl.appendChild(el("span","cv",String(nd.value)));
+      nodeEl.appendChild(el("span","nid",String(cur)));
+      this.llRow.appendChild(nodeEl);this.nodeEls.set(cur,nodeEl);
+      const nxt=nd.next;
+      if(nxt!==null&&nxt!==undefined){const a=el("span","arrow","→");this.llRow.appendChild(a)}
+      cur=nxt;
+    }
+  }
+  _renderTree(data){
+    /* cây: BFS → lưới; node ở hàng = depth, cột = thứ tự trái→phải; cạnh vẽ bằng SVG */
+    if(!this.tgrid){
+      this.tgrid=el("div","tgrid");
+      this.box.appendChild(this.tgrid);
+      this.svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+      this.svg.style.position="absolute";this.svg.style.top="0";this.svg.style.left="0";this.svg.style.overflow="visible";
+      this.tgrid.appendChild(this.svg);
+    }
+    const depth={},pos={};
+    const bfs=(()=>{
+      const root=data.root;
+      if(root===null||root===undefined||root===-1)return;
+      const layer=[[root,0,0]];
+      depth[root]=0;pos[root]=0;
+      while(layer.length){
+        const item=layer.shift();
+        const id=item[0],d=item[1],p=item[2];
+        const nd=data.nodes[id];if(!nd)continue;
+        const step=(nd.left!==null&&nd.left!==undefined&&nd.left!==-1)?1:0;
+        const child=d+1;
+        if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1){
+          depth[nd.left]=child;pos[nd.left]=p;
+          layer.push([nd.left,child,p]);
+        }
+        if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1){
+          depth[nd.right]=child;pos[nd.right]=p+step;
+          layer.push([nd.right,child,p+step]);
+        }
+      }
+    })();
+    const H=Object.keys(depth).reduce((mx,id)=>Math.max(mx,depth[id]+1),0)||0;
+    const W=Object.keys(pos).reduce((mx,id)=>Math.max(mx,pos[id]+1),0)||0;
+    const L=H>0?90:72,Wd=W>0?88:72;
+    this.tgrid.style.gridTemplateColumns="repeat("+Math.max(1,W)+",88px)";
+    /* tạo/cập nhật node theo id */
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      if(nd.vis===false){const old=this.nodeEls.get(+id);if(old)old.style.display="none";continue}
+      let n=this.nodeEls.get(+id);
+      if(!n){
+        n=el("div","node tnd");
+        n.appendChild(el("span","cv",""));
+        n.appendChild(el("span","nid",""));
+        n.appendChild(el("span","nstate",""));
+        n.appendChild(el("span","nst",""));
+        this.nodeEls.set(+id,n);
+        this.tgrid.insertBefore(n,this.svg);
+      }
+      n.querySelector(".cv").textContent=String(nd.value);
+      // ẩn id BFS — narrative dùng GIÁ TRỊ làm nhận diện, id chỉ gây nhầm
+      n.querySelector(".nid").textContent="";
+      const st=n.querySelector(".nstate");
+      if(nd.state!==undefined&&nd.state!==null&&nd.state!==""){st.textContent=String(nd.state);st.style.display=""}
+      else st.style.display="none";
+      n.style.gridRow=(depth[+id]!==undefined?depth[+id]:0)+1;
+      n.style.gridColumn=(pos[+id]!==undefined?pos[+id]:0)+1;
+      n.style.display="";
+    }
+    /* ẩn node cũ không còn trong dữ liệu */
+    this.nodeEls.forEach((n,id)=>{
+      if(!(id in data.nodes))n.style.display="none";
+    });
+    /* dây nối cha→con (SVG) */
+    const arcs=[];
+    for(const id in data.nodes){
+      const nd=data.nodes[id];
+      const px=(pos[+id]||0)*Wd+44,py=(depth[+id]||0)*L+44;
+      if(nd.left!==null&&nd.left!==undefined&&nd.left!==-1&&data.nodes[nd.left]){
+        const lx=(pos[nd.left]||0)*Wd+44,ly=(depth[nd.left]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+lx+" "+ly);
+      }
+      if(nd.right!==null&&nd.right!==undefined&&nd.right!==-1&&data.nodes[nd.right]){
+        const rx=(pos[nd.right]||0)*Wd+44,ry=(depth[nd.right]||0)*L+44;
+        arcs.push("M"+px+" "+py+" L"+rx+" "+ry);
+      }
+    }
+    const tw=Math.max(88,(W-1)*Wd+88),th=Math.max(88,(H-1)*L+88);
+    this.svg.setAttribute("width",tw);
+    this.svg.setAttribute("height",th);
+    this.svg.setAttribute("viewBox","0 0 "+tw+" "+th);
+    this.svg.innerHTML=arcs.map(d=>"<path d='"+d+"' stroke='#2f3c5c' stroke-width='2' fill='none'/>").join("");
+    this.box.style.minWidth=tw+"px";
+  }
+  _swapPairs(s){
+    if(!s.swap)return[];
+    const pairs=Array.isArray(s.swap)&&s.swap.length&&Array.isArray(s.swap[0])?s.swap:[s.swap];
+    return pairs.filter(p=>p&&p.length===2);
+  }
+  _applyNodeHighlights(s){
+    this.nodeEls.forEach(n=>{n.classList.remove("rd","wr","sw","act");const b=n.querySelector(".nst");if(b)b.style.display="none"});
+    // badge "đọc"/"ghi" trên node đang tương tác (tree/ll)
+    if(s.read)[].concat(s.read).forEach(r=>{
+      const hit=this._markTarget(r.target,"rd");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="đọc";b.style.display=""}}
+    });
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake){
+      const hit=this._markTarget(s.write.dest,"wr");
+      if(hit){const b=hit.querySelector&&hit.querySelector(".nst");if(b){b.textContent="ghi";b.style.display=""}}
+    }
+    this._swapPairs(s).forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    // ptr → node-id: highlight + badge trên node
+    if(s.ptr&&this.kind!=="array"&&this.kind!=="mat"){
+      const names=Object.keys(s.ptr);
+      const active=new Set();
+      Object.values(s.ptr).forEach((v,vi)=>{
+        const id=typeof v==="number"?v:(isNodeTarget(v)?v.node:-1);
+        if(id<0)return;
+        active.add(id);
+        const n=this.nodeEls.get(id);
+        if(n)n.classList.add("act");
+        let b=n&&n.querySelector(".ptr-tag");
+        if(n&&!b){b=el("span","ptr-tag",names[vi]||"?");b.style.cssText="position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:3;white-space:nowrap";n.appendChild(b)}
+        if(b)b.textContent=names[vi]||"?";
+      });
+      /* ẩn badge của node không còn con trỏ */
+      this.nodeEls.forEach((n,id)=>{
+        if(active.has(id))return;
+        const b=n.querySelector(".ptr-tag");
+        if(b)b.style.display="none";
+      });
+    }
+  }
+  /* ---------- render dữ liệu cell (array/mat/stack/hash/set) ---------- */
+  renderCells(s){
+    this.cellEls.forEach(x=>x.classList.remove("rd","wr","sw","act"));
+    if(this.kind==="mat"){
+      const cols=this._matCols();
+      if(s.mat)s.mat.forEach((row,r)=>row.forEach((v,c)=>{const i=r*cols+c;const ce=this.cellEls[i];if(ce){const cv=ce.querySelector(".cv");if(cv)cv.textContent=String(v)}}));
+      // write colored → tô xanh lục cho đúng ô
+      this.cellEls.forEach(x=>x.classList.remove("colored"));
+      if(s.write&&s.write.dest&&Array.isArray(s.write.dest)&&s.write.colored){
+        const[r,c]=s.write.dest;const ce=this.cellEls[r*cols+c];
+        if(ce)ce.classList.add("colored");
+      }
+    }else if(this.kind==="array"){
+      const src=s.display||s.array;
+      if(Array.isArray(src))src.forEach((v,p)=>{const cv=this.cellEls[p]&&this.cellEls[p].querySelector(".cv");if(cv&&cv.textContent!==String(v))cv.textContent=v});
+    }else if(this.kind==="stack"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=Array.isArray(s.stack)?s.stack:[];
+      arr.forEach(v=>{const d=el("div","cell scol");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+      this.box.appendChild(this.topLabel);
+    }else if(this.kind==="hash"){
+      this.box.innerHTML="";this.cellEls=[];this.hashEls=[];
+      const pairs=typeof s.hash==="object"&&!Array.isArray(s.hash)?Object.entries(s.hash):s.hash||[];
+      pairs.forEach(([k,v])=>{const hp=el("div","hpair");hp.appendChild(el("span","hk",k));hp.appendChild(el("span","hv",v));this.cellEls.push(hp);this.hashEls.push(hp);this.box.appendChild(hp)});
+    }else if(this.kind==="set"){
+      this.box.innerHTML="";this.cellEls=[];
+      const arr=s.set||[];
+      arr.forEach(v=>{const d=el("div","sbadge");d.appendChild(el("span","cv",v));this.cellEls.push(d);this.box.appendChild(d)});
+    }
+    // highlight cell
+    if(s.read)[].concat(s.read).forEach(r=>{this._markTarget(r.target,"rd")});
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+    const swapPairs=this._swapPairs(s);
+    swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    if(s.cells)s.cells.forEach((c,i)=>{if(c&&c.active&&this.cellEls[i])this.cellEls[i].classList.add("act")});
+    // stack: highlight top (ô cuối) + con trỏ dọc bên phải
+    if(this.kind==="stack"){
+      const top=this.cellEls[this.cellEls.length-1];
+      if(top)top.classList.add("top");
+      this.renderStackPtrs(s);
+      return;
+    }
+    // hash highlight theo cặp
+    if(this.kind==="hash"){
+      this.hashEls.forEach(x=>x.classList.remove("rd","wr","sw"));
+      if(s.read)[].concat(s.read).forEach(r=>{const c=this._markTarget(r.target,"rd");if(c&&c.classList)c.classList.add("rd")});
+      if(s.write&&!s.write.bake)this._markTarget(s.write.dest,"wr");
+      swapPairs.forEach(([a,b])=>{this._markTarget(a,"sw");this._markTarget(b,"sw")});
+    }
+    // ptr trên cell: định vị
+    this.ptrEls.forEach(p=>{p.style.display="none";p.style.top="1px"});
+    if(s.ptr&&(this.kind==="array"||this.kind==="mat")){
+      let n=0;
+      const names=Object.keys(s.ptr);
+      Object.values(s.ptr).forEach(pos=>{
+        const nm=names[n++]||"?";
+        const p=this.ptrEls.get(nm);if(!p)return;
+        p.style.display="block";
+        if(Array.isArray(pos)&&this.kind==="mat"){
+          const[r,c]=pos;p.style.left=(c*44+8)+"px";p.style.top=(r*40+1)+"px";
+        }
+        else if(typeof pos==="number")p.style.left=(pos*49+8)+"px";
+      });
+    }
+  }
+  renderStackPtrs(s){
+    if(!this.stackPtrs)return;
+    this.stackPtrs.innerHTML="";
+    if(!s.ptr)return;
+    Object.keys(s.ptr).forEach(name=>{
+      const pos=s.ptr[name];
+      const tag=el("span","sph");
+      tag.appendChild(el("span","ptr-tag",name));
+      this.stackPtrs.appendChild(tag);
+    });
+  }
+  /* ---------- aux (mảng phụ bên cạnh, vd nums2 / rotated) ---------- */
+  renderAux(s){
+    const a=s.aux;
+    this.auxBox.style.display=a?"flex":"none";
+    this.auxBox.innerHTML="";
+    if(!a)return;
+    const rows=Array.isArray(a)?a:[a];
+    rows.forEach(aux=>{
+      const lbl=el("span","alabel",aux.label||"aux");
+      this.auxBox.appendChild(lbl);
+      const vals=aux.values||[];
+      const ac=el("div","acells");
+      const amap=[];
+      vals.forEach(v=>{
+        const d=el("div","acell");
+        d.appendChild(el("span","cv",String(v)));
+        ac.appendChild(d);amap.push(d);
+      });
+      this.auxBox.appendChild(ac);
+      const tgt=pos=>Array.isArray(pos)&&pos.length===1?pos[0]:(typeof pos==="number"?pos:-1);
+      const hlAux=(i,cls)=>{if(i>=0&&i<amap.length)amap[i].classList.add(cls)};
+      if(s.read)[].concat(s.read).forEach(r=>{if(r&&!isNodeTarget(r.target))hlAux(tgt(r.target),"rd")});
+      if(s.write&&!s.write.bake&&!isNodeTarget(s.write.dest))hlAux(tgt(s.write.dest),"wr");
+      if(s.swap)[].concat(s.swap).forEach(pair=>{if(pair&&pair.length)[0,1].forEach(k=>{if(!isNodeTarget(pair[k]))hlAux(tgt(pair[k]),"sw")})});
+    });
+  }
+  /* ---------- note + end ---------- */
+  renderNote(s){
+    // ưu tiên narrative (explain) do content viết; fallback note động
+    const txt = (s.explain && s.explain.trim()) ? s.explain : s.note;
+    this.note.textContent=txt;
+    this.note.classList.toggle("fin",!!s.end);
+    const old=this.host.querySelector(".result");if(old)old.remove();
+    if(s.end){const r=el("span","result",s.k!==undefined?" · k = "+s.k:(s.answer!==undefined?" · đáp án: "+s.answer:""));if(r.textContent)this.note.appendChild(r)}
+  }
+  stepTo(i){
+    this.idx=Math.max(0,Math.min(this.steps.length-1,i));
+    const s=this.steps[this.idx];
+    if(this.kind==="ll"||this.kind==="tree")this.renderNodes(s);
+    else this.renderCells(s);
+    this.renderAux(s);
+    this.renderCode(s);
+    this.renderNote(s);
+    this.counter.textContent=(this.idx+1)+" / "+this.steps.length;
+    this.range.value=this.idx;
+  }
+}
+
+/* ---------- renderer ---------- */
+function render(){
+  if(!DATA){document.getElementById("content").textContent="(Dữ liệu chưa được nhúng — chạy build script trước)";return}
+  const g=DATA.group;
+  document.title=g.title+" — Top Interview 150";
+  document.getElementById("grpChip").textContent=g.count+" bài";
+  document.getElementById("grpTitle").textContent=g.title;
+  document.getElementById("grpDesc").textContent=g.desc||"";
+  const toc=document.getElementById("toc");
+  toc.innerHTML="";
+  DATA.problems.forEach(p=>{
+    const a=el("a","grp");a.href="#p"+p.no;
+    a.appendChild(el("span","ic",p.done?"✅":"📄"));
+    const d=el("span");d.appendChild(el("b","",p.no+" · "+p.title));
+    d.appendChild(el("small","",p.cat+" · "+p.diff));
+    a.appendChild(d);toc.appendChild(a);
+  });
+  const main=document.getElementById("content");
+  main.innerHTML="";
+  DATA.problems.forEach(p=>main.appendChild(renderProblem(p)));
+  const foot=document.getElementById("foot");
+  foot.textContent="Top Interview 150 · "+g.title+" · nội dung tiếng Việt · giải Python có test thật · tạo 2026-08-15";
+}
+function renderProblem(p){
+  const s=el("section","card");s.id="p"+p.no;
+  const top=el("div","sec-top");
+  top.appendChild(el("h2","",p.no+" · "+p.title));
+  top.appendChild(el("span","tag "+(p.diff||"easy").toLowerCase(),p.diff||"Easy"));
+  top.appendChild(el("span","tag",p.cat));
+  s.appendChild(top);
+  s.appendChild(el("p","stmt",p.statement));
+  if(p.examples)s.appendChild(el("p","ex",p.examples));
+  if(p.keyIdea)s.appendChild(el("div","idea ✨ Ý tưởng chính: "+p.keyIdea));
+  p.approaches.forEach((ap,i)=>{
+    const sol=el("div","sol");
+    const h=el("h4");
+    h.appendChild(el("span","",["①","②","③"][i]+" "+ap.name));
+    if(ap.time&&ap.space)h.appendChild(el("span","meta",ap.time+" · "+ap.space));
+    sol.appendChild(h);
+    if(ap.idea)sol.appendChild(el("p","stmt",ap.idea));
+    if(ap.code){const pre=el("pre","code");pre.innerHTML=hlpy(ap.code);sol.appendChild(pre)}
+    if(ap.steps){
+      if(ap.anim){const run=el("div","run");sol.appendChild(run);requestAnimationFrame(()=>new Player(run,ap.steps,{problem:p.no,approach:ap.name,code:ap.code}))}
+      else{
+        sol.appendChild(el("p","steps-desc","Các bước (tự luyện: che code rồi viết lại):"));
+        const box=el("div","steps");
+        ap.steps.forEach((st,j)=>{const l=el("div","step-line");l.appendChild(el("span","sno",String(j+1)));l.appendChild(el("span","",st.note));box.appendChild(l)});
+        sol.appendChild(box);
+      }
+    }
+    s.appendChild(sol);
+  });
+  return s;
+}
+document.addEventListener("DOMContentLoaded",render);
+</script>
+<script>
+/*__PLAYER_PATCH__*/
+</script>
+</body>
+</html>

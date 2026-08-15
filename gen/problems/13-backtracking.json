@@ -1,0 +1,387 @@
+{
+  "desc": "Backtracking: mẫu chọn – nhánh rẽ – quay lui (chọn, khám phá, huỷ chọn). Tập trung vào cấu hình tổ hợp hoán vị và ràng buộc.",
+  "problems": [
+    {
+      "no": "17",
+      "title": "Letter Combinations of a Phone Number",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Cho chuỗi chữ số 2-9 (mỗi chữ số một nút bàn phím điện thoại), trả mọi tổ hợp chữ cái có thể.",
+      "examples": "digits='23' → [\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]",
+      "keyIdea": "Backtrack/đệ quy tích Descartes: với mỗi chữ số, thêm từng chữ cái vào đường xây dựng.",
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi chữ số bổ sung một tầng lựa chọn — tổ hợp n chữ số là tích Descartes của n−1 chữ số và chữ cái của chữ số thứ n.",
+        "reverse": "Quy nạp ngược: muốn liệt kê tổ hợp độ dài n, lấy mọi tổ hợp độ dài n−1 rồi nối thêm từng ký tự hợp lệ."
+      },
+      "note": "Chú giải: Số chữ cái khác nhau theo nút (7,9 có 4 ký tự) nên phức tạp tệ nhất O(4^n) với n là độ dài digits.",
+      "approaches": [
+        {
+          "name": "Đệ quy (backtrack)",
+          "time": "O(4^n)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "Mảng ánh xạ chữ số→chuỗi; mỗi bước chọn 1 ký tự; đủ độ dài → thêm vào res.",
+          "code": "def letter_combinations(digits):\n    if not digits: return []\n    mp = ['', '', 'abc','def','ghi','jkl','mno','pqrs','tuv','wxyz']\n    res = []\n    def bt(i, cur):\n        if i == len(digits):\n            res.append(''.join(cur)); return\n        for c in mp[int(digits[i])]:\n            cur.append(c); bt(i+1, cur); cur.pop()\n    bt(0, [])\n    return res",
+          "static": [
+            "Với digits='23', nút '2' ứng 3 chữ cái (abc), nút '3' ứng 3 chữ cái (def).",
+            "Mở rộng nhánh từ 'a': ghép lần lượt 'ad','ae','af'.",
+            "Quay lui về chọn 'b', tiếp tục 'bd','be','bf'; rồi nhánh 'c' cho 'cd','ce','cf'.",
+            "Đủ độ dài bằng số chữ số thì nối chuỗi và thêm vào res.",
+            "Kết quả: ['ad','ae','af','bd','be','bf','cd','ce','cf']."
+          ]
+        },
+        {
+          "name": "Lặp tích lũy (BFS)",
+          "time": "O(4^n)",
+          "space": "O(4^n)",
+          "done": true,
+          "idea": "Bắt đầu ['']; với mỗi chữ số, ghép mọi tổ hợp hiện có với mọi chữ cái.",
+          "code": "def letter_combinations(digits):\n    if not digits: return []\n    mp = {2:'abc',3:'def',4:'ghi',5:'jkl',6:'mno',7:'pqrs',8:'tuv',9:'wxyz'}\n    cur = ['']\n    for d in digits:\n        cur = [p+c for p in cur for c in mp[int(d)]]\n    return cur",
+          "static": [
+            "Khởi đầu `cur = ['']`, sau đó mở rộng từng chữ số một.",
+            "Với chữ số '2': ghép '' với a,b,c → ['a','b','c'].",
+            "Với chữ số '3': mỗi phần tử hiện có ghép với d,e,f → 9 tổ hợp.",
+            "Quy nạp tiến: tổ hợp n chữ số = tích Descartes của tổ hợp n−1 chữ số và chữ cái của chữ số thứ n.",
+            "Kết quả cuối đúng thứ tự đề: ['ad','ae','af','bd','be','bf','cd','ce','cf']."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "77",
+      "title": "Combinations",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Trả mọi tổ hợp k phần tử từ [1..n]",
+      "examples": "n=4, k=2 → [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]",
+      "keyIdea": "Backtrack theo thứ tự tăng: bắt đầu từ start; thêm x rồi đệ quy từ x+1; không quay lui gây trùng.",
+      "thinking": {
+        "forward": "Quy nạp tiến: tổ hợp k phần tử = chọn phần tử nhỏ nhất rồi tổ hợp k−1 từ phần còn lại — thứ tự tăng chặn trùng hoán vị.",
+        "reverse": "Quy nạp ngược: để có tổ hợp k, bước trước phải là tổ hợp k−1 với phần tử cuối nhỏ hơn — truy ngược về tổ hợp rỗng."
+      },
+      "note": "Chú giải: Ràng buộc 'chỉ chọn từ start' khiến mỗi tổ hợp sinh đúng một lần; nếu bỏ ràng buộc này sẽ ra cả hoán vị trùng nhau.",
+      "approaches": [
+        {
+          "name": "Backtrack start tăng",
+          "time": "O(C(n,k))",
+          "space": "O(k)",
+          "done": true,
+          "idea": "bt(start,path): nếu len==k → thêm; duyệt i từ start tới n thêm rồi bt(i+1).",
+          "code": "def combine(n, k):\n    res = []\n    def bt(st, path):\n        if len(path) == k:\n            res.append(path[:]); return\n        for i in range(st, n+1):\n            path.append(i)\n            bt(i+1, path)\n            path.pop()\n    bt(1, [])\n    return res",
+          "static": [
+            "Với n=4, k=2, bắt đầu nhánh từ 1: ghép 1 với 2, 3, 4.",
+            "Chỉ duyệt i từ start trở lên (không quay lại số nhỏ hơn) để tránh trùng lặp tổ hợp.",
+            "Mỗi nhánh đủ 2 phần tử thì chép path vào res rồi quay lui.",
+            "Tiếp tục nhánh gốc 2: [2,3],[2,4]; nhánh 3: [3,4].",
+            "Kết quả: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]."
+          ]
+        },
+        {
+          "name": "itertools.combinations",
+          "time": "O(C(n,k))",
+          "space": "O(k)",
+          "done": true,
+          "idea": "Thư viện chuẩn—học được trước khi viết tay.",
+          "code": "from itertools import combinations\ndef combine(n, k):\n    return [list(c) for c in combinations(range(1, n+1), k)]",
+          "static": [
+            "Sinh mọi tổ hợp con k phần tử của dãy [1..n] bằng `itertools.combinations`.",
+            "Thư viện đã cài sẵn chiến lược duyệt tăng dần như nhánh backtrack ở trên.",
+            "Kết quả giữ đúng thứ tự từ điển: [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "46",
+      "title": "Permutations",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Hoán vị của mảng số phân biệt.",
+      "examples": "nums=[1,2,3] → [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+      "keyIdea": "Duy trì tập chữ chưa dùng (boolean hoặc swap): mỗi vị trí thử từng ứng viên còn lại.",
+      "thinking": {
+        "forward": "Quy nạp tiến: hoán vị độ dài n = cố định một phần tử ở vị trí đầu rồi hoán vị n−1 phần tử còn lại.",
+        "reverse": "Quy nạp ngược: hoán vị n là mọi cách chèn phần tử thứ n vào các vị trí của hoán vị n−1 — ít bộ nhớ trung gian hơn used[]."
+      },
+      "note": "Chú giải: Số lượng n! bùng nổ rất nhanh nên chỉ kiểm thử với n nhỏ; used[] giữ thứ tự ổn định còn cách chèn không quan tâm thứ tự.",
+      "approaches": [
+        {
+          "name": "Backtrack với used[]",
+          "time": "O(n!)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "used đánh dấu; mỗi vị trí thử mọi số chưa dùng; thêm kết quả khi đủ.",
+          "code": "def permute(nums):\n    res = []; n = len(nums); used = [False]*n\n    def bt(path):\n        if len(path) == n:\n            res.append(path[:]); return\n        for i in range(n):\n            if not used[i]:\n                used[i] = True; path.append(nums[i])\n                bt(path)\n                path.pop(); used[i] = False\n    bt([])\n    return res",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "path"
+            ],
+            "aux": [],
+            "expected": [
+              [
+                1,
+                2,
+                3
+              ],
+              [
+                1,
+                3,
+                2
+              ],
+              [
+                2,
+                1,
+                3
+              ],
+              [
+                2,
+                3,
+                1
+              ],
+              [
+                3,
+                1,
+                2
+              ],
+              [
+                3,
+                2,
+                1
+              ]
+            ],
+            "param_kinds": {},
+            "anim": true
+          }
+        },
+        {
+          "name": "Đệ quy chèn",
+          "time": "O(n!)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "permute(nums[:-1]) rồi chèn nums[-1] vào mọi vị trí — cách hiểu 'hoán vị n = chèn phần tử thứ n'.",
+          "code": "def permute(nums):\n    if len(nums) == 1: return [nums[:]]\n    res = []\n    for p in permute(nums[:-1]):\n        for i in range(len(p)+1):\n            res.append(p[:i] + [nums[-1]] + p[i:])\n    return res",
+          "static": [
+            "Quy nạp ngược: muốn hoán vị của [1,2,3], lấy mọi hoán vị của [1,2] rồi chèn 3 vào từng vị trí.",
+            "Hoán vị [1,2] = [[1,2],[2,1]]; chèn 3 vào 3 vị trí của [1,2] cho 3 kết quả.",
+            "Cũng vậy từ [2,1] cho 3 kết quả — tổng 6 hoán vị của 3 phần tử.",
+            "Độ sâu đệ quy giảm dần về cơ sở `len(nums)==1` (chỉ một hoán vị).",
+            "Kết quả gom đủ 6 hoán vị theo thứ tự chèn."
+          ]
+        },
+        {
+          "name": "itertools.permutations",
+          "time": "O(n!)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "Thư viện chuẩn.",
+          "code": "from itertools import permutations\ndef permute(nums):\n    return [list(p) for p in permutations(nums)]",
+          "static": [
+            "Sinh mọi hoán vị của mảng bằng `itertools.permutations`.",
+            "Thư viện duyệt theo thứ tự từ điển của dãy chỉ số.",
+            "Kết quả 6 hoán vị khớp đáp án đề: [[1,2,3],...,[3,2,1]]."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "39",
+      "title": "Combination Sum",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Tìm mọi tổ hợp các số trong candidates (tái dùng vô hạn) tổng bằng target, không trùng tổ hợp.",
+      "examples": "candidates=[2,3,6,7], target=7 → [[2,2,3],[7]]",
+      "keyIdea": "Sort; backtrack giảm target; luôn bắt đầu từ chỉ số hiện tại (cho phép tái dùng) và không nhảy xuống thấp hơn để tránh trùng.",
+      "thinking": {
+        "forward": "Quy nạp tiến: với mỗi số chọn lại vô hạn lần — bài toán con chỉ là (cùng chỉ số, target đã giảm) nên luôn thử lại chính số đó trước.",
+        "reverse": "Quy nạp ngược: tổng target đạt được nếu chọn số x rồi còn lại target−x — quy về tổng nhỏ hơn, dừng khi bằng 0."
+      },
+      "note": "Chú giải: Không cần sort thật sự cho bản thân thuật toán, nhưng sort giúp cắt nhánh rem<0 sớm khi duyệt theo thứ tự tăng.",
+      "approaches": [
+        {
+          "name": "Backtrack bắt đầu i",
+          "time": "O(n^(target/min))",
+          "space": "O(target/min)",
+          "done": true,
+          "idea": "bt(i, rem, path): rem==0 thêm; rem<0 dừng; thử candidates[i:] với số trùng.",
+          "code": "def combination_sum(cands, target):\n    res = []\n    def bt(i, rem, path):\n        if rem == 0:\n            res.append(path[:]); return\n        if rem < 0: return\n        for j in range(i, len(cands)):\n            path.append(cands[j])\n            bt(j, rem - cands[j], path)\n            path.pop()\n    bt(0, target, [])\n    return res",
+          "static": [
+            "Đệ quy bt(i, rem, path): chọn lại hoặc sang chỉ số kế",
+            "Base: rem==0 → lưu path (tổ hợp hợp lệ)",
+            "Base: rem<0 → cắt nhánh",
+            "Mỗi lần chọn đẩy cands[j] vào path, đệ quy, rồi pop để quay lui"
+          ]
+        },
+        {
+          "name": "Đệ quy chọn/không chọn",
+          "time": "O(n^(target/min))",
+          "space": "O(target/min)",
+          "done": true,
+          "idea": "Với mỗi số: chọn nó (giảm target) hoặc bỏ nó (chuyển chỉ số) — mô hình nhị phân.",
+          "code": "def combination_sum(cands, target):\n    res = []\n    def dfs(i, rem, path):\n        if rem == 0: res.append(path[:]); return\n        if i == len(cands) or rem < 0: return\n        path.append(cands[i])\n        dfs(i, rem - cands[i], path)     # chọn lại\n        path.pop()\n        dfs(i+1, rem, path)              # bỏ qua\n    dfs(0, target, [])\n    return res",
+          "static": [
+            "Đệ quy bt(i, rem, path): chọn lại hoặc sang chỉ số kế",
+            "Base: rem==0 → lưu path (tổ hợp hợp lệ)",
+            "Base: rem<0 → cắt nhánh",
+            "Mỗi lần chọn đẩy cands[j] vào path, đệ quy, rồi pop để quay lui"
+          ]
+        }
+      ]
+    },
+    {
+      "no": "52",
+      "title": "N-Queens II",
+      "cat": "Backtracking",
+      "diff": "Hard",
+      "done": true,
+      "statement": "Đếm số cách xếp n hậu trên bàn n×n không tấn công nhau.",
+      "examples": "n=4 → 2 · n=8 → 92",
+      "keyIdea": "Đặt từng hàng; theo dõi cột, đường chéo chính (r+c) và phụ (r−c) đã chiếm bằng set.",
+      "thinking": {
+        "forward": "Quy nạp tiến: đặt hậu ở hàng r, chọn cột an toàn rồi chuyển sang hàng r+1 — mỗi hàng chính xác một hậu.",
+        "reverse": "Quy nạp ngược: một cách xếp n hậu hợp lệ khi n−1 hậu đầu đã hợp lệ và hậu thứ n không trùng cột/diag với bất kỳ hậu nào trước."
+      },
+      "note": "Chú giải: Đường chéo chính cùng r+c, phụ cùng r−c nên kiểm tra O(1) bằng set; cách dùng mảng cols cũng giúp hiểu dấu hiệu |Δc| = |Δr|.",
+      "approaches": [
+        {
+          "name": "Backtrack với 3 set",
+          "time": "O(n!)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "Với mỗi hàng r, thử cột c không nằm trong cols, diag1(r+c), diag2(r−c); đặt rồi quay lui.",
+          "code": "def total_n_queens(n):\n    cols, d1, d2 = set(), set(), set()\n    def bt(r):\n        if r == n: return 1\n        cnt = 0\n        for c in range(n):\n            if c in cols or (r+c) in d1 or (r-c) in d2: continue\n            cols.add(c); d1.add(r+c); d2.add(r-c)\n            cnt += bt(r+1)\n            cols.remove(c); d1.remove(r+c); d2.remove(r-c)\n        return cnt\n    return bt(0)",
+          "static": [
+            "Với n=4, đặt hậu từng hàng từ 0; cột 0 thoả → chiếm cols={0}, d1={0}, d2={0}.",
+            "Hàng 1 phải tránh cột đã chiếm và đường chéo r+c, r−c — chỉ vài cột còn hợp lệ.",
+            "Đệ quy xuống hàng 2, 3; nhánh nào đặt đủ 4 hậu thì cộng 1 cách.",
+            "Quay lui xoá 3 tập tại mỗi bước để thử cột khác.",
+            "n=4 chỉ có 2 cách xếp hợp lệ → đáp án 2."
+          ]
+        },
+        {
+          "name": "Backtrack mảng cols (cách hiểu cột)",
+          "time": "O(n!)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "Dùng mảng col[r] tương tự, kiểm tra xung đột bằng min() — dạy dấu hiệu xung đột trực quan hơn.",
+          "code": "def total_n_queens(n):\n    cols = [0]*n; cnt = 0\n    def ok(r, c):\n        for i in range(r):\n            if cols[i] == c or abs(cols[i]-c) == r-i: return False\n        return True\n    def bt(r):\n        nonlocal cnt\n        if r == n: cnt += 1; return\n        for c in range(n):\n            if ok(r, c):\n                cols[r] = c\n                bt(r+1)\n    bt(0)\n    return cnt",
+          "static": [
+            "Dùng mảng `cols` với cols[r]=cột đặt hậu ở hàng r.",
+            "Hàm ok(r,c) kiểm tra: cùng cột hoặc chênh cột bằng chênh hàng (|c1−c|==r−i) là xung đột.",
+            "Đặt hậu xuống từng hàng; khi r==n tức đã xếp đủ n hậu → tăng biến đếm.",
+            "Quay lui ghi lại cột khác cho hàng hiện tại sau mỗi nhánh.",
+            "n=4 → 2 cách; mở rộng n=8 → 92 (mẫu kiểm chứng nổi tiếng)."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "22",
+      "title": "Generate Parentheses",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Sinh mọi chuỗi n cặp ngoặc đúng.",
+      "examples": "n=3 → [\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+      "keyIdea": "Chỉ thêm '(' khi còn mở, ')' khi số đóng < số mở — ràng buộc cân bằng.",
+      "thinking": {
+        "forward": "Quy nạp tiến: chuỗi đúng luôn có mở ≥ đóng ở mọi tiền tố — chỉ thêm '(' khi còn quota, chỉ thêm ')' khi có mở đang chờ.",
+        "reverse": "Quy nạp ngược: chuỗi n cặp đúng sinh từ chuỗi n−1 cặp bằng cách thêm cặp vào — nhưng điều kiện cân bằng đơn giản hơn nhiều để sinh trực tiếp."
+      },
+      "note": "Chú giải: Bất biến 'số mở luôn ≥ số đóng trên mọi tiền tố' chính là định nghĩa ngoặc đúng; số lượng là số Catalan.",
+      "approaches": [
+        {
+          "name": "Backtrack đếm mở/đóng",
+          "time": "O(Catalan)",
+          "space": "O(n)",
+          "done": true,
+          "idea": "bt(open, close, s): nếu open<n thêm '('; nếu close<open thêm ')'; open==close==n → thêm.",
+          "code": "def generate_parenthesis(n):\n    res = []\n    def bt(o, c, s):\n        if o == n and c == n:\n            res.append(s); return\n        if o < n: bt(o+1, c, s+'(')\n        if c < o: bt(o, c+1, s+')')\n    bt(0, 0, '')\n    return res",
+          "static": [
+            "Với n=3, bắt đầu chuỗi rỗng; luôn được thêm '(' trước (o<n).",
+            "Chỉ thêm ')' khi số đóng nhỏ hơn số mở — bảo toàn tính cân bằng.",
+            "Nhánh đạt o==c==3 thì ghi chuỗi vào kết quả.",
+            "Tổ hợp: '((()))', '(()())', '(())()', '()(())', '()()()' — 5 chuỗi Catalan thứ 3.",
+            "Ràng buộc open≥close suốt đường đi chính là điều kiện ngoặc đúng."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "79",
+      "title": "Word Search",
+      "cat": "Backtracking",
+      "diff": "Medium",
+      "done": true,
+      "statement": "Xem từ có thể tạo bằng đường liền kề (4 hướng) trên lưới, không lặp ô.",
+      "examples": "board, word='ABCCED' → true · word='ABCB' → false",
+      "keyIdea": "DFS từ mỗi ô khớp ký tự đầu; backtrack bằng cách đánh dấu ô '#' và khôi phục.",
+      "thinking": {
+        "forward": "Quy nạp tiến: khớp được k ký tự đầu, thử 4 hướng để khớp ký tự thứ k+1 — mỗi bước thu hẹp về bài toán con ngắn hơn.",
+        "reverse": "Quy nạp ngược: từ có tồn tại khi ô cuối khớp ký tự cuối và ô trước đó khớp ký tự liền trước — truy ngược về ô đầu."
+      },
+      "note": "Chú giải: Đánh dấu '#' chống lặp ô trong cùng đường đi rồi khôi phục khi quay lui — khác với 'chìm' ở bài Number of Islands (không cần khôi phục).",
+      "approaches": [
+        {
+          "name": "DFS backtrack",
+          "time": "O(m·n·4^L)",
+          "space": "O(L)",
+          "done": true,
+          "idea": "Với mỗi ô: dfs(i,j,k) với k là chỉ số ký tự; mismatch → False; hết từ → True; tạm đặt '#', dò 4 hướng, khôi phục.",
+          "code": "def exist(board, word):\n    m, n = len(board), len(board[0])\n    def dfs(i, j, k):\n        if k == len(word): return True\n        if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != word[k]: return False\n        ch = board[i][j]; board[i][j] = '#'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            if dfs(i+di, j+dj, k+1): return True\n        board[i][j] = ch\n        return False\n    for i in range(m):\n        for j in range(n):\n            if dfs(i, j, 0): return True\n    return False",
+          "tcex": {
+            "input": {
+              "board": [
+                [
+                  "A",
+                  "B",
+                  "C",
+                  "E"
+                ],
+                [
+                  "S",
+                  "F",
+                  "C",
+                  "S"
+                ],
+                [
+                  "A",
+                  "D",
+                  "E",
+                  "E"
+                ]
+              ],
+              "word": "ABCCED"
+            },
+            "kind": "mat",
+            "display": "board",
+            "ptrs": [
+              "i",
+              "j",
+              "k"
+            ],
+            "aux": [],
+            "expected": true,
+            "param_kinds": {
+              "board": "mat"
+            },
+            "anim": true
+          }
+        }
+      ]
+    }
+  ]
+}

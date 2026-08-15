@@ -1,0 +1,432 @@
+{
+  "desc": "Thu hẹp hai đầu, gặp giữa, hoán đổi có điều kiện. Nhóm này đẹp nhất cho animation vì con trỏ di chuyển rõ ràng.",
+  "problems": [
+    {
+      "no": "125",
+      "title": "Valid Palindrome",
+      "cat": "Two Pointers",
+      "diff": "Easy",
+      "statement": "Xem chuỗi (bỏ ký tự không phải chữ/số, bỏ qua case) có đọc xuôi ngược giống nhau không.",
+      "examples": "\"A man, a plan, a canal: Panama\" → true · \"race a car\" → false",
+      "keyIdea": "Bỏ qua ký tự không alnum rồi so hai đầu.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ + isalnum",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "l, r hai đầu; nhảy qua ký tự không chữ số; so chuẩn hoá case.",
+          "code": "def is_palindrome(s):\n    l, r = 0, len(s) - 1\n    while l < r:\n        while l < r and not s[l].isalnum(): l += 1\n        while l < r and not s[r].isalnum(): r -= 1\n        if s[l].lower() != s[r].lower(): return False\n        l += 1; r -= 1\n    return True",
+          "static": [
+            "l, r hai đầu chuỗi; nhảy qua các ký tự không phải chữ/số bằng isalnum()",
+            "Ví dụ 'A man, a plan, a canal: Panama': l=0 là 'A', r cuối là 'a' → sau khi hạ case bằng nhau",
+            "So s[l].lower() != s[r].lower() → nếu lệch trả False ngay",
+            "Với chuỗi hợp lệ hai con trỏ chạm nhau ở giữa mà không lệch → True",
+            "O(n) thời gian, O(1) bộ nhớ — mỗi ký tự bị nhảy qua tối đa một lần"
+          ]
+        },
+        {
+          "name": "Lọc rồi đảo",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "t = ''.join(c.lower() for c in s if c.isalnum()); return t == t[::-1].",
+          "code": "def is_palindrome(s):\n    t = ''.join(c.lower() for c in s if c.isalnum())\n    return t == t[::-1]",
+          "static": [
+            "Lọc chuỗi: t = ''.join(c.lower() for c in s if c.isalnum())",
+            "Với 'A man, a plan, a canal: Panama' → 'amanaplanacanalpanama'",
+            "So t với t[::-1]: chuỗi đối xứng → True",
+            "Với 'race a car' → 'raceacar' khác 'racace' → False",
+            "Sạch và dễ đọc; tốn O(n) bộ nhớ cho chuỗi sau lọc"
+          ]
+        },
+        {
+          "name": "regex + slice",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "chỉ giữ chữ và số bằng regex, hạ case, so với phiên bản đảo.",
+          "code": "import re\ndef is_palindrome(s):\n    t = re.sub(r'[^a-zA-Z0-9]', '', s).lower()\n    return t == t[::-1]",
+          "static": [
+            "re.sub(r'[^a-zA-Z0-9]', '', s) loại mọi ký tự không phải chữ/số",
+            "Hạ case toàn bộ bằng .lower()",
+            "So với phiên bản đảo t[::-1] để kết luận đối xứng",
+            "Gọn nhưng dùng regex — ít được ưu tiên trong phỏng vấn"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Hai con trỏ từ hai đầu, bỏ qua ký tự không chữ số, so sánh khi gặp ký tự.",
+        "reverse": "Cần xác định palindrome → so từ ngoài vào trong, chỉ quan tâm ký tự chữ/số."
+      },
+      "note": "Bỏ qua ký tự không alnum rồi so hai đầu."
+    },
+    {
+      "no": "392",
+      "title": "Is Subsequence",
+      "cat": "Two Pointers",
+      "diff": "Easy",
+      "statement": "Xem s có phải dãy con (subsequence) của t — bỏ đi một số ký tự của t giữ nguyên thứ tự.",
+      "examples": "s=\"abc\", t=\"ahbgdc\" → true · s=\"axc\", t=\"ahbgdc\" → false",
+      "keyIdea": "Khớp tham lam: duyệt t, khi gặp ký tự cần của s thì tiến con trỏ s.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ",
+          "time": "O(len(t))",
+          "space": "O(1)",
+          "idea": "i duyệt s, j duyệt t; nếu s[i]==t[j] thì i++; kết thúc khi i chạm cuối s → true.",
+          "code": "def is_subsequence(s, t):\n    i = 0\n    for ch in t:\n        if i < len(s) and s[i] == ch:\n            i += 1\n    return i == len(s)",
+          "static": [
+            "i = con trỏ trên s; duyệt từng ký tự ch của t",
+            "Nếu s[i] == ch thì i += 1 — khớp được một ký tự của s",
+            "Ví dụ s='abc', t='ahbgdc': 'a' khớp → i=1; 'b' khớp → i=2; 'c' khớp → i=3",
+            "Cuối lượt i == len(s) → True (mọi ký tự s đều đã xuất hiện theo thứ tự)",
+            "Nếu hết t mà i chưa tới cuối s → False"
+          ]
+        },
+        {
+          "name": "Dùng iterator",
+          "time": "O(len(t))",
+          "space": "O(1)",
+          "idea": "it = iter(t); mọi ký tự s phải nằm trong phần còn lại của t theo thứ tự.",
+          "code": "def is_subsequence(s, t):\n    it = iter(t)\n    return all(c in it for c in s)",
+          "static": [
+            "it = iter(t) là một con trỏ 'tiêu hao' duyệt qua t",
+            "Với từng ký tự c của s: kiểm tra c in it — tìm trong phần t CHƯA đọc",
+            "c in it tiêu thụ các ký tự ở trước vị trí tìm thấy (iterator duyệt tuyến tính)",
+            "Ví dụ s='abc', t='ahbgdc': 'a' tìm thấy, 'b' tìm trong phần còn lại, 'c' tương tự → True",
+            "all(...) = True khi mọi ký tự s đều xuất hiện theo đúng thứ tự"
+          ]
+        },
+        {
+          "name": "Vị trí nhị phân (chuẩn bị follow-up)",
+          "time": "O(|s|·log|t|)",
+          "space": "O(|t|)",
+          "idea": "Nếu có nhiều s cần hỏi, tiền xử lý vị trí từng ký tự của t bằng dict + bisect; mỗi hỏi tra nhanh.",
+          "code": "from collections import defaultdict\nfrom bisect import bisect_left\ndef is_subsequence(s, t):\n    pos = defaultdict(list)\n    for i, ch in enumerate(t): pos[ch].append(i)\n    cur = -1\n    for ch in s:\n        lst = pos[ch]\n        k = bisect_left(lst, cur + 1)\n        if k == len(lst): return False\n        cur = lst[k]\n    return True",
+          "static": [
+            "Tiền xử lý pos: dict ký tự → danh sách vị trí xuất hiện trong t (tăng dần)",
+            "Ví dụ t='ahbgdc': pos['a']=[0], pos['b']=[2], pos['g']=[3], pos['d']=[4], pos['c']=[5]",
+            "Với mỗi ch của s: bisect_left(pos[ch], cur+1) tìm vị trí khớp đứng sau cur",
+            "Không tìm thấy → False; tìm thấy → cur = vị trí đó và đi tiếp",
+            "O(|s|·log|t|) sau O(|t|) tiền xử lý — tối ưu khi phải trả lời nhiều truy vấn"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Duyệt t: mỗi khi khớp s[j] tăng j; hết t mà j bằng len(s) thì là subsequence.",
+        "reverse": "Cần xác nhận s nằm trong t → không cần xoá, chỉ cần tìm đủ từng ký tự của s theo thứ tự."
+      },
+      "note": "Khớp tham lam: duyệt t, khi gặp ký tự cần của s thì tiến con trỏ s."
+    },
+    {
+      "no": "11",
+      "title": "Container With Most Water",
+      "cat": "Two Pointers",
+      "diff": "Medium",
+      "statement": "Cho heights của các vách; chọn hai vách làm thành bể chứa nước lớn nhất (diện tích = min(h trái,h phải)×khoảng cách).",
+      "examples": "[1,8,6,2,5,4,8,3,7] → 49",
+      "keyIdea": "Khoảng cách càng xa càng tốt, nhưng chiều cao bị giới hạn bởi vách thấp hơn → luôn dịch bỏ vách thấp hơn.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Diện tích với (l,r); tăng best; dịch con trỏ bên vách thấp hơn. Mỗi bước loại bỏ một vách chắc chắn không tối ưu hơn.",
+          "code": "def max_area(height):\n    l, r = 0, len(height) - 1\n    best = 0\n    while l < r:\n        w = r - l\n        area = min(height[l], height[r]) * w\n        best = max(best, area)\n        if height[l] < height[r]: l += 1\n        else: r -= 1\n    return best",
+          "trace": "ref:11-container-with-most-water",
+          "tcex": {
+            "input": {
+              "height": [
+                1,
+                8,
+                6,
+                2,
+                5,
+                4,
+                8,
+                3,
+                7
+              ]
+            },
+            "kind": "array",
+            "display": "height",
+            "ptrs": [
+              "l",
+              "r"
+            ],
+            "expected": 49,
+            "anim": true
+          }
+        },
+        {
+          "name": "Vét cạn",
+          "time": "O(n²)",
+          "space": "O(1)",
+          "idea": "Thử mọi cặp vách — dùng để chứng minh đáp án tối ưu đúng.",
+          "code": "def max_area(height):\n    best = 0\n    for i in range(len(height)):\n        for j in range(i+1, len(height)):\n            best = max(best, min(height[i], height[j])*(j-i))\n    return best",
+          "tcex": {
+            "input": {
+              "height": [
+                1,
+                8,
+                6,
+                2,
+                5,
+                4,
+                8,
+                3,
+                7
+              ]
+            },
+            "kind": "array",
+            "display": "height",
+            "ptrs": [
+              "i",
+              "j"
+            ],
+            "expected": 49,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Hai con trỏ đầu-cuối, di chuyển con trỏ có chiều cao thấp hơn vì nó giới hạn thể tích.",
+        "reverse": "Cần diện tích lớn nhất → thu hẹp khoảng cách, chỉ thay đổi cạnh thấp hơn mới có thể tăng diện tích."
+      },
+      "note": "Khoảng cách càng xa càng tốt, nhưng chiều cao bị giới hạn bởi vách thấp hơn → luôn dịch bỏ vách thấp hơn."
+    },
+    {
+      "no": "167",
+      "title": "Two Sum II - Input Array Is Sorted",
+      "cat": "Two Pointers",
+      "diff": "Medium",
+      "statement": "Mảng đã sắp tăng; tìm hai chỉ số (1-based) cộng lại bằng target, có đúng một đáp án.",
+      "examples": "numbers=[2,7,11,15], target=9 → [1,2]",
+      "keyIdea": "Tận dụng tính sắp xếp: tổng nhỏ→dịch trái, tổng lớn→dịch phải.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "l=0, r=n-1; nếu tổng < target → l++, > target → r--, bằng → trả [l+1,r+1].",
+          "code": "def two_sum(numbers, target):\n    l, r = 0, len(numbers) - 1\n    while l < r:\n        s = numbers[l] + numbers[r]\n        if s == target: return [l+1, r+1]\n        elif s < target: l += 1\n        else: r -= 1\n    return []",
+          "tcex": {
+            "input": {
+              "numbers": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "array",
+            "display": "numbers",
+            "ptrs": [
+              "l",
+              "r"
+            ],
+            "expected": [
+              1,
+              2
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Dict bù",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Tương tự Two Sum gốc nhưng vì mảng đã sắp, hai con trỏ là tối ưu bộ nhớ hơn. Đây là bản dùng dict.",
+          "code": "def two_sum(numbers, target):\n    seen = {}\n    for i, x in enumerate(numbers):\n        if target - x in seen: return [seen[target-x]+1, i+1]\n        seen[x] = i\n    return []",
+          "tcex": {
+            "input": {
+              "numbers": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "array",
+            "display": "numbers",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              1,
+              2
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Nhị phân cho số bù",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Với mỗi l, tìm số bù bằng binary search trong phần còn lại.",
+          "code": "from bisect import bisect_left\ndef two_sum(numbers, target):\n    for i, x in enumerate(numbers):\n        j = bisect_left(numbers, target - x, i + 1)\n        if j < len(numbers) and numbers[j] == target - x:\n            return [i+1, j+1]\n    return []",
+          "tcex": {
+            "input": {
+              "numbers": [
+                2,
+                7,
+                11,
+                15
+              ],
+              "target": 9
+            },
+            "kind": "array",
+            "display": "numbers",
+            "ptrs": [
+              "i",
+              "j"
+            ],
+            "expected": [
+              1,
+              2
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Mảng đã sắp → hai con trỏ trái-phải, tăng trái nếu tổng nhỏ, giảm phải nếu tổng lớn.",
+        "reverse": "Cần cặp có tổng target → khi cố định tổng, quyết định di chuyển con trỏ dựa trên dấu chênh lệch."
+      },
+      "note": "Tận dụng tính sắp xếp: tổng nhỏ→dịch trái, tổng lớn→dịch phải."
+    },
+    {
+      "no": "15",
+      "title": "3Sum",
+      "cat": "Two Pointers",
+      "diff": "Medium",
+      "statement": "Tìm mọi bộ ba (i,j,k) có tổng bằng 0, không trùng bộ ba.",
+      "examples": "[-1,0,1,2,-1,-4] → [[-1,-1,2],[-1,0,1]]",
+      "keyIdea": "Sort rồi cố định từng số và dùng hai con trỏ cho phần còn lại; phải bỏ qua giá trị trùng.",
+      "approaches": [
+        {
+          "name": "Sort + hai con trỏ",
+          "time": "O(n²)",
+          "space": "O(1) ngoài kết quả",
+          "idea": "Sort; với mỗi i, chạy hai con trỏ lo/hi tìm tổng bằng −a[i]; bỏ qua trùng ở cả ba mức.",
+          "code": "def three_sum(nums):\n    nums.sort(); res = []\n    n = len(nums)\n    for i in range(n - 2):\n        if i > 0 and nums[i] == nums[i-1]: continue\n        lo, hi = i + 1, n - 1\n        while lo < hi:\n            s = nums[i] + nums[lo] + nums[hi]\n            if s == 0:\n                res.append([nums[i], nums[lo], nums[hi]])\n                while lo < hi and nums[lo] == nums[lo+1]: lo += 1\n                while lo < hi and nums[hi] == nums[hi-1]: hi -= 1\n                lo += 1; hi -= 1\n            elif s < 0: lo += 1\n            else: hi -= 1\n    return res",
+          "trace": "ref:15-3sum",
+          "tcex": {
+            "input": {
+              "nums": [
+                -1,
+                0,
+                1,
+                2,
+                -1,
+                -4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "lo",
+              "hi"
+            ],
+            "expected": [
+              [
+                -1,
+                -1,
+                2
+              ],
+              [
+                -1,
+                0,
+                1
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Vét cạn ba vòng",
+          "time": "O(n³)",
+          "space": "O(n³)",
+          "idea": "Thử mọi bộ ba, khử trùng bằng set — khởi điểm để phân tích rồi tối ưu.",
+          "code": "def three_sum(nums):\n    res = set()\n    n = len(nums)\n    for i in range(n):\n        for j in range(i+1, n):\n            for k in range(j+1, n):\n                if nums[i] + nums[j] + nums[k] == 0:\n                    res.add(tuple(sorted((nums[i], nums[j], nums[k]))))\n    return [list(t) for t in res]",
+          "tcex": {
+            "input": {
+              "nums": [
+                -1,
+                0,
+                1,
+                2,
+                -1,
+                -4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "j",
+              "k"
+            ],
+            "expected": [
+              [
+                -1,
+                0,
+                1
+              ],
+              [
+                -1,
+                -1,
+                2
+              ]
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Map bù từng cặp",
+          "time": "O(n²)",
+          "space": "O(n)",
+          "idea": "Nhóm theo giá trị, dùng bù của hai con trỏ — bản trung gian giữa O(n²) và O(n³).",
+          "code": "from collections import defaultdict\ndef three_sum(nums):\n    pos = defaultdict(list)\n    for i, x in enumerate(nums): pos[x].append(i)\n    res = set()\n    n = len(nums)\n    for i in range(n):\n        for j in range(i+1, n):\n            need = -(nums[i] + nums[j])\n            for k in pos[need]:\n                if k != i and k != j:\n                    res.add(tuple(sorted((nums[i], nums[j], need))))\n                    break\n    return [list(t) for t in res]",
+          "tcex": {
+            "input": {
+              "nums": [
+                -1,
+                0,
+                1,
+                2,
+                -1,
+                -4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "j"
+            ],
+            "expected": [
+              [
+                -1,
+                0,
+                1
+              ],
+              [
+                -1,
+                -1,
+                2
+              ]
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp rồi cố định i, tìm hai con trỏ cho tổng -nums[i]; bỏ qua trùng.",
+        "reverse": "Cần mọi bộ ba tổng 0 → sau sắp xếp biến về bài hai con trỏ, chặn trùng bằng so sánh kề."
+      },
+      "note": "Sort rồi cố định từng số và dùng hai con trỏ cho phần còn lại; phải bỏ qua giá trị trùng."
+    }
+  ]
+}

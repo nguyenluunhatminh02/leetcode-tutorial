@@ -1,0 +1,1154 @@
+{
+ "desc": "Cây nhị phân: duyệt DFS (đệ quy/stack) và BFS (hàng đợi). Nắm chắc 4 kiểu duyệt và cách truyền kết quả lên/di truyền trạng thái xuống.",
+ "problems": [
+  {
+   "no": "104",
+   "title": "Maximum Depth of Binary Tree",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Depth = số nút trên đường dài nhất từ gốc tới lá (gốc depth=1).",
+   "examples": "root=[3,9,20,null,null,15,7] → 3",
+   "keyIdea": "depth = 1 + max(depth trái, depth phải), đệ quy về 0 khi None.",
+   "thinking": {
+    "forward": "Quy nạp tiến: độ sâu của cây = 1 (gốc) + độ sâu lớn nhất của hai nhánh con — mỗi cây con tự giải bằng công thức như cây mẹ.",
+    "reverse": "Quy nạp ngược: muốn biết độ sâu ở gốc thì phải biết độ sâu của cả hai cây con — lá là trường hợp cơ sở trả 0 (không có nút con)."
+   },
+   "note": "Chú giải: gốc None trả 0 (cây rỗng); đệ quy gọi tới None là điểm dừng — đây là mẫu DFS phổ biến nhất.",
+   "approaches": [
+    {
+     "name": "Đệ quy DFS",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "if not root: return 0; return 1 + max(maxDepth(left), maxDepth(right)).",
+     "code": "def max_depth(root):\n    if not root: return 0\n    return 1 + max(max_depth(root.left), max_depth(root.right))",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 3,
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS stack có độ sâu",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Push (node, depth); cập nhật max khi pop.",
+     "code": "def max_depth(root):\n    if not root: return 0\n    st = [(root, 1)]; best = 1\n    while st:\n        n, d = st.pop(); best = max(best, d)\n        if n.left: st.append((n.left, d+1))\n        if n.right: st.append((n.right, d+1))\n    return best",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 3,
+      "anim": true
+     }
+    },
+    {
+     "name": "BFS theo tầng",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Đếm số tầng duyệt; mỗi vòng hàng đợi là một tầng.",
+     "code": "from collections import deque\ndef max_depth(root):\n    if not root: return 0\n    q = deque([root]); depth = 0\n    while q:\n        depth += 1\n        for _ in range(len(q)):\n            n = q.popleft()\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n    return depth",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 3,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "100",
+   "title": "Same Tree",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Hai cây nhị phân có cùng cấu trúc và cùng giá trị?",
+   "examples": "root1=[1,2,3], root2=[1,2,3] → true · [1,2], [1,null,2] → false",
+   "keyIdea": "So gốc, rồi đệ quy so trái và phải.",
+   "thinking": {
+    "forward": "Quy nạp tiến: hai cây giống nhau khi cả hai gốc cùng None, hoặc cùng giá trị và cây trái/phải của chúng đều giống nhau — so từng cặp vị trí tương ứng.",
+    "reverse": "Quy nạp ngược: muốn khẳng định giống nhau thì phải so đến cùng — chỉ một nút lệch giá trị hoặc một bên None một bên có nút là đủ kết luận khác nhau."
+   },
+   "note": "Chú giải: thứ tự kiểm tra quan trọng — 'cả hai None' trước, rồi 'một None', rồi 'giá trị khác'.",
+   "approaches": [
+    {
+     "name": "Đệ quy",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "if not p and not q: return True; nếu một trong hai None hoặc giá trị khác → False; else so (left,left) và (right,right).",
+     "code": "def is_same_tree(p, q):\n    if not p and not q: return True\n    if not p or not q: return False\n    if p.val != q.val: return False\n    return is_same_tree(p.left, q.left) and is_same_tree(p.right, q.right)",
+     "tcex": {
+      "input": {
+       "p": [
+        1,
+        2,
+        3
+       ],
+       "q": [
+        1,
+        2,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "p",
+      "param_kinds": {
+       "p": "tree",
+       "q": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack song song",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Dùng một stack chứa cặp (p_node, q_node).",
+     "code": "def is_same_tree(p, q):\n    st = [(p, q)]\n    while st:\n        a, b = st.pop()\n        if not a and not b: continue\n        if not a or not b or a.val != b.val: return False\n        st.append((a.left, b.left))\n        st.append((a.right, b.right))\n    return True",
+     "tcex": {
+      "input": {
+       "p": [
+        1,
+        2,
+        3
+       ],
+       "q": [
+        1,
+        2,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "p",
+      "param_kinds": {
+       "p": "tree",
+       "q": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "226",
+   "title": "Invert Binary Tree",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Đảo cây nhị phân (hoán đổi con trái/phải tại mỗi nút).",
+   "examples": "root=[4,2,7,1,3,6,9] → [4,7,2,9,6,3,1]",
+   "keyIdea": "Tại mỗi nút, hoán con trái/phải rồi đệ quy xuống.",
+   "thinking": {
+    "forward": "Quy nạp tiến: đảo cây = hoán đổi hai con của gốc, rồi đảo từng cây con đó — sau cùng mọi nút đều có con trái/phải đổi chỗ.",
+    "reverse": "Quy nạp ngược: muốn đảo cả cây thì trước hết phải đảo xong hai cây con, rồi mới hoán hai con của gốc — thứ tự đảo con trước không ảnh hưởng kết quả."
+   },
+   "note": "Chú giải: trong code gán `root.left, root.right = invert(right), invert(left)` — vế phải tính trước nên đảo cây con của con cũ, không phải con đã bị đổi.",
+   "approaches": [
+    {
+     "name": "Đệ quy hoán",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "if not root: return None; root.left,root.right = invert(right),invert(left); return root.",
+     "code": "def invert_tree(root):\n    if not root: return None\n    root.left, root.right = invert_tree(root.right), invert_tree(root.left)\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        7,
+        1,
+        3,
+        6,
+        9
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       4,
+       7,
+       2,
+       9,
+       6,
+       3,
+       1
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack BFS",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Duyệt mọi nút, hoán con của nó.",
+     "code": "def invert_tree(root):\n    st = [root]\n    while st:\n        n = st.pop()\n        if n:\n            n.left, n.right = n.right, n.left\n            st.append(n.left); st.append(n.right)\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        7,
+        1,
+        3,
+        6,
+        9
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       4,
+       7,
+       2,
+       9,
+       6,
+       3,
+       1
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "101",
+   "title": "Symmetric Tree",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Cây có đối xứng gương theo trục gốc không?",
+   "examples": "root=[1,2,2,3,4,4,3] → true · [1,2,2,null,3,null,3] → false",
+   "keyIdea": "So hai cây con đối xứng: left.left vs right.right, left.right vs right.left.",
+   "thinking": {
+    "forward": "Quy nạp tiến: hai cây con gương nhau khi giá trị bằng và cây trái của cây này gương với cây phải của cây kia — so chéo, không so cùng phía.",
+    "reverse": "Quy nạp ngược: muốn kết luận đối xứng thì phải so cặp ngoài cùng trái/phải trước, rồi cặp trong — mọi cặp đều phải khớp."
+   },
+   "note": "Chú giải: đối xứng gương nghĩa là gập cây theo trục qua gốc — nút trái nhất khớp nút phải nhất.",
+   "approaches": [
+    {
+     "name": "Đệ quy so cặp",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "mirror(a,b): nếu cả None → True; một None → False; giá trị bằng và mirror(a.left,b.right) và mirror(a.right,b.left).",
+     "code": "def is_symmetric(root):\n    def mirror(a, b):\n        if not a and not b: return True\n        if not a or not b: return False\n        return a.val == b.val and mirror(a.left, b.right) and mirror(a.right, b.left)\n    return mirror(root.left, root.right)",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        2,
+        3,
+        4,
+        4,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack cặp",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Dùng stack chứa cặp nút cần so.",
+     "code": "def is_symmetric(root):\n    st = [(root.left, root.right)]\n    while st:\n        a, b = st.pop()\n        if not a and not b: continue\n        if not a or not b or a.val != b.val: return False\n        st.append((a.left, b.right)); st.append((a.right, b.left))\n    return True",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        2,
+        3,
+        4,
+        4,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "105",
+   "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Dựng lại cây nhị phân từ preorder và inorder (giá trị duy nhất).",
+   "examples": "pre=[3,9,20,15,7], in=[9,3,15,20,7] → [3,9,20,null,null,15,7]",
+   "keyIdea": "phần tử preorder đầu là gốc; trong inorder, bên trái gốc là cây trái, bên phải là cây phải.",
+   "thinking": {
+    "forward": "Quy nạp tiến: preorder bắt đầu bằng gốc; vị trí gốc trong inorder chia dãy thành hai phần — phần trái/phải là cây con, dựng tiếp bằng chính quy tắc này.",
+    "reverse": "Quy nạp ngược: muốn biết gốc là gì thì nhìn phần tử đầu tiên của preorder; muốn biết gốc nằm ở đâu trong inorder thì phải tra vị trí của nó."
+   },
+   "note": "Chú giải: vì giá trị duy nhất nên dùng dict index của inorder để tra O(1); preorder chia nhịp — duyệt lần lượt từ trái sang.",
+   "approaches": [
+    {
+     "name": "Đệ quy với index inorder",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Dùng con trỏ pre_idx; inorder[pre_idx] là gốc; tìm vị trí gốc trong inorder; phần trái/phải cho đệ quy.",
+     "code": "def build_tree(pre, inorder):\n    idx = {v: i for i, v in enumerate(inorder)}\n    ii = 0\n    def go(lo, hi):\n        nonlocal ii\n        if lo > hi: return None\n        val = pre[ii]; ii += 1\n        root = TreeNode(val)\n        mid = idx[val]\n        root.left = go(lo, mid - 1)\n        root.right = go(mid + 1, hi)\n        return root\n    return go(0, len(inorder) - 1)",
+     "static": [
+      "pre = [3,9,20,15,7], in = [9,3,15,20,7]; dict idx = {9:0, 3:1, 15:2, 20:3, 7:4}.",
+      "go(0,4): val = pre[0] = 3; ii → 1; mid = 1; dựng gốc 3.",
+      "go(0,0): val = pre[1] = 9; mid = 0; dựng nút 9 (trái của 3).",
+      "go(0,-1): lo > hi → None (9 không con trái).",
+      "go(1,0): lo > hi → None (9 không con phải).",
+      "go(2,4): val = pre[2] = 20; mid = 3; dựng nút 20 (phải của 3).",
+      "go(2,2): val = pre[3] = 15; mid = 2; dựng nút 15 (trái của 20).",
+      "go(4,4): val = pre[4] = 7; dựng nút 7 (phải của 20).",
+      "Kết quả BFS: [3, 9, 20, null, null, 15, 7]."
+     ]
+    },
+    {
+     "name": "Cắt slice đệ quy",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "Phiên bản dễ đọc: gốc = pre[0]; tìm vị trí trong in; gọi với slice trái/phải.",
+     "code": "def build_tree(pre, inorder):\n    if not pre: return None\n    root = TreeNode(pre[0])\n    i = inorder.index(pre[0])\n    root.left = build_tree(pre[1:i+1], inorder[:i])\n    root.right = build_tree(pre[i+1:], inorder[i+1:])\n    return root",
+     "static": [
+      "pre = [3,9,20,15,7], in = [9,3,15,20,7]: gốc = 3.",
+      "Vị trí 3 trong inorder là 1 → cây trái có inorder [9], cây phải [15,20,7].",
+      "Cây trái: pre [9], in [9] → gốc 9, không con.",
+      "Cây phải: pre [20,15,7], in [15,20,7] → gốc 20.",
+      "Vị trí 20 trong inorder là 1 → cây trái [15], cây phải [7].",
+      "Gắn các nút: 9 trái của 3; 15 trái của 20; 7 phải của 20.",
+      "Kết quả BFS: [3, 9, 20, null, null, 15, 7]."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "106",
+   "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Dựng cây từ inorder và postorder.",
+   "examples": "in=[9,3,15,20,7], post=[9,15,7,20,3] → [3,9,20,null,null,15,7]",
+   "keyIdea": "postorder cuối là gốc; tương tự 105 nhưng duyệt postorder từ cuối.",
+   "thinking": {
+    "forward": "Quy nạp tiến: postorder kết thúc bằng gốc; duyệt từ cuối lên, gốc mới luôn là phần tử chưa dùng ở cuối — dựng cây phải trước rồi cây trái.",
+    "reverse": "Quy nạp ngược: muốn dựng được nút gốc thì phải lấy phần tử cuối postorder; muốn chia inorder thì phải tra vị trí của gốc trong đó."
+   },
+   "note": "Chú giải: khác với preorder, ở đây phải dựng cây phải TRƯỚC cây trái vì postorder ngược với preorder.",
+   "approaches": [
+    {
+     "name": "Đệ quy với index postorder",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "pi từ cuối postorder; gốc = post[pi]; tách inorder; đệ quy trái/phải.",
+     "code": "def build_tree(inorder, post):\n    idx = {v: i for i, v in enumerate(inorder)}\n    pi = len(post) - 1\n    def go(lo, hi):\n        nonlocal pi\n        if lo > hi: return None\n        val = post[pi]; pi -= 1\n        root = TreeNode(val)\n        mid = idx[val]\n        root.right = go(mid + 1, hi)\n        root.left = go(lo, mid - 1)\n        return root\n    return go(0, len(inorder) - 1)",
+     "static": [
+      "in = [9,3,15,20,7], post = [9,15,7,20,3]: gốc = post cuối = 3.",
+      "Vị trí 3 trong inorder là 1 → cây trái inorder [9], cây phải [15,20,7].",
+      "Dựng cây phải trước: gốc mới = 20; vị trí 20 là 3 → trái [15], phải [7].",
+      "20.left = 15, 20.right = 7 (post: 15, 7).",
+      "Dựng cây trái: gốc = 9, không con.",
+      "Gắn: 3.left = 9, 3.right = 20.",
+      "Kết quả BFS: [3, 9, 20, null, null, 15, 7]."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "117",
+   "title": "Populating Next Right Pointers in Each Node II",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Nối mỗi nút với nút kế bên phải cùng tầng (next), có thể là cây không hoàn chỉnh.",
+   "examples": "root=[1,2,3,4,5,null,7] → các nút cùng tầng được nối next",
+   "keyIdea": "BFS theo tầng nối các nút cùng tầng; vì cây không đầy, phải theo dõi tầng kế tiếp trong lúc duyệt.",
+   "thinking": {
+    "forward": "Quy nạp tiến: trong một tầng, mỗi nút nối next tới nút duyệt sau nó trong cùng hàng đợi — nút đầu mỗi tầng không có prev nên không cần nối.",
+    "reverse": "Quy nạp ngược: muốn nối được tầng dưới thì phải biết nút đầu của tầng đó — dummy head trong cách 2 giữ chỗ cho nút đầu tiên mỗi tầng."
+   },
+   "note": "Chú giải: khác bài 'Populating Next I' (cây hoàn hảo), ở đây cây không đầy nên không thể đi theo chuỗi next thuần tuý — phải theo dõi tầng con.",
+   "approaches": [
+    {
+     "name": "BFS nối từng tầng",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Với mỗi tầng, nối next cho các phần tử trong hàng đợi đó.",
+     "code": "from collections import deque\ndef connect(root):\n    if not root: return None\n    q = deque([root])\n    while q:\n        prev = None\n        for _ in range(len(q)):\n            n = q.popleft()\n            if prev: prev.next = n\n            prev = n\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        null,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       7
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Con trỏ tầng (không hàng đợi)",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Duyệt theo 'chuỗi next' của tầng hiện tại, đồng thời xây chuỗi next tầng dưới bằng dummy head.",
+     "code": "def connect(root):\n    head = root\n    while head:\n        dummy = Node(0); tail = dummy\n        cur = head\n        while cur:\n            if cur.left: tail.next = cur.left; tail = tail.next\n            if cur.right: tail.next = cur.right; tail = tail.next\n            cur = cur.next\n        head = dummy.next\n    return root",
+     "static": [
+      "head = nút 1 (tầng trên cùng).",
+      "Tầng 2: dummy (0) làm chỗ; duyệt chuỗi next của tầng 1 (chỉ nút 1): nối 1.left=2 rồi 1.right=3 → chuỗi 2→3.",
+      "head = dummy.next = 2 (nút đầu tầng 2).",
+      "Tầng 3: duyệt chuỗi 2→3: 2.left=4 → nối, 2.right=5 → nối; 3.left=None, 3.right=7 → nối → chuỗi 4→5→7.",
+      "head = dummy.next = 4.",
+      "Tầng 4: 4,5,7 đều không con → chuỗi rỗng, dummy.next = None → vòng lặp kết thúc.",
+      "Trả root với mọi next đã nối đúng tầng."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "114",
+   "title": "Flatten Binary Tree to Linked List",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Làm phẳng cây thành danh sách liên kết dùng right, theo tiền tố (preorder), in-place.",
+   "examples": "[1,2,5,3,4,null,6] → 1→2→3→4→5→6",
+   "keyIdea": "Duyệt preorder; với mỗi nút, gắn cây phải của con phải vào cuối cây con trái rồi xoay.",
+   "thinking": {
+    "forward": "Quy nạp tiến: tại mỗi nút có con trái, kéo toàn bộ cây phải cũ xuống cuối cây con trái rồi cho cây con trái chiếm vị trí right — thứ tự preorder được bảo toàn.",
+    "reverse": "Quy nạp ngược: muốn kết quả là dãy preorder thì nút đi sau một nút luôn là nút ngoài cùng bên trái của cây con trái — phải đặt nó ngay sau right."
+   },
+   "note": "Chú giải: 'rightmost của cây con trái' là nút cuối cùng khi đi hết right bên trong cây con trái; nối cây phải cũ vào đó trước khi xoay.",
+   "approaches": [
+    {
+     "name": "Xoay con trái lên",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Với mỗi nút có left: tìm rightmost của left; nối right vào đó; left dời lên thành right; left=None.",
+     "code": "def flatten(root):\n    cur = root\n    while cur:\n        if cur.left:\n            rm = cur.left\n            while rm.right: rm = rm.right\n            rm.right = cur.right\n            cur.right = cur.left\n            cur.left = None\n        cur = cur.right",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        5,
+        3,
+        4,
+        null,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack preorder dựng lại",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Duyệt preorder bằng stack, nối nút kế vào right của nút trước đó.",
+     "code": "def flatten(root):\n    if not root: return None\n    st = [root]\n    while st:\n        n = st.pop()\n        if n.right: st.append(n.right)\n        if n.left: st.append(n.left)\n        if st: n.right = st[-1]\n        n.left = None\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        5,
+        3,
+        4,
+        null,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "112",
+   "title": "Path Sum",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Có đường gốc→lá nào có tổng đúng targetSum không?",
+   "examples": "root=[5,4,8,11,null,13,4,7,2,null,null,null,1], target=22 → true",
+   "keyIdea": "Trừ dần target khi đi xuống; ở lá: bằng 0 là đạt.",
+   "thinking": {
+    "forward": "Quy nạp tiến: khi xuống con, target giảm đi giá trị nút hiện tại — nút lá đạt yêu cầu khi target còn lại đúng bằng giá trị của nó.",
+    "reverse": "Quy nạp ngược: muốn biết có đường thoả mãn ở gốc thì phải tìm trong hai cây con với target đã trừ đi giá trị gốc — một trong hai nhánh có đáp án là đủ."
+   },
+   "note": "Chú giải: chỉ chấp nhận đường kết thúc ở LÁ; nếu gốc không có con trái/phải thì gốc chính là lá.",
+   "approaches": [
+    {
+     "name": "Đệ quy trừ dần",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "if not root: return False; nếu lá, return target == root.val; ngược lại truyền target−val xuống hai nhánh.",
+     "code": "def has_path_sum(root, target):\n    if not root: return False\n    if not root.left and not root.right:\n        return target == root.val\n    return has_path_sum(root.left, target - root.val) or has_path_sum(root.right, target - root.val)",
+     "tcex": {
+      "input": {
+       "root": [
+        5,
+        4,
+        8,
+        11,
+        null,
+        13,
+        4,
+        7,
+        2,
+        null,
+        null,
+        null,
+        1
+       ],
+       "target": 22
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack (DFS, not leaf check rõ)",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Push (node, remaining); khi pop nếu lá và =0 → True.",
+     "code": "def has_path_sum(root, target):\n    if not root: return False\n    st = [(root, target)]\n    while st:\n        n, rem = st.pop()\n        if not n.left and not n.right and rem == n.val: return True\n        if n.left: st.append((n.left, rem - n.val))\n        if n.right: st.append((n.right, rem - n.val))\n    return False",
+     "tcex": {
+      "input": {
+       "root": [
+        5,
+        4,
+        8,
+        11,
+        null,
+        13,
+        4,
+        7,
+        2,
+        null,
+        null,
+        null,
+        1
+       ],
+       "target": 22
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "129",
+   "title": "Sum Root to Leaf Numbers",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Mỗi đường gốc→lá tạo một số (nối các chữ số); cộng tổng tất cả.",
+   "examples": "[1,2,3] → 12+13=25 · [4,9,0,5,1] → 1026",
+   "keyIdea": "Truyền số hiện tại = num*10+val; cộng vào tổng khi tới lá.",
+   "thinking": {
+    "forward": "Quy nạp tiến: khi xuống sâu một tầng, số hiện tại dịch trái một chữ số rồi thêm giá trị nút — nút lá đóng góp số hoàn chỉnh vào tổng.",
+    "reverse": "Quy nạp ngược: muốn tổng đúng thì mỗi đường gốc→lá phải tạo đúng số — giá trị truyền xuống phải là 'số đã gom tính tới nút cha'."
+   },
+   "note": "Chú giải: num*10+val gom chữ số theo chiều từ gốc xuống; ở cách đệ quy, tổng trả về của hai nhánh lá cộng lại.",
+   "approaches": [
+    {
+     "name": "DFS đệ quy gom số",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "num = num*10 + root.val; ở lá cộng num; ngược lại truyền xuống.",
+     "code": "def sum_numbers(root, num=0):\n    if not root: return 0\n    num = num*10 + root.val\n    if not root.left and not root.right: return num\n    return sum_numbers(root.left, num) + sum_numbers(root.right, num)",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        9,
+        0,
+        5,
+        1
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 1026,
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack gom số",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Push (node, num); cộng ở lá.",
+     "code": "def sum_numbers(root):\n    if not root: return 0\n    total = 0; st = [(root, 0)]\n    while st:\n        n, num = st.pop()\n        num = num*10 + n.val\n        if not n.left and not n.right: total += num\n        if n.left: st.append((n.left, num))\n        if n.right: st.append((n.right, num))\n    return total",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        9,
+        0,
+        5,
+        1
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 1026,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "124",
+   "title": "Binary Tree Maximum Path Sum",
+   "cat": "Binary Tree General",
+   "diff": "Hard",
+   "statement": "Tìm tổng lớn nhất của bất kỳ đường đi nào (từ nút tới nút, qua gốc có thể) — mỗi nút tối đa 1 lần.",
+   "examples": "[1,2,3] → 6 · [-10,9,20,null,null,15,7] → 42",
+   "keyIdea": "Mỗi nút trả về giá trị đường 'một nhánh' xuống (max(left,right)+val); cập nhật đáp án với đường 'đi qua nút' (left+val+right).",
+   "thinking": {
+    "forward": "Quy nạp tiến: tại mỗi nút có hai thứ — nhánh tốt nhất đi xuống (dùng tiếp cho cha) và đường đi qua nút (ứng viên đáp án); nút âm thì cắt nhánh về 0.",
+    "reverse": "Quy nạp ngược: muốn tính đáp án qua nút cha thì cần nhánh tốt nhất của từng con — mỗi nút trả lên 'max nhánh + giá trị bản thân'."
+   },
+   "note": "Chú giải: đường đi không nhất thiết qua gốc; nút âm có thể bỏ qua hoàn toàn nên dùng max(nhánh, 0).",
+   "approaches": [
+    {
+     "name": "DFS trả nhánh, cập nhật best",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "helper trả max nhánh xuống (có thể 0 nếu âm); best = max(best, l+r+val).",
+     "code": "def max_path_sum(root):\n    best = -10**9\n    def dfs(n):\n        nonlocal best\n        if not n: return 0\n        l = max(dfs(n.left), 0)\n        r = max(dfs(n.right), 0)\n        best = max(best, l + r + n.val)\n        return max(l, r) + n.val\n    dfs(root)\n    return best",
+     "static": [
+      "Cây [-10, 9, 20, null, null, 15, 7]: nút 15 trả nhánh 15, nút 7 trả 7.",
+      "Nút 20: l = 15, r = 7; best = max(best, 15+20+7 = 42); trả lên max(15,7)+20 = 35.",
+      "Nút 9 (lá): l = 0, r = 0; best = max(42, 9) = 42; trả 9.",
+      "Gốc -10: l = max(9,0) = 9, r = max(35,0) = 35; best = max(42, 9+35-10 = 34) = 42.",
+      "Trả best = 42 — đường 15→20→7 đi qua nút 20, không cần gốc."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "173",
+   "title": "Binary Search Tree Iterator",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Iterator duyệt BST theo thứ tự tăng dần (inorder) với next() và hasNext() O(1) trung bình.",
+   "examples": "['BSTIterator','next','next','hasNext','next','hasNext','next','hasNext','next','hasNext'] trên [7,3,15,null,null,9,20]",
+   "keyIdea": "Mô phỏng inorder bằng stack: luôn đẩy nhánh trái; khi next pop và đẩy nhánh phải.",
+   "thinking": {
+    "forward": "Quy nạp tiến: inorder đi hết nhánh trái trước; mỗi lần next lấy nút dưới cùng bên trái, rồi chuyển sang nhánh phải của nó — stack nhớ đường đi còn dở.",
+    "reverse": "Quy nạp ngược: muốn next() trả đúng phần tử kế tiếp trong inorder thì phải chuẩn bị sẵn nhánh trái của nút kế — đẩy toàn bộ nhánh trái khi mới gặp nút."
+   },
+   "note": "Chú giải: phức tạp trung bình O(1) vì mỗi nút được push/pop đúng một lần trong suốt vòng đời iterator.",
+   "approaches": [
+    {
+     "name": "Stack đẩy trái",
+     "time": "O(h) worst next, O(1) trung bình",
+     "space": "O(h)",
+     "idea": "Khởi tạo đẩy hết nhánh trái từ gốc. next: pop, với node.right đẩy hết nhánh trái của nó; trả val.",
+     "code": "class BSTIterator:\n    def __init__(self, root):\n        self.st = []\n        self._push(root)\n    def _push(self, n):\n        while n: self.st.append(n); n = n.left\n    def next(self):\n        n = self.st.pop()\n        self._push(n.right)\n        return n.val\n    def hasNext(self):\n        return bool(self.st)",
+     "static": [
+      "Cây [7,3,15,null,null,9,20]; khởi tạo đẩy hết nhánh trái: stack [7, 3].",
+      "next(): pop 3, đẩy nhánh trái của 3.right (None) → trả 3.",
+      "next(): pop 7, đẩy nhánh trái của 7.right (15, 9) → trả 7. Stack [15, 9].",
+      "next(): pop 9, đẩy trái của 9.right (None) → trả 9.",
+      "next(): pop 15, đẩy trái của 15.right (20) → trả 15. Stack [20].",
+      "next(): pop 20, không còn con → trả 20.",
+      "hasNext() = False khi stack rỗng."
+     ]
+    },
+    {
+     "name": "Duyệt inorder trước",
+     "time": "O(n) next",
+     "space": "O(n)",
+     "idea": "Tạo sẵn danh sách inorder trong __init__, next lấy tuần tự. Đơn giản nhưng tốn thời gian khởi tạo.",
+     "code": "class BSTIterator:\n    def __init__(self, root):\n        self.a = []; self.i = 0\n        def dfs(n):\n            if not n: return\n            dfs(n.left); self.a.append(n.val); dfs(n.right)\n        dfs(root)\n    def next(self):\n        v = self.a[self.i]; self.i += 1; return v\n    def hasNext(self):\n        return self.i < len(self.a)",
+     "static": [
+      "DFS inorder trên cây [7,3,15,null,null,9,20]: gom [3, 7, 9, 15, 20].",
+      "self.i = 0 trỏ tới phần tử đầu.",
+      "next(): trả self.a[0] = 3, i = 1.",
+      "next(): trả 7, i = 2; next(): trả 9, i = 3.",
+      "next(): trả 15, i = 4; next(): trả 20, i = 5.",
+      "hasNext(): i < len(a) → false khi đã lấy hết 5 phần tử."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "222",
+   "title": "Count Complete Tree Nodes",
+   "cat": "Binary Tree General",
+   "diff": "Easy",
+   "statement": "Đếm số nút của cây nhị phân hoàn chỉnh (complete tree).",
+   "examples": "root=[1,2,3,4,5,6] → 6",
+   "keyIdea": "Tận dụng: cây con đầy đủ có 2^h − 1 nút; so chiều cao trái/phải để biết bên nào đầy.",
+   "thinking": {
+    "forward": "Quy nạp tiến: nếu chiều cao trái = chiều cao phải thì cây trái đầy (2^hl − 1 nút) — chỉ cần đếm tiếp cây phải; nếu lệch thì cây phải đầy.",
+    "reverse": "Quy nạp ngược: muốn đếm nhanh cây hoàn chỉnh thì phải tận dụng công thức cây đầy — mỗi bước lược bỏ một nửa số nút."
+   },
+   "note": "Chú giải: cây hoàn chỉnh: mọi tầng đầy trừ tầng cuối, các nút dồn về trái — vì vậy một trong hai cây con luôn đầy.",
+   "approaches": [
+    {
+     "name": "Đệ quy nhị phân hoàn chỉnh",
+     "time": "O(log² n)",
+     "space": "O(log n)",
+     "idea": "hL, hR; nếu hL==hR → 2^hL −1 (cây trái đầy); ngược lại cây phải đầy.",
+     "code": "def count_nodes(root):\n    if not root: return 0\n    def height(n):\n        h = 0\n        while n: h += 1; n = n.left\n        return h\n    hl = height(root.left); hr = height(root.right)\n    if hl == hr:\n        return (1 << hl) + count_nodes(root.right)\n    else:\n        return (1 << hr) + count_nodes(root.left)",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 6,
+      "anim": true
+     }
+    },
+    {
+     "name": "Đệ quy thường",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Duyệt hết mọi nút đếm — tham chiếu khi cây không hoàn chỉnh.",
+     "code": "def count_nodes(root):\n    if not root: return 0\n    return 1 + count_nodes(root.left) + count_nodes(root.right)",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 6,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "236",
+   "title": "Lowest Common Ancestor of a Binary Tree",
+   "cat": "Binary Tree General",
+   "diff": "Medium",
+   "statement": "Tìm tổ tiên chung thấp nhất của hai nút p,q (nút thấp nhất có cả p và q trong cây con).",
+   "examples": "root=[3,5,1,6,2,0,8,null,null,7,4], p=5,q=1 → 3 · p=5,q=4 → 5",
+   "keyIdea": "DFS: nếu nút là p hoặc q → trả nút đó; nếu cả hai nhánh đều trả khác None → nút này là LCA.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi nút trả lên 'có tìm thấy p/q trong cây con này không'; nút có cả hai nhánh đều 'có' là điểm gặp thấp nhất — chính là LCA.",
+    "reverse": "Quy nạp ngược: muốn biết gốc có phải LCA không thì phải biết hai nhánh con có chứa p, q không — thông tin dồn từ lá lên."
+   },
+   "note": "Chú giải: nếu p là tổ tiên của q thì chính p là LCA — trường hợp này nút p được trả lên ngay mà không cần xuống tìm q.",
+   "approaches": [
+    {
+     "name": "DFS đệ quy",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "helper: None nếu không chứa; nút nếu n==p or n==q; nếu l và r đều khác → n; else l or r.",
+     "code": "def lowest_common_ancestor(root, p, q):\n    if not root or root is p or root is q: return root\n    l = lowest_common_ancestor(root.left, p, q)\n    r = lowest_common_ancestor(root.right, p, q)\n    if l and r: return root\n    return l or r",
+     "static": [
+      "Cây [3,5,1,6,2,0,8,null,null,7,4], tìm LCA của 5 và 1.",
+      "DFS tới 5: nút là p → trả lên 5 (mang theo 'thấy p').",
+      "DFS tới 1: nút là q → trả lên 1 (mang theo 'thấy q').",
+      "Tại gốc 3: nhánh trái trả 5, nhánh phải trả 1 — cả hai đều khác None.",
+      "Nút có cả hai nhánh trả khác None chính là LCA → trả 3.",
+      "Trường hợp p=5, q=4: DFS trả 5 từ nhánh trái và 4 từ nhánh phải của 2 → LCA = 5."
+     ]
+    },
+    {
+     "name": "Lưu cha + đường đi",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "BFS lưu parent cho mọi nút; lấy đường p lên gốc vào set, rồi đi q lên tới khi gặp nút trong set.",
+     "code": "from collections import deque\ndef lowest_common_ancestor(root, p, q):\n    parent = {root: None}\n    st = [root]\n    while p not in parent or q not in parent:\n        n = st.pop()\n        if n.left: parent[n.left] = n; st.append(n.left)\n        if n.right: parent[n.right] = n; st.append(n.right)\n    seen = set()\n    while p:\n        seen.add(p); p = parent[p]\n    while q not in seen:\n        q = parent[q]\n    return q",
+     "static": [
+      "BFS từ gốc, ghi parent cho mọi nút tới khi cả p và q đều có trong dict parent.",
+      "Lưu đường đi từ p ngược lên gốc vào set: p=5 → 3.",
+      "Từ q=1 ngược lên: 1 có trong seen? không → q = parent[1] = 3.",
+      "3 có trong seen → LCA = 3.",
+      "Trường hợp p=5, q=4: đường p = {5, 3}; q=4 → 2 → 5 có trong seen → LCA = 5."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "199",
+   "title": "Binary Tree Right Side View",
+   "cat": "Binary Tree BFS",
+   "diff": "Medium",
+   "statement": "Nhìn từ bên phải, liệt kê các nút nhìn thấy (nút ngoài cùng phải mỗi tầng).",
+   "examples": "root=[1,2,3,null,5,null,4] → [1,3,4]",
+   "keyIdea": "BFS theo tầng lấy nút cuối mỗi tầng; hoặc DFS ưu tiên phải trước.",
+   "thinking": {
+    "forward": "Quy nạp tiến: trong BFS theo tầng, nút cuối cùng được duyệt của mỗi tầng là nút nhìn thấy từ bên phải — vì duyệt trái trước phải sau.",
+    "reverse": "Quy nạp ngược: muốn liệt kê nút phải nhất mỗi tầng thì phải duyệt đủ cả tầng trước khi sang tầng kế — BFS đảm bảo điều này."
+   },
+   "note": "Chú giải: với DFS ưu tiên phải, tầng đầu tiên gặp trong thứ tự đó chính là nút nhìn thấy — dùng độ sâu bằng len(res) để chốt.",
+   "approaches": [
+    {
+     "name": "BFS nút phải cùng tầng",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Mỗi tầng, lấy phần tử cuối trước khi sang tầng kế.",
+     "code": "from collections import deque\ndef right_side_view(root):\n    if not root: return []\n    res = []; q = deque([root])\n    while q:\n        sz = len(q)\n        for i in range(sz):\n            n = q.popleft()\n            if i == sz - 1: res.append(n.val)\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        3,
+        null,
+        5,
+        null,
+        4
+       ]
+      },
+      "kind": "tree",
+      "display": "res",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       1,
+       3,
+       4
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS ưu tiên phải",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Duyệt phải trước; tầng đầu tiên gặp trong thứ tự này là nút nhìn thấy: nếu depth == len(res) thì thêm.",
+     "code": "def right_side_view(root):\n    res = []\n    def dfs(n, d):\n        if not n: return\n        if d == len(res): res.append(n.val)\n        dfs(n.right, d+1)\n        dfs(n.left, d+1)\n    dfs(root, 0)\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        1,
+        2,
+        3,
+        null,
+        5,
+        null,
+        4
+       ]
+      },
+      "kind": "tree",
+      "display": "res",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       1,
+       3,
+       4
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "637",
+   "title": "Average of Levels in Binary Tree",
+   "cat": "Binary Tree BFS",
+   "diff": "Easy",
+   "statement": "Trả trung bình cộng giá trị của từng tầng.",
+   "examples": "[3,9,20,null,null,15,7] → [3.0, 14.5, 11.0]",
+   "keyIdea": "BFS, chia tổng mỗi tầng cho số phần tử tầng đó.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi vòng lặp BFS xử lý đúng một tầng — cộng toàn bộ giá trị tầng rồi chia cho số nút của tầng đó.",
+    "reverse": "Quy nạp ngược: muốn trung bình đúng theo tầng thì phải biết ranh giới tầng — len(q) trước khi duyệt chính là số nút của tầng."
+   },
+   "note": "Chú giải: lấy len(q) TRƯỚC khi popleft — nếu lấy sau thì số tầng sai vì hàng đợi thay đổi trong lúc duyệt.",
+   "approaches": [
+    {
+     "name": "BFS tổng từng tầng",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Mỗi vòng hàng đợi là một tầng; tính sum/len.",
+     "code": "from collections import deque\ndef average_of_levels(root):\n    if not root: return []\n    res = []; q = deque([root])\n    while q:\n        s = 0; sz = len(q)\n        for _ in range(sz):\n            n = q.popleft(); s += n.val\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n        res.append(s / sz)\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "res",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       3.0,
+       14.5,
+       11.0
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "102",
+   "title": "Binary Tree Level Order Traversal",
+   "cat": "Binary Tree BFS",
+   "diff": "Medium",
+   "statement": "Trả giá trị theo từng tầng.",
+   "examples": "[3,9,20,null,null,15,7] → [[3],[9,20],[15,7]]",
+   "keyIdea": "BFS chuẩn: mỗi vòng một tầng.",
+   "thinking": {
+    "forward": "Quy nạp tiến: hàng đợi lúc bắt đầu mỗi vòng chứa đúng các nút của một tầng; duyệt hết chúng rồi mới sang tầng kế.",
+    "reverse": "Quy nạp ngược: muốn nhóm đúng theo tầng thì phải cố định số nút của tầng tại thời điểm bắt đầu — mọi nút con thêm vào thuộc tầng sau."
+   },
+   "note": "Chú giải: mẫu 'sz = len(q); for _ in range(sz)' là mẫu chuẩn cho mọi bài BFS theo tầng (zigzag, right side view, average...).",
+   "approaches": [
+    {
+     "name": "BFS theo tầng",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Hàng đợi; mỗi vòng lấy toàn bộ tầng hiện tại (len(q)).",
+     "code": "from collections import deque\ndef level_order(root):\n    if not root: return []\n    res = []; q = deque([root])\n    while q:\n        level = []; sz = len(q)\n        for _ in range(sz):\n            n = q.popleft(); level.append(n.val)\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n        res.append(level)\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "res",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       [
+        3
+       ],
+       [
+        9,
+        20
+       ],
+       [
+        15,
+        7
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS theo độ sâu",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Đệ quy với depth; res[depth].append(val) — duyệt pre-order.",
+     "code": "def level_order(root):\n    res = []\n    def dfs(n, d):\n        if not n: return\n        if d == len(res): res.append([])\n        res[d].append(n.val)\n        dfs(n.left, d+1); dfs(n.right, d+1)\n    dfs(root, 0)\n    return res",
+     "static": [
+      "Gọi dfs(3, 0): d == len(res) = 0 nên res = [[ ]], thêm 3 → [[3]].",
+      "dfs(9, 1): d = 1 == len(res) nên res = [[3], [ ]], thêm 9 → [[3], [9]].",
+      "dfs(20, 1): d = 1 < len(res) = 2 nên chỉ thêm → [[3], [9, 20]].",
+      "dfs(15, 2): tạo tầng 2, thêm 15 → [[3], [9, 20], [15]].",
+      "dfs(7, 2): thêm 7 → [[3], [9, 20], [15, 7]].",
+      "Pre-order đi trái trước phải nên thứ tự trong mỗi tầng đúng như BFS."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "103",
+   "title": "Binary Tree Zigzag Level Order Traversal",
+   "cat": "Binary Tree BFS",
+   "diff": "Medium",
+   "statement": "Như level order nhưng đảo chiều mỗi tầng (zigzag).",
+   "examples": "[3,9,20,null,null,15,7] → [[3],[20,9],[15,7]]",
+   "keyIdea": "BFS; tầng chẵn ghi xuôi, tầng lẻ ghi ngược (hoặc reverse).",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi tầng gom theo BFS bình thường, rồi đảo chiều các tầng lẻ — cờ rev đổi mỗi vòng để xen kẽ hướng.",
+    "reverse": "Quy nạp ngược: muốn tầng 1 đi từ phải sang trái thì sau khi gom list xuôi phải đảo — việc đảo làm sau khi đã có thứ tự BFS chuẩn."
+   },
+   "note": "Chú giải: dùng level[::-1] cho tầng lẻ giữ nguyên thứ tự con trái/phải trong hàng đợi — chỉ đảo thứ tự GHI kết quả.",
+   "approaches": [
+    {
+     "name": "BFS + đảo chiều",
+     "time": "O(n)",
+     "space": "O(w)",
+     "idea": "Mỗi tầng gom list; nếu depth lẻ thì reverse trước khi append.",
+     "code": "from collections import deque\ndef zigzag_level_order(root):\n    if not root: return []\n    res = []; q = deque([root]); rev = False\n    while q:\n        level = []; sz = len(q)\n        for _ in range(sz):\n            n = q.popleft(); level.append(n.val)\n            if n.left: q.append(n.left)\n            if n.right: q.append(n.right)\n        res.append(level[::-1] if rev else level)\n        rev = not rev\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        9,
+        20,
+        null,
+        null,
+        15,
+        7
+       ]
+      },
+      "kind": "tree",
+      "display": "res",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       [
+        3
+       ],
+       [
+        20,
+        9
+       ],
+       [
+        15,
+        7
+       ]
+      ],
+      "anim": true
+     }
+    }
+   ]
+  }
+ ]
+}

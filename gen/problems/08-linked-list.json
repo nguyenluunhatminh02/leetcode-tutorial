@@ -1,0 +1,691 @@
+{
+  "desc": "Thao tác nút và con trỏ: đảo, gộp, tìm chu trình, con trỏ trước/sau, dummy head. Kẻ thù lớn nhất là mất tham chiếu khi đổi next.",
+  "problems": [
+    {
+      "no": "141",
+      "title": "Linked List Cycle",
+      "cat": "Linked List",
+      "diff": "Easy",
+      "statement": "Xem danh sách liên kết có vòng không. Follow-up: O(1) bộ nhớ.",
+      "examples": "head=[3,2,0,-4], pos=1 → true · head=[1], pos=-1 → false",
+      "keyIdea": "Hai con trỏ thỏ/rùa: rùa đi 1 bước, thỏ đi 2; nếu có vòng thì gặp nhau.",
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi bước slow tiến 1, fast tiến 2 — trong vòng, khoảng cách hai con trỏ thu hẹp 1 mỗi bước nên cuối cùng chúng phải trùng nhau.",
+        "reverse": "Quy nạp ngược: muốn kết luận có vòng thì phải chứng minh được hai con trỏ gặp nhau — nếu không gặp trước khi fast về None, danh sách không có vòng."
+      },
+      "note": "Chú giải: vòng có thể là vòng tự trỏ (pos chỉ tới chính nút đó). Con trỏ fast đi 2 bước nên phải kiểm tra fast và fast.next đều khác None.",
+      "approaches": [
+        {
+          "name": "Thỏ & rùa (Floyd)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "slow = slow.next, fast = fast.next.next; nếu gặp → vòng. Cẩn thận None.",
+          "code": "def has_cycle(head):\n    slow = fast = head\n    while fast and fast.next:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast: return True\n    return False",
+          "tcex": {
+            "input": {
+              "head": {
+                "values": [
+                  3,
+                  2,
+                  0,
+                  -4
+                ],
+                "pos": 1
+              }
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": true,
+            "anim": true
+          }
+        },
+        {
+          "name": "Set đã thăm",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Lưu từng nút đã gặp; gặp lại → vòng. Dễ hiểu, tốn bộ nhớ.",
+          "code": "def has_cycle(head):\n    seen = set(); cur = head\n    while cur:\n        if cur in seen: return True\n        seen.add(cur); cur = cur.next\n    return False",
+          "tcex": {
+            "input": {
+              "head": {
+                "values": [
+                  3,
+                  2,
+                  0,
+                  -4
+                ],
+                "pos": 1
+              }
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": true,
+            "anim": true
+          }
+        },
+        {
+          "name": "Đánh dấu nút",
+          "time": "O(n)",
+          "space": "O(1) (thay đổi nút)",
+          "idea": "Gán cờ vào từng nút khi đã đi qua; thấy nút đã gắn → vòng. Biến đổi dữ liệu nên ít dùng trong thực tế.",
+          "code": "def has_cycle(head):\n    cur = head\n    while cur:\n        if hasattr(cur, 'visited'): return True\n        cur.visited = True\n        cur = cur.next\n    return False",
+          "static": [
+            "Duyệt list, đánh dấu từng nút đã gặp",
+            "Nếu gặp nút đã đánh dấu → có cycle",
+            "Dùng set lưu id/địa chỉ nút",
+            "Đi hết None → không có cycle"
+          ]
+        }
+      ]
+    },
+    {
+      "no": "2",
+      "title": "Add Two Numbers",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Hai số được biểu diễn bằng danh sách liên kết (mỗi nút 1 chữ số, có thể có nhớ). Trả tổng.",
+      "examples": "[2,4,3] + [5,6,4] → [7,0,8] (342+465=807)",
+      "keyIdea": "Duyệt song song hai danh sách + biến carry; nối kết quả vào dummy head.",
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi cột cộng ba giá trị (l1, l2, carry); chữ số hàng đơn vị vào nút mới, carry đẩy lên cột kế tiếp.",
+        "reverse": "Quy nạp ngược: muốn nối được kết quả đúng thứ tự thì phải dựng từ hàng đơn vị lên — dummy head giúp không cần xử lý riêng nút đầu tiên."
+      },
+      "note": "Chú giải: phải duyệt tiếp tục khi carry còn dù cả hai danh sách hết (vd 999 + 1 = 1000); nút kết quả lưu sum % 10, carry = sum // 10.",
+      "approaches": [
+        {
+          "name": "Cộng có nhớ bằng dummy",
+          "time": "O(m+n)",
+          "space": "O(max(m,n))",
+          "idea": "Duyệt khi l1 hoặc l2 còn; sum = v1+v2+carry; push sum%10; carry = sum//10; cuối cùng thêm carry nếu còn. Trả dummy.next.",
+          "code": "def add_two_numbers(l1, l2):\n    dummy = tail = ListNode()\n    carry = 0\n    while l1 or l2 or carry:\n        v = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry\n        carry = v // 10\n        tail.next = ListNode(v % 10)\n        tail = tail.next\n        if l1: l1 = l1.next\n        if l2: l2 = l2.next\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "l1": [
+                2,
+                4,
+                3
+              ],
+              "l2": [
+                5,
+                6,
+                4
+              ]
+            },
+            "kind": "ll",
+            "display": "l1",
+            "param_kinds": {
+              "l1": "ll",
+              "l2": "ll"
+            },
+            "expected": [
+              7,
+              0,
+              8
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Gom vào chuỗi rồi đảo",
+          "time": "O(m+n)",
+          "space": "O(m+n)",
+          "idea": "Lợi dụng Python: gộp thành số, cộng, rồi dựng lại danh sách. Dạy cách ánh xạ cấu trúc → số.",
+          "code": "def to_num(node):\n    s = ''\n    while node: s = str(node.val) + s; node = node.next\n    return int(s or '0')\ndef mk_list(n):\n    dummy = tail = ListNode()\n    for ch in str(n)[::-1]:\n        tail.next = ListNode(int(ch)); tail = tail.next\n    return dummy.next\ndef add_two_numbers(l1, l2):\n    return mk_list(to_num(l1) + to_num(l2))",
+          "static": [
+            "to_num([2,4,3]): gom '2' rồi thêm '4' lên trước → '42', rồi '3' → '342' → int 342.",
+            "to_num([5,6,4]) tương tự → 465.",
+            "Cộng hai số: 342 + 465 = 807.",
+            "mk_list(807): duyệt chuỗi '807' ngược → [7, 0, 8].",
+            "Trả về dummy.next — danh sách biểu diễn tổng 807."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "21",
+      "title": "Merge Two Sorted Lists",
+      "cat": "Linked List",
+      "diff": "Easy",
+      "statement": "Gộp hai danh sách đã sắp (tăng dần) thành một, giữ thứ tự, không tạo nút mới (dùng nút sẵn có là tiện nhất).",
+      "examples": "list1=[1,2,4], list2=[1,3,4] → [1,1,2,3,4,4]",
+      "keyIdea": "So sánh đỉnh hai danh sách, nối đỉnh nhỏ hơn vào kết quả, dummy head tránh viết riêng đầu.",
+      "thinking": {
+        "forward": "Quy nạp tiến: nút đầu kết quả là nút nhỏ hơn trong hai đỉnh; phần còn lại là bài toán gộp của hai đuôi — luôn duy trì 'phần đã gộp' đã sắp.",
+        "reverse": "Quy nạp ngược: muốn danh sách gộp hợp lệ thì mỗi bước phải kéo đúng nút nhỏ nhất còn lại — hai đuôi luôn là hai danh sách con đã sắp."
+      },
+      "note": "Chú giải: không cần tạo nút mới, chỉ cần trỏ lại next — dummy head xử lý việc nút đầu tiên của kết quả chưa biết là ai.",
+      "approaches": [
+        {
+          "name": "Vòng lặp + dummy",
+          "time": "O(m+n)",
+          "space": "O(1)",
+          "idea": "So l1.val vs l2.val; nối nhỏ hơn vào tail; khi một bên hết, nối luôn phần còn lại.",
+          "code": "def merge_two_lists(l1, l2):\n    dummy = tail = ListNode()\n    while l1 and l2:\n        if l1.val < l2.val:\n            tail.next, l1 = l1, l1.next\n        else:\n            tail.next, l2 = l2, l2.next\n        tail = tail.next\n    tail.next = l1 or l2\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "l1": [
+                1,
+                2,
+                4
+              ],
+              "l2": [
+                1,
+                3,
+                4
+              ]
+            },
+            "kind": "ll",
+            "display": "l1",
+            "param_kinds": {
+              "l1": "ll",
+              "l2": "ll"
+            },
+            "expected": [
+              1,
+              1,
+              2,
+              3,
+              4,
+              4
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Đệ quy",
+          "time": "O(m+n)",
+          "space": "O(m+n) stack",
+          "idea": "nếu cả hai rỗng → None; chọn nút nhỏ hơn rồi nối với merge(phần còn lại).",
+          "code": "def merge_two_lists(l1, l2):\n    if not l1: return l2\n    if not l2: return l1\n    if l1.val < l2.val:\n        l1.next = merge_two_lists(l1.next, l2); return l1\n    else:\n        l2.next = merge_two_lists(l1, l2.next); return l2",
+          "static": [
+            "Gọi merge(1→2→4, 1→3→4): l1.val = 1, l2.val = 1 → chọn l2 (không < nên lấy nhánh else).",
+            "merge(1→2→4, 3→4): 1 < 3 → l1.next = merge(2→4, 3→4), trả 1.",
+            "merge(2→4, 3→4): 2 < 3 → l1.next = merge(4, 3→4), trả 2.",
+            "merge(4, 3→4): 3 < 4 → l2.next = merge(4, 4), trả 3.",
+            "merge(4, 4): 4 < 4 sai → l2.next = merge(4, None) = 4, trả 4.",
+            "Lần ngược lên, các con trỏ next được nối: 1→1→2→3→4→4."
+          ]
+        }
+      ]
+    },
+    {
+      "no": "138",
+      "title": "Copy List with Random Pointer",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Deep-copy danh sách liên kết có thêm con trỏ random trỏ tới nút bất kỳ.",
+      "examples": "head = [[7,null],[13,0],[11,4],[10,2],[1,0]] → bản sao tương đương",
+      "keyIdea": "Ánh xạ nút cũ → nút mới; sau đó gắn next/random theo ánh xạ.",
+      "thinking": {
+        "forward": "Quy nạp tiến: lượt 1 dựng bản sao độc lập cho từng nút và ghi ánh xạ; lượt 2 dựa trên ánh xạ để nối next/random — không cần biết nút đó ở đâu.",
+        "reverse": "Quy nạp ngược: muốn random trỏ đúng nút mới tương ứng thì phải có cách tra 'nút cũ → nút mới' — ánh xạ chính là cầu nối."
+      },
+      "note": "Chú giải: không được copy tham chiếu trực tiếp (nếu không sẽ dính vào danh sách cũ); key của dict là chính đối tượng nút cũ.",
+      "approaches": [
+        {
+          "name": "Dict ánh xạ cổ điển",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Lượt 1: tạo bản sao mỗi nút, lưu map[node]=copy. Lượt 2: m.copy.next = map[node.next], m.copy.random = map[node.random].",
+          "code": "def copy_random_list(head):\n    m = {None: None}\n    cur = head\n    while cur:\n        m[cur] = Node(cur.val); cur = cur.next\n    cur = head\n    while cur:\n        m[cur].next = m[cur.next]\n        m[cur].random = m[cur.random]\n        cur = cur.next\n    return m[head]",
+          "static": [
+            "Tạo bản sao từng nút, lưu ánh xạ cũ→mới",
+            "Nối next và random theo ánh xạ",
+            "Copy deep từng nút với đúng random pointer",
+            "Trả đầu danh sách mới"
+          ]
+        },
+        {
+          "name": "Hóa trang (interleaving)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Chèn bản sao ngay sau mỗi nút; gắn random; rồi tách hai danh sách ra. Không cần dict.",
+          "code": "def copy_random_list(head):\n    if not head: return None\n    cur = head\n    while cur:\n        nxt = cur.next; cur.next = Node(cur.val); cur.next.next = nxt; cur = nxt\n    cur = head\n    while cur:\n        if cur.random: cur.next.random = cur.random.next\n        cur = cur.next.next\n    old = head; copy = head.next; out = copy\n    while old:\n        old.next = old.next.next\n        copy.next = copy.next.next if copy.next else None\n        old = old.next; copy = copy.next\n    return out",
+          "static": [
+            "Tạo bản sao từng nút, lưu ánh xạ cũ→mới",
+            "Nối next và random theo ánh xạ",
+            "Copy deep từng nút với đúng random pointer",
+            "Trả đầu danh sách mới"
+          ]
+        }
+      ]
+    },
+    {
+      "no": "92",
+      "title": "Reverse Linked List II",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Đảo phần từ vị trí left đến right (1-based) của danh sách, một lượt duyệt.",
+      "examples": "head=[1,2,3,4,5], left=2, right=4 → [1,4,3,2,5]",
+      "keyIdea": "Tìm prev của nút left; đảo right−left+1 nút; nối lại ba đoạn.",
+      "thinking": {
+        "forward": "Quy nạp tiến: đi tới nút trước left (pre), rồi với mỗi nút trong đoạn, kéo nó lên đầu đoạn — sau right−left lần thì đoạn đã đảo.",
+        "reverse": "Quy nạp ngược: muốn nối lại đúng ba đoạn thì phải giữ chắc pre (trước đoạn) và cur (đuôi đoạn) — không được để mất tham chiếu."
+      },
+      "note": "Chú giải: kỹ thuật 'đưa nút lên đầu đoạn' giữ pre cố định; nút đầu của đoạn là nút kế của pre tại mọi thời điểm.",
+      "approaches": [
+        {
+          "name": "Đảo cục bộ ba con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "pre = nút trước left. Đảo bằng đầu nút mới; với mỗi nút trong đoạn, đưa nó lên đầu đoạn. Sau đó nối pre.next, và đuôi.",
+          "code": "def reverse_between(head, left, right):\n    dummy = ListNode(next=head)\n    pre = dummy\n    for _ in range(left - 1): pre = pre.next\n    cur = pre.next\n    for _ in range(right - left):\n        nxt = cur.next\n        cur.next = nxt.next\n        nxt.next = pre.next\n        pre.next = nxt\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "left": 2,
+              "right": 4
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              4,
+              3,
+              2,
+              5
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Tách đoạn rồi reverse",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Ghi lại start/end của đoạn, cắt rời, reverse, nối lại. Rõ ràng hơn cho người mới.",
+          "code": "def reverse_between(head, left, right):\n    dummy = ListNode(next=head)\n    pre = dummy\n    for _ in range(left - 1): pre = pre.next\n    st = pre.next; en = st\n    for _ in range(right - left): en = en.next\n    tail = en.next; en.next = None\n    rev = None; cur = st\n    while cur:\n        nxt = cur.next; cur.next = rev; rev = cur; cur = nxt\n    pre.next = rev; st.next = tail\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "left": 2,
+              "right": 4
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              4,
+              3,
+              2,
+              5
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "25",
+      "title": "Reverse Nodes in k-Group",
+      "cat": "Linked List",
+      "diff": "Hard",
+      "statement": "Đảo từng nhóm k nút liên tiếp; nhóm cuối không đủ k thì giữ nguyên.",
+      "examples": "head=[1,2,3,4,5], k=2 → [2,1,4,3,5] · k=3 → [3,2,1,4,5]",
+      "keyIdea": "Đếm k nút còn đủ trước khi đảo; đảo nhóm rồi nối vào kết quả. Dùng dummy và nhóm 'pre-before'.",
+      "thinking": {
+        "forward": "Quy nạp tiến: với mỗi nhóm, kiểm tra còn đủ k nút; đảo nhóm bằng cách đưa từng nút đầu nhóm lên trước pre; sau đó di chuyển pre tới cuối nhóm vừa đảo.",
+        "reverse": "Quy nạp ngược: muốn nối các nhóm liền mạch thì phải biết chính xác nút cuối mỗi nhóm (nút đầu nhóm cũ) — lưu nó trước khi đảo để dùng làm pre cho nhóm sau."
+      },
+      "note": "Chú giải: luôn kiểm tra đủ k nút trước khi đảo; nút đầu nhóm cũ (end) sẽ thành cuối nhóm sau khi đảo nên dùng làm pre kế tiếp.",
+      "approaches": [
+        {
+          "name": "Pre + đảo nhóm",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Kiểm tra đủ k nút; pre là nút trước nhóm; đảo k nút bằng cách lặp đưa nút đầu nhóm lên; nối lại.",
+          "code": "def reverse_k_group(head, k):\n    dummy = ListNode(next=head); pre = dummy\n    while True:\n        cur = pre\n        for _ in range(k):\n            cur = cur.next\n            if not cur: return dummy.next\n        nxt_head = cur.next; end = pre.next\n        # đảo [pre.next .. cur]\n        prev = pre; cur2 = pre.next\n        while cur2 != nxt_head:\n            nxt = cur2.next; cur2.next = prev; prev = cur2; cur2 = nxt\n        # nối lại\n        pre.next.next = nxt_head; pre.next = prev\n        pre = end",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "k": 2
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              2,
+              1,
+              4,
+              3,
+              5
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "19",
+      "title": "Remove Nth Node From End of List",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Xoá nút thứ n tính từ cuối, một lượt duyệt.",
+      "examples": "head=[1,2,3,4,5], n=2 → [1,2,3,5]",
+      "keyIdea": "Hai con trỏ cách n vị trí; khi fast chạm cuối thì slow nằm ngay trước nút cần xoá.",
+      "thinking": {
+        "forward": "Quy nạp tiến: cho fast đi trước n bước, rồi cả hai cùng tiến — khoảng cách n được giữ cố định nên khi fast hết, slow đứng ngay trước nút đích.",
+        "reverse": "Quy nạp ngược: muốn xoá nút thứ n từ cuối chỉ cần một lượt thì phải biết nút liền trước nó — dummy head khiến slow không bao giờ rơi vào trường hợp xoá chính đầu."
+      },
+      "note": "Chú giải: slow luôn trỏ tới nút TRƯỚC nút cần xoá (nhờ dummy); nếu không có dummy thì xoá head sẽ rất rắc rối.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "fast đi n bước trước; sau đó slow và fast cùng đi; khi fast hết, slow.next = slow.next.next.",
+          "code": "def remove_nth_from_end(head, n):\n    dummy = ListNode(next=head)\n    slow = fast = dummy\n    for _ in range(n): fast = fast.next\n    while fast.next:\n        slow = slow.next; fast = fast.next\n    slow.next = slow.next.next\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "n": 2
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              2,
+              3,
+              5
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Hai lượt đếm",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Lượt 1 đếm tổng L; lượt 2 đi tới L−n−1 rồi xoá. Dễ hiểu hơn.",
+          "code": "def remove_nth_from_end(head, n):\n    L = 0; cur = head\n    while cur: L += 1; cur = cur.next\n    dummy = ListNode(next=head); cur = dummy\n    for _ in range(L - n): cur = cur.next\n    cur.next = cur.next.next\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "n": 2
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              2,
+              3,
+              5
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "82",
+      "title": "Remove Duplicates from Sorted List II",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Xoá toàn bộ nút có giá trị trùng (giữ lại 0 bản), danh sách đã sắp.",
+      "examples": "[1,2,3,3,4,4,5] → [1,2,5] · [1,1,1,2,3] → [2,3]",
+      "keyIdea": "Duyệt theo cụm giá trị; nếu cụm dài >1 thì bỏ cả cụm, giữ prev nối tiếp.",
+      "thinking": {
+        "forward": "Quy nạp tiến: duyệt từng nút qua con trỏ cur; nếu hai nút kế tiếp cùng giá trị thì đây là cụm trùng — nhảy qua toàn bộ cụm, không giữ nút nào.",
+        "reverse": "Quy nạp ngược: muốn giữ nút hiện tại thì phải chắc chắn nó không trùng với nút sau — chỉ di chuyển cur khi nút kế là 'sạch'."
+      },
+      "note": "Chú giải: khác với 'Remove Duplicates from Sorted List I' (giữ 1 bản), bài này xoá hết cụm trùng; phải nhìn hai nút kế tiếp để biết cụm.",
+      "approaches": [
+        {
+          "name": "Duyệt cụm",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "dummy; với mỗi nút cur giá trị x, đếm run; nếu run==1 giữ, ngược lại bỏ hết; nối prev.next cho phần không trùng.",
+          "code": "def delete_duplicates(head):\n    dummy = ListNode(next=head); cur = dummy\n    while cur.next:\n        if cur.next.next and cur.next.val == cur.next.next.val:\n            v = cur.next.val\n            while cur.next and cur.next.val == v:\n                cur.next = cur.next.next\n        else:\n            cur = cur.next\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                3,
+                4,
+                4,
+                5
+              ]
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              2,
+              5
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Đếm trước rồi dựng lại",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Đếm tần suất mỗi giá trị rồi chỉ giữ giá trị xuất hiện 1 lần — giữ thứ tự.",
+          "code": "from collections import Counter\ndef delete_duplicates(head):\n    cnt = Counter()\n    cur = head\n    while cur: cnt[cur.val] += 1; cur = cur.next\n    dummy = tail = ListNode()\n    cur = head\n    while cur:\n        if cnt[cur.val] == 1:\n            tail.next = ListNode(cur.val); tail = tail.next\n        cur = cur.next\n    return dummy.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                1,
+                1,
+                2,
+                3
+              ]
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              2,
+              3
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "61",
+      "title": "Rotate List",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Xoay danh sách sang phải k vị trí.",
+      "examples": "head=[1,2,3,4,5], k=2 → [4,5,1,2,3] · k=6 (lớn hơn L) → [2,3,1] cho L=3",
+      "keyIdea": "Chuẩn hoá k %= L; tìm nút thứ L−k (điểm cắt), nối đuôi vào đầu.",
+      "thinking": {
+        "forward": "Quy nạp tiến: xoay phải k vị trí tương đương kéo k nút cuối lên đầu; điểm cắt nằm ở nút thứ L−k tính từ đầu.",
+        "reverse": "Quy nạp ngược: muốn danh sách kết quả đúng thì sau khi nối vòng phải cắt đúng chỗ — nút trước phần kéo lên chính là nút cuối mới, đặt next = None."
+      },
+      "note": "Chú giải: k có thể lớn hơn L nên phải lấy k %= L trước; nếu k == 0 sau khi chuẩn hoá thì trả nguyên danh sách.",
+      "approaches": [
+        {
+          "name": "Kết vòng rồi cắt",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Đếm L, nối đuôi vào đầu thành vòng; cut tại L−k; tách.",
+          "code": "def rotate_right(head, k):\n    if not head or not head.next or k == 0: return head\n    L = 1; tail = head\n    while tail.next: tail = tail.next; L += 1\n    k %= L\n    if k == 0: return head\n    tail.next = head\n    for _ in range(L - k - 1): head = head.next\n    new = head.next; head.next = None\n    return new",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "k": 2
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              4,
+              5,
+              1,
+              2,
+              3
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "86",
+      "title": "Partition List",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Sắp xếp lại danh sách sao cho các nút < x đứng trước các nút ≥ x, giữ thứ tự tương đối, không cần sắp tuyệt đối.",
+      "examples": "head=[1,4,3,2,5,2], x=3 → [1,2,2,4,3,5]",
+      "keyIdea": "Hai danh sách tạm: less và ge, rồi nối less + ge.",
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi nút được phân vào một trong hai chuỗi (nhỏ hơn x / từ x trở lên) đúng thứ tự duyệt — giữ nguyên thứ tự tương đối trong từng chuỗi.",
+        "reverse": "Quy nạp ngược: muốn kết quả là hai khối liên tiếp thì phải tách sẵn hai chuỗi trong một lượt duyệt rồi mới nối đuôi chuỗi nhỏ vào đầu chuỗi lớn."
+      },
+      "note": "Chú giải: nhớ đặt tg.next = None trước khi nối, nếu không danh sách có thể thành vòng (nút cuối chuỗi ≥ x vẫn trỏ vào nút cũ).",
+      "approaches": [
+        {
+          "name": "Hai danh sách tạm",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "lt và ge là hai dummy; phân phối nút theo giá trị so x; cuối cùng nối lt.tail.next = ge.next.",
+          "code": "def partition(head, x):\n    lt = tl = ListNode(); ge = tg = ListNode()\n    cur = head\n    while cur:\n        if cur.val < x:\n            tl.next = cur; tl = tl.next\n        else:\n            tg.next = cur; tg = tg.next\n        cur = cur.next\n    tg.next = None\n    tl.next = ge.next\n    return lt.next",
+          "tcex": {
+            "input": {
+              "head": [
+                1,
+                4,
+                3,
+                2,
+                5,
+                2
+              ],
+              "x": 3
+            },
+            "kind": "ll",
+            "display": "head",
+            "param_kinds": {
+              "head": "ll"
+            },
+            "expected": [
+              1,
+              2,
+              2,
+              4,
+              3,
+              5
+            ],
+            "anim": true
+          }
+        }
+      ]
+    },
+    {
+      "no": "146",
+      "title": "LRU Cache",
+      "cat": "Linked List",
+      "diff": "Medium",
+      "statement": "Thiết kế bộ nhớ đệm LRU: get/put O(1), evict phần tử ít dùng nhất khi vượt capacity.",
+      "examples": "put(1,1),put(2,2),get(1)→1,put(3,3),get(2)→-1,put(4,4),get(1)→-1,get(3)→3,get(4)→4",
+      "keyIdea": "Dict lưu nút + danh sách liên kết đôi theo thứ tự mới dùng (MRU ở đuôi/đầu).",
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi lần dùng (get/put) một key thì đưa nút của nó lên vị trí mới nhất; phần tử lâu không dùng nhất luôn ở đầu danh sách — xoá nó khi tràn.",
+        "reverse": "Quy nạp ngược: muốn evict đúng phần tử LRU trong O(1) thì phải giữ sẵn một cấu trúc có thứ tự thời gian — danh sách liên kết đôi + dict cho phép chèn/xoá giữa mà không dịch chuyển."
+      },
+      "note": "Chú giải: get cũng phải cập nhật thứ tự 'mới dùng'; đánh dấu dummy head/tail để chèn/xoá không cần xử lý biên.",
+      "approaches": [
+        {
+          "name": "OrderedDict",
+          "time": "O(1)",
+          "space": "O(cap)",
+          "idea": "collections.OrderedDict: move_to_end khi get/put; popitem(last=False) khi tràn.",
+          "code": "from collections import OrderedDict\nclass LRUCache:\n    def __init__(self, capacity):\n        self.d = OrderedDict(); self.cap = capacity\n    def get(self, key):\n        if key not in self.d: return -1\n        self.d.move_to_end(key); return self.d[key]\n    def put(self, key, value):\n        if key in self.d: self.d.move_to_end(key)\n        self.d[key] = value\n        if len(self.d) > self.cap:\n            self.d.popitem(last=False)",
+          "static": [
+            "Khởi tạo OrderedDict rỗng, cap = 2.",
+            "put(1,1): d = {1:1} (1 là mới nhất).",
+            "put(2,2): d = {1:1, 2:2} (2 mới nhất).",
+            "get(1): d.move_to_end(1) → d = {2:2, 1:1}; trả 1.",
+            "put(3,3): d = {2:2, 1:1, 3:3}; vượt cap nên popitem(last=False) xoá 2 → {1:1, 3:3}.",
+            "get(2): 2 không có → trả -1.",
+            "put(4,4): d = {1:1, 3:3, 4:4}; popitem xoá 1 → {3:3, 4:4}.",
+            "get(1) → -1; get(3) → 3; get(4) → 4."
+          ]
+        },
+        {
+          "name": "DL node + dict",
+          "time": "O(1)",
+          "space": "O(cap)",
+          "idea": "Tự cài nút với prev/next, dummy head/tail; get nhảy nút về cuối, put chèn cuối & xoá đầu khi tràn.",
+          "code": "class LNode:\n    def __init__(self, k=0, v=0):\n        self.key = k; self.val = v; self.prev = self.next = None\nclass LRUCache:\n    def __init__(self, capacity):\n        self.cap = capacity; self.m = {}\n        self.head = LNode(); self.tail = LNode()\n        self.head.next = self.tail; self.tail.prev = self.head\n    def _remove(self, n):\n        n.prev.next = n.next; n.next.prev = n.prev\n    def _add(self, n):\n        p = self.tail.prev; p.next = n; n.prev = p\n        n.next = self.tail; self.tail.prev = n\n    def get(self, key):\n        if key not in self.m: return -1\n        n = self.m[key]; self._remove(n); self._add(n)\n        return n.val\n    def put(self, key, value):\n        if key in self.m: self._remove(self.m[key])\n        n = LNode(key, value); self.m[key] = n; self._add(n)\n        if len(self.m) > self.cap:\n            x = self.head.next; self._remove(x); del self.m[x.key]",
+          "static": [
+            "Khởi tạo dummy head ↔ dummy tail; dict m rỗng, cap = 2.",
+            "put(1,1): tạo nút (1,1); _add chèn trước tail → head↔(1,1)↔tail.",
+            "put(2,2): chèn (2,2) trước tail → head↔(1,1)↔(2,2)↔tail.",
+            "get(1): tìm nút 1 trong m, _remove khỏi giữa, _add về trước tail → head↔(2,2)↔(1,1)↔tail; trả 1.",
+            "put(3,3): chèn trước tail; len = 3 > 2 nên xoá head.next (nút 2) và del m[2] → head↔(1,1)↔(3,3)↔tail.",
+            "get(2): không có trong m → -1.",
+            "put(4,4): chèn trước tail; xoá nút 1 (LRU) → head↔(3,3)↔(4,4)↔tail.",
+            "get(1) → -1; get(3) → 3 (đưa 3 lên mới nhất); get(4) → 4."
+          ]
+        }
+      ]
+    }
+  ]
+}

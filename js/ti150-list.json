@@ -1,0 +1,902 @@
+[
+ {
+  "no": "88",
+  "slug": "merge-sorted-array",
+  "title": "Merge Sorted Array",
+  "cat": "Array / String"
+ },
+ {
+  "no": "27",
+  "slug": "remove-element",
+  "title": "Remove Element",
+  "cat": "Array / String"
+ },
+ {
+  "no": "26",
+  "slug": "remove-duplicates-from-sorted-array",
+  "title": "Remove Duplicates from Sorted Array",
+  "cat": "Array / String"
+ },
+ {
+  "no": "80",
+  "slug": "remove-duplicates-from-sorted-array-ii",
+  "title": "Remove Duplicates from Sorted Array II",
+  "cat": "Array / String"
+ },
+ {
+  "no": "169",
+  "slug": "majority-element",
+  "title": "Majority Element",
+  "cat": "Array / String"
+ },
+ {
+  "no": "189",
+  "slug": "rotate-array",
+  "title": "Rotate Array",
+  "cat": "Array / String"
+ },
+ {
+  "no": "121",
+  "slug": "best-time-to-buy-and-sell-stock",
+  "title": "Best Time to Buy and Sell Stock",
+  "cat": "Array / String"
+ },
+ {
+  "no": "122",
+  "slug": "best-time-to-buy-and-sell-stock-ii",
+  "title": "Best Time to Buy and Sell Stock II",
+  "cat": "Array / String"
+ },
+ {
+  "no": "55",
+  "slug": "jump-game",
+  "title": "Jump Game",
+  "cat": "Array / String"
+ },
+ {
+  "no": "45",
+  "slug": "jump-game-ii",
+  "title": "Jump Game II",
+  "cat": "Array / String"
+ },
+ {
+  "no": "274",
+  "slug": "h-index",
+  "title": "H-Index",
+  "cat": "Array / String"
+ },
+ {
+  "no": "380",
+  "slug": "insert-delete-getrandom-o1",
+  "title": "Insert Delete GetRandom O(1)",
+  "cat": "Array / String"
+ },
+ {
+  "no": "238",
+  "slug": "product-of-array-except-self",
+  "title": "Product of Array Except Self",
+  "cat": "Array / String"
+ },
+ {
+  "no": "134",
+  "slug": "gas-station",
+  "title": "Gas Station",
+  "cat": "Array / String"
+ },
+ {
+  "no": "135",
+  "slug": "candy",
+  "title": "Candy",
+  "cat": "Array / String"
+ },
+ {
+  "no": "42",
+  "slug": "trapping-rain-water",
+  "title": "Trapping Rain Water",
+  "cat": "Array / String"
+ },
+ {
+  "no": "13",
+  "slug": "roman-to-integer",
+  "title": "Roman to Integer",
+  "cat": "Array / String"
+ },
+ {
+  "no": "12",
+  "slug": "integer-to-roman",
+  "title": "Integer to Roman",
+  "cat": "Array / String"
+ },
+ {
+  "no": "58",
+  "slug": "length-of-last-word",
+  "title": "Length of Last Word",
+  "cat": "Array / String"
+ },
+ {
+  "no": "14",
+  "slug": "longest-common-prefix",
+  "title": "Longest Common Prefix",
+  "cat": "Array / String"
+ },
+ {
+  "no": "151",
+  "slug": "reverse-words-in-a-string",
+  "title": "Reverse Words in a String",
+  "cat": "Array / String"
+ },
+ {
+  "no": "6",
+  "slug": "zigzag-conversion",
+  "title": "Zigzag Conversion",
+  "cat": "Array / String"
+ },
+ {
+  "no": "28",
+  "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+  "title": "Find the Index of the First Occurrence in a String",
+  "cat": "Array / String"
+ },
+ {
+  "no": "68",
+  "slug": "text-justification",
+  "title": "Text Justification",
+  "cat": "Array / String"
+ },
+ {
+  "no": "125",
+  "slug": "valid-palindrome",
+  "title": "Valid Palindrome",
+  "cat": "Two Pointers"
+ },
+ {
+  "no": "392",
+  "slug": "is-subsequence",
+  "title": "Is Subsequence",
+  "cat": "Two Pointers"
+ },
+ {
+  "no": "167",
+  "slug": "two-sum-ii-input-array-is-sorted",
+  "title": "Two Sum II - Input Array Is Sorted",
+  "cat": "Two Pointers"
+ },
+ {
+  "no": "11",
+  "slug": "container-with-most-water",
+  "title": "Container With Most Water",
+  "cat": "Two Pointers"
+ },
+ {
+  "no": "15",
+  "slug": "3sum",
+  "title": "3Sum",
+  "cat": "Two Pointers"
+ },
+ {
+  "no": "209",
+  "slug": "minimum-size-subarray-sum",
+  "title": "Minimum Size Subarray Sum",
+  "cat": "Sliding Window"
+ },
+ {
+  "no": "3",
+  "slug": "longest-substring-without-repeating-characters",
+  "title": "Longest Substring Without Repeating Characters",
+  "cat": "Sliding Window"
+ },
+ {
+  "no": "30",
+  "slug": "substring-with-concatenation-of-all-words",
+  "title": "Substring with Concatenation of All Words",
+  "cat": "Sliding Window"
+ },
+ {
+  "no": "76",
+  "slug": "minimum-window-substring",
+  "title": "Minimum Window Substring",
+  "cat": "Sliding Window"
+ },
+ {
+  "no": "36",
+  "slug": "valid-sudoku",
+  "title": "Valid Sudoku",
+  "cat": "Matrix"
+ },
+ {
+  "no": "54",
+  "slug": "spiral-matrix",
+  "title": "Spiral Matrix",
+  "cat": "Matrix"
+ },
+ {
+  "no": "48",
+  "slug": "rotate-image",
+  "title": "Rotate Image",
+  "cat": "Matrix"
+ },
+ {
+  "no": "73",
+  "slug": "set-matrix-zeroes",
+  "title": "Set Matrix Zeroes",
+  "cat": "Matrix"
+ },
+ {
+  "no": "289",
+  "slug": "game-of-life",
+  "title": "Game of Life",
+  "cat": "Matrix"
+ },
+ {
+  "no": "383",
+  "slug": "ransom-note",
+  "title": "Ransom Note",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "205",
+  "slug": "isomorphic-strings",
+  "title": "Isomorphic Strings",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "290",
+  "slug": "word-pattern",
+  "title": "Word Pattern",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "242",
+  "slug": "valid-anagram",
+  "title": "Valid Anagram",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "49",
+  "slug": "group-anagrams",
+  "title": "Group Anagrams",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "1",
+  "slug": "two-sum",
+  "title": "Two Sum",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "202",
+  "slug": "happy-number",
+  "title": "Happy Number",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "219",
+  "slug": "contains-duplicate-ii",
+  "title": "Contains Duplicate II",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "128",
+  "slug": "longest-consecutive-sequence",
+  "title": "Longest Consecutive Sequence",
+  "cat": "Hashmap"
+ },
+ {
+  "no": "228",
+  "slug": "summary-ranges",
+  "title": "Summary Ranges",
+  "cat": "Intervals"
+ },
+ {
+  "no": "56",
+  "slug": "merge-intervals",
+  "title": "Merge Intervals",
+  "cat": "Intervals"
+ },
+ {
+  "no": "57",
+  "slug": "insert-interval",
+  "title": "Insert Interval",
+  "cat": "Intervals"
+ },
+ {
+  "no": "452",
+  "slug": "minimum-number-of-arrows-to-burst-balloons",
+  "title": "Minimum Number of Arrows to Burst Balloons",
+  "cat": "Intervals"
+ },
+ {
+  "no": "20",
+  "slug": "valid-parentheses",
+  "title": "Valid Parentheses",
+  "cat": "Stack"
+ },
+ {
+  "no": "71",
+  "slug": "simplify-path",
+  "title": "Simplify Path",
+  "cat": "Stack"
+ },
+ {
+  "no": "155",
+  "slug": "min-stack",
+  "title": "Min Stack",
+  "cat": "Stack"
+ },
+ {
+  "no": "150",
+  "slug": "evaluate-reverse-polish-notation",
+  "title": "Evaluate Reverse Polish Notation",
+  "cat": "Stack"
+ },
+ {
+  "no": "224",
+  "slug": "basic-calculator",
+  "title": "Basic Calculator",
+  "cat": "Stack"
+ },
+ {
+  "no": "141",
+  "slug": "linked-list-cycle",
+  "title": "Linked List Cycle",
+  "cat": "Linked List"
+ },
+ {
+  "no": "2",
+  "slug": "add-two-numbers",
+  "title": "Add Two Numbers",
+  "cat": "Linked List"
+ },
+ {
+  "no": "21",
+  "slug": "merge-two-sorted-lists",
+  "title": "Merge Two Sorted Lists",
+  "cat": "Linked List"
+ },
+ {
+  "no": "138",
+  "slug": "copy-list-with-random-pointer",
+  "title": "Copy List with Random Pointer",
+  "cat": "Linked List"
+ },
+ {
+  "no": "92",
+  "slug": "reverse-linked-list-ii",
+  "title": "Reverse Linked List II",
+  "cat": "Linked List"
+ },
+ {
+  "no": "25",
+  "slug": "reverse-nodes-in-k-group",
+  "title": "Reverse Nodes in k-Group",
+  "cat": "Linked List"
+ },
+ {
+  "no": "19",
+  "slug": "remove-nth-node-from-end-of-list",
+  "title": "Remove Nth Node From End of List",
+  "cat": "Linked List"
+ },
+ {
+  "no": "82",
+  "slug": "remove-duplicates-from-sorted-list-ii",
+  "title": "Remove Duplicates from Sorted List II",
+  "cat": "Linked List"
+ },
+ {
+  "no": "61",
+  "slug": "rotate-list",
+  "title": "Rotate List",
+  "cat": "Linked List"
+ },
+ {
+  "no": "86",
+  "slug": "partition-list",
+  "title": "Partition List",
+  "cat": "Linked List"
+ },
+ {
+  "no": "146",
+  "slug": "lru-cache",
+  "title": "LRU Cache",
+  "cat": "Linked List"
+ },
+ {
+  "no": "104",
+  "slug": "maximum-depth-of-binary-tree",
+  "title": "Maximum Depth of Binary Tree",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "100",
+  "slug": "same-tree",
+  "title": "Same Tree",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "226",
+  "slug": "invert-binary-tree",
+  "title": "Invert Binary Tree",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "101",
+  "slug": "symmetric-tree",
+  "title": "Symmetric Tree",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "105",
+  "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+  "title": "Construct Binary Tree from Preorder and Inorder Traversal",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "106",
+  "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+  "title": "Construct Binary Tree from Inorder and Postorder Traversal",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "117",
+  "slug": "populating-next-right-pointers-in-each-node-ii",
+  "title": "Populating Next Right Pointers in Each Node II",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "114",
+  "slug": "flatten-binary-tree-to-linked-list",
+  "title": "Flatten Binary Tree to Linked List",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "112",
+  "slug": "path-sum",
+  "title": "Path Sum",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "129",
+  "slug": "sum-root-to-leaf-numbers",
+  "title": "Sum Root to Leaf Numbers",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "124",
+  "slug": "binary-tree-maximum-path-sum",
+  "title": "Binary Tree Maximum Path Sum",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "173",
+  "slug": "binary-search-tree-iterator",
+  "title": "Binary Search Tree Iterator",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "222",
+  "slug": "count-complete-tree-nodes",
+  "title": "Count Complete Tree Nodes",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "236",
+  "slug": "lowest-common-ancestor-of-a-binary-tree",
+  "title": "Lowest Common Ancestor of a Binary Tree",
+  "cat": "Binary Tree General"
+ },
+ {
+  "no": "199",
+  "slug": "binary-tree-right-side-view",
+  "title": "Binary Tree Right Side View",
+  "cat": "Binary Tree BFS"
+ },
+ {
+  "no": "637",
+  "slug": "average-of-levels-in-binary-tree",
+  "title": "Average of Levels in Binary Tree",
+  "cat": "Binary Tree BFS"
+ },
+ {
+  "no": "102",
+  "slug": "binary-tree-level-order-traversal",
+  "title": "Binary Tree Level Order Traversal",
+  "cat": "Binary Tree BFS"
+ },
+ {
+  "no": "103",
+  "slug": "binary-tree-zigzag-level-order-traversal",
+  "title": "Binary Tree Zigzag Level Order Traversal",
+  "cat": "Binary Tree BFS"
+ },
+ {
+  "no": "530",
+  "slug": "minimum-absolute-difference-in-bst",
+  "title": "Minimum Absolute Difference in BST",
+  "cat": "Binary Search Tree"
+ },
+ {
+  "no": "230",
+  "slug": "kth-smallest-element-in-a-bst",
+  "title": "Kth Smallest Element in a BST",
+  "cat": "Binary Search Tree"
+ },
+ {
+  "no": "98",
+  "slug": "validate-binary-search-tree",
+  "title": "Validate Binary Search Tree",
+  "cat": "Binary Search Tree"
+ },
+ {
+  "no": "200",
+  "slug": "number-of-islands",
+  "title": "Number of Islands",
+  "cat": "Graph General"
+ },
+ {
+  "no": "130",
+  "slug": "surrounded-regions",
+  "title": "Surrounded Regions",
+  "cat": "Graph General"
+ },
+ {
+  "no": "133",
+  "slug": "clone-graph",
+  "title": "Clone Graph",
+  "cat": "Graph General"
+ },
+ {
+  "no": "399",
+  "slug": "evaluate-division",
+  "title": "Evaluate Division",
+  "cat": "Graph General"
+ },
+ {
+  "no": "207",
+  "slug": "course-schedule",
+  "title": "Course Schedule",
+  "cat": "Graph General"
+ },
+ {
+  "no": "210",
+  "slug": "course-schedule-ii",
+  "title": "Course Schedule II",
+  "cat": "Graph General"
+ },
+ {
+  "no": "909",
+  "slug": "snakes-and-ladders",
+  "title": "Snakes and Ladders",
+  "cat": "Graph BFS"
+ },
+ {
+  "no": "433",
+  "slug": "minimum-genetic-mutation",
+  "title": "Minimum Genetic Mutation",
+  "cat": "Graph BFS"
+ },
+ {
+  "no": "127",
+  "slug": "word-ladder",
+  "title": "Word Ladder",
+  "cat": "Graph BFS"
+ },
+ {
+  "no": "208",
+  "slug": "implement-trie-prefix-tree",
+  "title": "Implement Trie (Prefix Tree)",
+  "cat": "Trie"
+ },
+ {
+  "no": "211",
+  "slug": "design-add-and-search-words-data-structure",
+  "title": "Design Add and Search Words Data Structure",
+  "cat": "Trie"
+ },
+ {
+  "no": "212",
+  "slug": "word-search-ii",
+  "title": "Word Search II",
+  "cat": "Trie"
+ },
+ {
+  "no": "17",
+  "slug": "letter-combinations-of-a-phone-number",
+  "title": "Letter Combinations of a Phone Number",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "77",
+  "slug": "combinations",
+  "title": "Combinations",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "46",
+  "slug": "permutations",
+  "title": "Permutations",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "39",
+  "slug": "combination-sum",
+  "title": "Combination Sum",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "52",
+  "slug": "n-queens-ii",
+  "title": "N-Queens II",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "22",
+  "slug": "generate-parentheses",
+  "title": "Generate Parentheses",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "79",
+  "slug": "word-search",
+  "title": "Word Search",
+  "cat": "Backtracking"
+ },
+ {
+  "no": "108",
+  "slug": "convert-sorted-array-to-binary-search-tree",
+  "title": "Convert Sorted Array to Binary Search Tree",
+  "cat": "Divide & Conquer"
+ },
+ {
+  "no": "148",
+  "slug": "sort-list",
+  "title": "Sort List",
+  "cat": "Divide & Conquer"
+ },
+ {
+  "no": "427",
+  "slug": "construct-quad-tree",
+  "title": "Construct Quad Tree",
+  "cat": "Divide & Conquer"
+ },
+ {
+  "no": "23",
+  "slug": "merge-k-sorted-lists",
+  "title": "Merge k Sorted Lists",
+  "cat": "Divide & Conquer"
+ },
+ {
+  "no": "53",
+  "slug": "maximum-subarray",
+  "title": "Maximum Subarray",
+  "cat": "Kadane's Algorithm"
+ },
+ {
+  "no": "918",
+  "slug": "maximum-sum-circular-subarray",
+  "title": "Maximum Sum Circular Subarray",
+  "cat": "Kadane's Algorithm"
+ },
+ {
+  "no": "35",
+  "slug": "search-insert-position",
+  "title": "Search Insert Position",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "74",
+  "slug": "search-a-2d-matrix",
+  "title": "Search a 2D Matrix",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "162",
+  "slug": "find-peak-element",
+  "title": "Find Peak Element",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "33",
+  "slug": "search-in-rotated-sorted-array",
+  "title": "Search in Rotated Sorted Array",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "34",
+  "slug": "find-first-and-last-position-of-element-in-sorted-array",
+  "title": "Find First and Last Position of Element in Sorted Array",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "153",
+  "slug": "find-minimum-in-rotated-sorted-array",
+  "title": "Find Minimum in Rotated Sorted Array",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "4",
+  "slug": "median-of-two-sorted-arrays",
+  "title": "Median of Two Sorted Arrays",
+  "cat": "Binary Search"
+ },
+ {
+  "no": "215",
+  "slug": "kth-largest-element-in-an-array",
+  "title": "Kth Largest Element in an Array",
+  "cat": "Heap"
+ },
+ {
+  "no": "502",
+  "slug": "ipo",
+  "title": "IPO",
+  "cat": "Heap"
+ },
+ {
+  "no": "373",
+  "slug": "find-k-pairs-with-smallest-sums",
+  "title": "Find K Pairs with Smallest Sums",
+  "cat": "Heap"
+ },
+ {
+  "no": "295",
+  "slug": "find-median-from-data-stream",
+  "title": "Find Median from Data Stream",
+  "cat": "Heap"
+ },
+ {
+  "no": "67",
+  "slug": "add-binary",
+  "title": "Add Binary",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "190",
+  "slug": "reverse-bits",
+  "title": "Reverse Bits",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "191",
+  "slug": "number-of-1-bits",
+  "title": "Number of 1 Bits",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "136",
+  "slug": "single-number",
+  "title": "Single Number",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "137",
+  "slug": "single-number-ii",
+  "title": "Single Number II",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "201",
+  "slug": "bitwise-and-of-numbers-range",
+  "title": "Bitwise AND of Numbers Range",
+  "cat": "Bit Manipulation"
+ },
+ {
+  "no": "9",
+  "slug": "palindrome-number",
+  "title": "Palindrome Number",
+  "cat": "Math"
+ },
+ {
+  "no": "66",
+  "slug": "plus-one",
+  "title": "Plus One",
+  "cat": "Math"
+ },
+ {
+  "no": "172",
+  "slug": "factorial-trailing-zeroes",
+  "title": "Factorial Trailing Zeroes",
+  "cat": "Math"
+ },
+ {
+  "no": "69",
+  "slug": "sqrtx",
+  "title": "Sqrt(x)",
+  "cat": "Math"
+ },
+ {
+  "no": "50",
+  "slug": "powx-n",
+  "title": "Pow(x, n)",
+  "cat": "Math"
+ },
+ {
+  "no": "149",
+  "slug": "max-points-on-a-line",
+  "title": "Max Points on a Line",
+  "cat": "Math"
+ },
+ {
+  "no": "70",
+  "slug": "climbing-stairs",
+  "title": "Climbing Stairs",
+  "cat": "1D DP"
+ },
+ {
+  "no": "198",
+  "slug": "house-robber",
+  "title": "House Robber",
+  "cat": "1D DP"
+ },
+ {
+  "no": "139",
+  "slug": "word-break",
+  "title": "Word Break",
+  "cat": "1D DP"
+ },
+ {
+  "no": "322",
+  "slug": "coin-change",
+  "title": "Coin Change",
+  "cat": "1D DP"
+ },
+ {
+  "no": "300",
+  "slug": "longest-increasing-subsequence",
+  "title": "Longest Increasing Subsequence",
+  "cat": "1D DP"
+ },
+ {
+  "no": "120",
+  "slug": "triangle",
+  "title": "Triangle",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "64",
+  "slug": "minimum-path-sum",
+  "title": "Minimum Path Sum",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "63",
+  "slug": "unique-paths-ii",
+  "title": "Unique Paths II",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "5",
+  "slug": "longest-palindromic-substring",
+  "title": "Longest Palindromic Substring",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "97",
+  "slug": "interleaving-string",
+  "title": "Interleaving String",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "72",
+  "slug": "edit-distance",
+  "title": "Edit Distance",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "123",
+  "slug": "best-time-to-buy-and-sell-stock-iii",
+  "title": "Best Time to Buy and Sell Stock III",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "188",
+  "slug": "best-time-to-buy-and-sell-stock-iv",
+  "title": "Best Time to Buy and Sell Stock IV",
+  "cat": "Multidimensional DP"
+ },
+ {
+  "no": "221",
+  "slug": "maximal-square",
+  "title": "Maximal Square",
+  "cat": "Multidimensional DP"
+ }
+]

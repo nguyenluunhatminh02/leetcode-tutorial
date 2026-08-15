@@ -1,0 +1,754 @@
+{
+  "desc": "Quy hoạch động đa chiều: bảng 2 chiều (hoặc hơn) — đường đi, chuỗi con, phạm vi. Chìa khoá: định nghĩa rõ trạng thái và thứ tự điền.",
+  "problems": [
+    {
+      "no": "120",
+      "title": "Triangle",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Đi từ đỉnh xuống đáy tam giác số, mỗi bước xuống hàng dưới kề (i hoặc i+1); tổng nhỏ nhất.",
+      "examples": "[[2],[3,4],[6,5,7],[4,1,8,3]] → 11 (2+3+5+1)",
+      "keyIdea": "dp hàng dưới = min từ hai ô kề hàng trên; đi từ đáy lên để không cần xử lý biên.",
+      "approaches": [
+        {
+          "name": "DP bottom-up từ đáy",
+          "time": "O(n²)",
+          "space": "O(n)",
+          "idea": "dp = triangle[-1]; với mỗi hàng từ đáy−1 lên: dp[j] = tri[i][j] + min(dp[j], dp[j+1]).",
+          "code": "def minimum_total(triangle):\n    dp = triangle[-1]\n    for i in range(len(triangle)-2, -1, -1):\n        for j in range(i+1):\n            dp[j] = triangle[i][j] + min(dp[j], dp[j+1])\n    return dp[0]",
+          "static": [
+            "dp[i][j]=min(dp[i+1][j], dp[i+1][j+1]) + triangle[i][j]",
+            "Xuất phát từ đáy: dp hàng cuối = triangle hàng cuối",
+            "Đi lên, mỗi ô chọn min của 2 con dưới",
+            "Kết quả = dp[0][0]"
+          ],
+          "tcex": {
+            "input": {
+              "triangle": [
+                [
+                  2
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  6,
+                  5,
+                  7
+                ],
+                [
+                  4,
+                  1,
+                  8,
+                  3
+                ]
+              ]
+            },
+            "kind": "none",
+            "expected": 11
+          }
+        },
+        {
+          "name": "Bảng đầy đủ",
+          "time": "O(n²)",
+          "space": "O(n²)",
+          "idea": "dp[i][j] = tri[i][j] + min(dp[i-1][j-1], dp[i-1][j]); kết quả min hàng cuối.",
+          "code": "def minimum_total(triangle):\n    n = len(triangle)\n    dp = [[0]*n for _ in range(n)]\n    dp[0][0] = triangle[0][0]\n    for i in range(1, n):\n        for j in range(i+1):\n            best = min(\n                dp[i-1][j-1] if j > 0 else 10**9,\n                dp[i-1][j] if j < i else 10**9)\n            dp[i][j] = triangle[i][j] + best\n    return min(dp[-1])",
+          "static": [
+            "dp[i][j]=min(dp[i+1][j], dp[i+1][j+1]) + triangle[i][j]",
+            "Xuất phát từ đáy: dp hàng cuối = triangle hàng cuối",
+            "Đi lên, mỗi ô chọn min của 2 con dưới",
+            "Kết quả = dp[0][0]"
+          ],
+          "tcex": {
+            "input": {
+              "triangle": [
+                [
+                  2
+                ],
+                [
+                  3,
+                  4
+                ],
+                [
+                  6,
+                  5,
+                  7
+                ],
+                [
+                  4,
+                  1,
+                  8,
+                  3
+                ]
+              ]
+            },
+            "kind": "none",
+            "expected": 11
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Từ đáy đi lên, mỗi ô chọn min 2 con.",
+        "reverse": "Cần đường đi nhỏ nhất → tối ưu từ đáy, không phụ thuộc hàng trên."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "64",
+      "title": "Minimum Path Sum",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Từ (0,0) tới (m-1,n-1), chỉ xuống/phải; tổng nhỏ nhất.",
+      "examples": "[[1,3,1],[1,5,1],[4,2,1]] → 7 (1+3+1+1+1)",
+      "keyIdea": "dp[i][j] = grid[i][j] + min(dp trên, dp trái); xử lý biên bằng vô cực.",
+      "approaches": [
+        {
+          "name": "DP 2D",
+          "time": "O(m·n)",
+          "space": "O(m·n)",
+          "idea": "Điền hàng/cột đầy đủ; biên đặc biệt.",
+          "code": "def min_path_sum(grid):\n    m, n = len(grid), len(grid[0])\n    dp = [[10**9]*n for _ in range(m)]\n    dp[0][0] = grid[0][0]\n    for i in range(m):\n        for j in range(n):\n            if i == 0 and j == 0: continue\n            dp[i][j] = grid[i][j] + min(dp[i-1][j] if i > 0 else 10**9,\n                                       dp[i][j-1] if j > 0 else 10**9)\n    return dp[-1][-1]",
+          "static": [
+            "dp[i][j]=grid[i][j]+min(dp[i-1][j], dp[i][j-1])",
+            "Điền hàng 0 và cột 0 cộng dồn",
+            "Ô giữa chọn min từ trên/trái",
+            "Kết quả = dp[m-1][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "grid": [
+                [
+                  1,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  5,
+                  1
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "grid",
+            "expected": 7
+          }
+        },
+        {
+          "name": "Quét đồng thời tại chỗ",
+          "time": "O(m·n)",
+          "space": "O(1)",
+          "idea": "Ghi đè grid bằng tổng tích luỹ — tiết kiệm mảng.",
+          "code": "def min_path_sum(grid):\n    m, n = len(grid), len(grid[0])\n    for i in range(m):\n        for j in range(n):\n            if i == 0 and j == 0: continue\n            up = grid[i-1][j] if i > 0 else 10**9\n            left = grid[i][j-1] if j > 0 else 10**9\n            grid[i][j] += min(up, left)\n    return grid[-1][-1]",
+          "static": [
+            "dp[i][j]=grid[i][j]+min(dp[i-1][j], dp[i][j-1])",
+            "Điền hàng 0 và cột 0 cộng dồn",
+            "Ô giữa chọn min từ trên/trái",
+            "Kết quả = dp[m-1][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "grid": [
+                [
+                  1,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  5,
+                  1
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "grid",
+            "expected": 7
+          }
+        },
+        {
+          "name": "Hàng đơn (cuộn không gian)",
+          "time": "O(m·n)",
+          "space": "O(n)",
+          "idea": "Chỉ giữ 1 hàng dp; dp[j] = grid[i][j] + min(dp[j], dp[j-1]).",
+          "code": "def min_path_sum(grid):\n    m, n = len(grid), len(grid[0])\n    dp = [10**9]*n; dp[0] = 0\n    for i in range(m):\n        for j in range(n):\n            dp[j] = grid[i][j] + (min(dp[j], dp[j-1]) if j > 0 else dp[j])\n        \n    return dp[-1]",
+          "static": [
+            "dp[i][j]=grid[i][j]+min(dp[i-1][j], dp[i][j-1])",
+            "Điền hàng 0 và cột 0 cộng dồn",
+            "Ô giữa chọn min từ trên/trái",
+            "Kết quả = dp[m-1][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "grid": [
+                [
+                  1,
+                  3,
+                  1
+                ],
+                [
+                  1,
+                  5,
+                  1
+                ],
+                [
+                  4,
+                  2,
+                  1
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "grid",
+            "expected": 7
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Cộng dồn, chọn min từ trên/trái.",
+        "reverse": "Cần chi phí tới đích → tích luỹ chi phí tối thiểu từ ô kề."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "63",
+      "title": "Unique Paths II",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Số đường đi từ (0,0) tới (m-1,n-1) tránh các ô chướng ngại (1).",
+      "examples": "[[0,0,0],[0,1,0],[0,0,0]] → 2",
+      "keyIdea": "dp[i][j] = dp trên + dp trái; ô chướng ngại → 0.",
+      "approaches": [
+        {
+          "name": "DP 2D",
+          "time": "O(m·n)",
+          "space": "O(m·n)",
+          "idea": "Khởi tạo dp[0][0]=1 (nếu không chướng); mỗi ô: nếu obstacle → 0; else cộng hai hướng.",
+          "code": "def unique_paths_with_obstacles(obstacleGrid):\n    m, n = len(obstacleGrid), len(obstacleGrid[0])\n    dp = [[0]*n for _ in range(m)]\n    dp[0][0] = 1 if obstacleGrid[0][0] == 0 else 0\n    for i in range(m):\n        for j in range(n):\n            if obstacleGrid[i][j] == 1:\n                dp[i][j] = 0; continue\n            if i > 0: dp[i][j] += dp[i-1][j]\n            if j > 0: dp[i][j] += dp[i][j-1]\n    return dp[-1][-1]",
+          "static": [
+            "dp[i][j]=0 nếu có chướng ngại, ngược lại dp trái+dp trên",
+            "Hàng 0/cột 0: đặt 1 tới khi gặp obstacle",
+            "Điền từng ô",
+            "Kết quả = dp[m-1][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "obstacleGrid": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "obstacleGrid",
+            "expected": 2
+          }
+        },
+        {
+          "name": "Hàng đơn",
+          "time": "O(m·n)",
+          "space": "O(n)",
+          "idea": "Cuộn 1 hàng dp; chú ý biên và chướng ngại.",
+          "code": "def unique_paths_with_obstacles(g):\n    m, n = len(g), len(g[0])\n    dp = [0]*n; dp[0] = 1\n    for i in range(m):\n        for j in range(n):\n            if g[i][j] == 1: dp[j] = 0\n            elif j > 0: dp[j] += dp[j-1]\n    return dp[-1]",
+          "static": [
+            "dp[i][j]=0 nếu có chướng ngại, ngược lại dp trái+dp trên",
+            "Hàng 0/cột 0: đặt 1 tới khi gặp obstacle",
+            "Điền từng ô",
+            "Kết quả = dp[m-1][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "g": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  1,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "g",
+            "expected": 2
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Chướng ngại → 0, ngược lại cộng 2 hướng.",
+        "reverse": "Cần số cách tới đích → chỉ qua ô không chướng ngại, gom từ trái/trên."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "5",
+      "title": "Longest Palindromic Substring",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Dãy con liên tiếp dài nhất là palindrome.",
+      "examples": "s='babad' → 'bab' (hoặc 'aba') · s='cbbd' → 'bb'",
+      "keyIdea": "Biên rộng dần từ các palindrome đơn/đôi KÝ TỰ GIỮA: mở rộng khi hai bên bằng cả hai đầu; hoặc dp[i][j].",
+      "approaches": [
+        {
+          "name": "Mở rộng quanh tâm",
+          "time": "O(n²)",
+          "space": "O(1)",
+          "idea": "Với mỗi vị trí (và giữa hai ký tự), loang hai bên khi bằng nhau; cập nhật max.",
+          "code": "def longest_palindrome(s):\n    def expand(l, r):\n        while l >= 0 and r < len(s) and s[l] == s[r]:\n            l -= 1; r += 1\n        return s[l+1:r]\n    best = ''\n    for i in range(len(s)):\n        t1 = expand(i, i)\n        t2 = expand(i, i+1)\n        best = max(best, t1, t2, key=len)\n    return best",
+          "static": [
+            "Mở rộng quanh tâm i (lẻ) và i,i+1 (chẵn)",
+            "Với mỗi tâm, kéo rộng khi s[L]==s[R]",
+            "Cập nhật chuỗi con dài nhất",
+            "Trả đoạn con max"
+          ],
+          "tcex": {
+            "input": {
+              "s": "babad"
+            },
+            "kind": "none",
+            "expected": "bab"
+          }
+        },
+        {
+          "name": "DP bảng [i][j]",
+          "time": "O(n²)",
+          "space": "O(n²)",
+          "idea": "dp[i][j] = s[i]==s[j] and (j−i<3 or dp[i+1][j−1]); duyệt theo độ dài.",
+          "code": "def longest_palindrome(s):\n    n = len(s)\n    dp = [[False]*n for _ in range(n)]\n    best = ''\n    for j in range(n):\n        for i in range(j+1):\n            if s[i] == s[j] and (j - i < 3 or dp[i+1][j-1]):\n                dp[i][j] = True\n                if j - i + 1 > len(best): best = s[i:j+1]\n    return best",
+          "static": [
+            "Mở rộng quanh tâm i (lẻ) và i,i+1 (chẵn)",
+            "Với mỗi tâm, kéo rộng khi s[L]==s[R]",
+            "Cập nhật chuỗi con dài nhất",
+            "Trả đoạn con max"
+          ],
+          "tcex": {
+            "input": {
+              "s": "babad"
+            },
+            "kind": "none",
+            "expected": "bab"
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Mở rộng quanh tâm.",
+        "reverse": "Cần palindrome dài nhất → với mỗi tâm, kéo rộng khi hai đầu khớp."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "97",
+      "title": "Interleaving String",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "s3 có phải xen kẽ (interleave) đúng thứ tự của s1 và s2 không?",
+      "examples": "s1='aabcc', s2='dbbca', s3='aadbbcbcac' → true · 'aadbbbaccc' → false",
+      "keyIdea": "dp[i][j] = s3[:i+j] xen kẽ s1[:i] và s2[:j]; truy hồi theo ký tự cuối.",
+      "approaches": [
+        {
+          "name": "DP 2D",
+          "time": "O(m·n)",
+          "space": "O(m·n)",
+          "idea": "dp[0][0]=True; dp[i][j] = (dp[i-1][j] và s1[i-1]==s3[i+j-1]) hoặc (dp[i][j-1] và s2[j-1]==...).",
+          "code": "def is_interleave(s1, s2, s3):\n    m, n = len(s1), len(s2)\n    if m + n != len(s3): return False\n    dp = [[False]*(n+1) for _ in range(m+1)]\n    dp[0][0] = True\n    for i in range(m+1):\n        for j in range(n+1):\n            if i > 0 and s1[i-1] == s3[i+j-1]:\n                dp[i][j] |= dp[i-1][j]\n            if j > 0 and s2[j-1] == s3[i+j-1]:\n                dp[i][j] |= dp[i][j-1]\n    return dp[m][n]",
+          "static": [
+            "dp[i][j]: s1[:i]+s2[:j] có khớp s3[:i+j]?",
+            "Khởi tạo hàng 0/cột 0 bằng cách so sánh tiền tố",
+            "dp[i][j]=(dp[i-1][j] and s1[i-1]==s3[i+j-1]) or (dp[i][j-1] and s2[j-1]==s3[i+j-1])",
+            "Kết quả dp[n][m]"
+          ],
+          "tcex": {
+            "input": {
+              "s1": "aabcc",
+              "s2": "dbbca",
+              "s3": "aadbbcbcac"
+            },
+            "kind": "none",
+            "expected": true
+          }
+        },
+        {
+          "name": "Hàng đơn + memo",
+          "time": "O(m·n)",
+          "space": "O(n)",
+          "idea": "Cuộn bảng về 1 hàng.",
+          "code": "def is_interleave(s1, s2, s3):\n    m, n = len(s1), len(s2)\n    if m + n != len(s3): return False\n    dp = [False]*(n+1)\n    dp[0] = True\n    for i in range(m+1):\n        for j in range(n+1):\n            if i == 0 and j == 0: continue\n            dp[j] = False\n            if i > 0 and s1[i-1] == s3[i+j-1]: dp[j] |= dp[j]\n            if j > 0 and s2[j-1] == s3[i+j-1]: dp[j] |= dp[j-1]\n    return dp[n]",
+          "static": [
+            "dp[i][j]: s1[:i]+s2[:j] có khớp s3[:i+j]?",
+            "Khởi tạo hàng 0/cột 0 bằng cách so sánh tiền tố",
+            "dp[i][j]=(dp[i-1][j] and s1[i-1]==s3[i+j-1]) or (dp[i][j-1] and s2[j-1]==s3[i+j-1])",
+            "Kết quả dp[n][m]"
+          ],
+          "tcex": {
+            "input": {
+              "s1": "aabcc",
+              "s2": "dbbca",
+              "s3": "aadbbcbcac"
+            },
+            "kind": "none",
+            "expected": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "dp[i][j] theo 2 hướng khớp ký tự.",
+        "reverse": "Cần xen kẽ đúng → xác định ký tự cuối thuộc s1 hay s2."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "72",
+      "title": "Edit Distance",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Số thao tác tối thiểu (chèn, xoá, thay) để biến word1 thành word2.",
+      "examples": "word1='horse', word2='ros' → 3 · 'intention','execution' → 5",
+      "keyIdea": "dp[i][j] = edit distance của word1[:i] và word2[:j]; truy hồi chữ cuối.",
+      "approaches": [
+        {
+          "name": "DP 2D",
+          "time": "O(m·n)",
+          "space": "O(m·n)",
+          "idea": "Khởi tạo hàng/cột 0..; nếu ký tự bằng → dp[i][j]=dp[i-1][j-1]; else 1+min(chèn, xoá, thay).",
+          "code": "def min_distance(w1, w2):\n    m, n = len(w1), len(w2)\n    dp = [[0]*(n+1) for _ in range(m+1)]\n    for i in range(m+1): dp[i][0] = i\n    for j in range(n+1): dp[0][j] = j\n    for i in range(1, m+1):\n        for j in range(1, n+1):\n            if w1[i-1] == w2[j-1]:\n                dp[i][j] = dp[i-1][j-1]\n            else:\n                dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])\n    return dp[m][n]",
+          "static": [
+            "dp[i][j]: chi phí biến w1[:i]→w2[:j]",
+            "Khởi tạo hàng 0/cột 0 = độ dài (delete/insert)",
+            "Nếu ký tự bằng: dp[i-1][j-1]; ngược lại 1+min(xóa,chèn,thay)",
+            "Kết quả dp[n][m]"
+          ],
+          "tcex": {
+            "input": {
+              "w1": "horse",
+              "w2": "ros"
+            },
+            "kind": "none",
+            "expected": 3
+          }
+        },
+        {
+          "name": "Hai hàng",
+          "time": "O(m·n)",
+          "space": "O(n)",
+          "idea": "Cuộn bảng chỉ giữ hàng trước.",
+          "code": "def min_distance(w1, w2):\n    m, n = len(w1), len(w2)\n    prev = list(range(n+1))\n    for i in range(1, m+1):\n        cur = [i] + [0]*n\n        for j in range(1, n+1):\n            if w1[i-1] == w2[j-1]:\n                cur[j] = prev[j-1]\n            else:\n                cur[j] = 1 + min(prev[j], cur[j-1], prev[j-1])\n        prev = cur\n    return prev[n]",
+          "static": [
+            "dp[i][j]: chi phí biến w1[:i]→w2[:j]",
+            "Khởi tạo hàng 0/cột 0 = độ dài (delete/insert)",
+            "Nếu ký tự bằng: dp[i-1][j-1]; ngược lại 1+min(xóa,chèn,thay)",
+            "Kết quả dp[n][m]"
+          ],
+          "tcex": {
+            "input": {
+              "w1": "horse",
+              "w2": "ros"
+            },
+            "kind": "none",
+            "expected": 3
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Chi phí edit = min(xoá, chèn, thay).",
+        "reverse": "Cần biến w1→w2 → quy về bài con nhỏ hơn ở 3 phép biến đổi."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "123",
+      "title": "Best Time to Buy and Sell Stock III",
+      "cat": "Multidimensional DP",
+      "diff": "Hard",
+      "statement": "Tối đa hai giao dịch (mua trước bán sau, không chồng lấn), tối đa lợi nhuận.",
+      "examples": "[3,3,5,0,0,3,1,4] → 6 · [7,6,4,3,1] → 0",
+      "keyIdea": "Duy trì 4 trạng thái: b1 (tiền sau lần mua 1), s1 (sau bán 1), b2 (mua 2), s2 (bán 2); mỗi bước cập nhật theo số mới.",
+      "approaches": [
+        {
+          "name": "4 biến trạng thái",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "b1 = max(b1, -p); s1 = max(s1, b1+p); b2 = max(b2, s1-p); s2 = max(s2, b2+p).",
+          "code": "def max_profit(prices):\n    b1 = b2 = -10**9\n    s1 = s2 = 0\n    for p in prices:\n        b1 = max(b1, -p)\n        s1 = max(s1, b1 + p)\n        b2 = max(b2, s1 - p)\n        s2 = max(s2, b2 + p)\n    return s2",
+          "static": [
+            "4 biến: buy1,sell1,buy2,sell2",
+            "buy1=min(buy1, price); sell1=max(sell1, price-buy1)",
+            "buy2=min(buy2, price-sell1); sell2=max(sell2, price-buy2)",
+            "Kết quả sell2"
+          ],
+          "tcex": {
+            "input": {
+              "prices": [
+                3,
+                3,
+                5,
+                0,
+                0,
+                3,
+                1,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "expected": 6
+          }
+        },
+        {
+          "name": "DP k giao dịch tổng quát (cho bài IV)",
+          "time": "O(k·n)",
+          "space": "O(n)",
+          "idea": "dp[k][i] = lợi nhuận tối đa k giao dịch tới ngày i; dp[k][i] = max(dp[k][i-1], dp[k-1][j] + p[i]−p[j]).",
+          "code": "def max_profit(prices):\n    k = 2; n = len(prices)\n    if not prices: return 0\n    dp = [[0]*n for _ in range(k+1)]\n    for t in range(1, k+1):\n        m = -prices[0]\n        for i in range(1, n):\n            m = max(m, dp[t-1][i-1] - prices[i-1])\n            dp[t][i] = max(dp[t][i-1], m + prices[i])\n    return dp[k][n-1]",
+          "static": [
+            "4 biến: buy1,sell1,buy2,sell2",
+            "buy1=min(buy1, price); sell1=max(sell1, price-buy1)",
+            "buy2=min(buy2, price-sell1); sell2=max(sell2, price-buy2)",
+            "Kết quả sell2"
+          ],
+          "tcex": {
+            "input": {
+              "prices": [
+                3,
+                3,
+                5,
+                0,
+                0,
+                3,
+                1,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "expected": 6
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "4 biến trạng thái qua 2 giao dịch.",
+        "reverse": "Cần lợi nhuận 2 giao dịch → theo dõi buy/sell tối ưu từng giai đoạn."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "188",
+      "title": "Best Time to Buy and Sell Stock IV",
+      "cat": "Multidimensional DP",
+      "diff": "Hard",
+      "statement": "Giống III nhưng cho tối đa k giao dịch.",
+      "examples": "k=2, prices=[3,2,6,5,0,3] → 7 · k=7, [1,2,4,2,5,7,2,4,9,0] → 13",
+      "keyIdea": "Nếu k ≥ n/2 thì bài toán thành không giới hạn (om mọi bước tăng). Ngược lại DP k giao dịch.",
+      "approaches": [
+        {
+          "name": "DP k giao dịch",
+          "time": "O(k·n)",
+          "space": "O(k·n)",
+          "idea": "Như III tổng quát; tối ưu bằng giữ m theo từng giao dịch.",
+          "code": "def max_profit(k, prices):\n    n = len(prices)\n    if n < 2: return 0\n    if k >= n//2:\n        return sum(max(prices[i]-prices[i-1], 0) for i in range(1, n))\n    dp = [[0]*n for _ in range(k+1)]\n    for t in range(1, k+1):\n        m = -prices[0]\n        for i in range(1, n):\n            m = max(m, dp[t-1][i-1] - prices[i-1])\n            dp[t][i] = max(dp[t][i-1], m + prices[i])\n    return dp[k][n-1]",
+          "static": [
+            "DP k giao dịch: dp[k][i]=max(dp[k][i-1], price[i]+max(dp[k-1][j]-price[j]))",
+            "Tối ưu theo dõi best=một biến khi duyệt i",
+            "Với k=2, prices=[3,2,6,5,0,3] → 7",
+            "Kết quả dp[k][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "k": 2,
+              "prices": [
+                3,
+                2,
+                6,
+                5,
+                0,
+                3
+              ]
+            },
+            "kind": "none",
+            "expected": 7
+          }
+        },
+        {
+          "name": "k biến trạng thái",
+          "time": "O(k·n)",
+          "space": "O(k)",
+          "idea": "Giữ mảng buy/sell dài k cập nhật mỗi ngày.",
+          "code": "def max_profit(k, prices):\n    if not prices: return 0\n    buy = [-10**9]*k\n    sell = [0]*k\n    for p in prices:\n        for t in range(k):\n            buy[t] = max(buy[t], (sell[t-1] if t else 0) - p)\n            sell[t] = max(sell[t], buy[t] + p)\n    return sell[-1]",
+          "static": [
+            "DP k giao dịch: dp[k][i]=max(dp[k][i-1], price[i]+max(dp[k-1][j]-price[j]))",
+            "Tối ưu theo dõi best=một biến khi duyệt i",
+            "Với k=2, prices=[3,2,6,5,0,3] → 7",
+            "Kết quả dp[k][n-1]"
+          ],
+          "tcex": {
+            "input": {
+              "k": 2,
+              "prices": [
+                3,
+                2,
+                6,
+                5,
+                0,
+                3
+              ]
+            },
+            "kind": "none",
+            "expected": 7
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "DP số giao dịch × giá.",
+        "reverse": "Cần k giao dịch → mỗi giao dịch thứ k phụ thuộc giao dịch k-1 trước đó."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    },
+    {
+      "no": "221",
+      "title": "Maximal Square",
+      "cat": "Multidimensional DP",
+      "diff": "Medium",
+      "statement": "Tìm diện tích hình vuông 1 lớn nhất trong ma trận nhị phân.",
+      "examples": "[['1','0','1','0','0'],['1','0','1','1','1'],['1','1','1','1','1'],['1','0','0','1','0']] → 4",
+      "keyIdea": "dp[i][j] = cạnh hình vuông lớn nhất kết thúc tại (i,j) = 1 + min(trên, trái, chéo).",
+      "approaches": [
+        {
+          "name": "DP 2D cạnh",
+          "time": "O(m·n)",
+          "space": "O(m·n)",
+          "idea": "Ô '1': dp = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]); max² là đáp án.",
+          "code": "def maximal_square(matrix):\n    m, n = len(matrix), len(matrix[0])\n    dp = [[0]*n for _ in range(m)]\n    best = 0\n    for i in range(m):\n        for j in range(n):\n            if matrix[i][j] == '1':\n                if i == 0 or j == 0: dp[i][j] = 1\n                else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])\n                best = max(best, dp[i][j])\n    return best*best",
+          "static": [
+            "dp[i][j]=1+min(trái,trên,chéo) nếu matrix[i][j]=='1'",
+            "Cạnh hình vuông lớn nhất tại ô = min của 3 ô kề +1",
+            "Cập nhật max cạnh",
+            "Diện tích = max²"
+          ],
+          "tcex": {
+            "input": {
+              "matrix": [
+                [
+                  "1",
+                  "0",
+                  "1",
+                  "0",
+                  "0"
+                ],
+                [
+                  "1",
+                  "0",
+                  "1",
+                  "1",
+                  "1"
+                ],
+                [
+                  "1",
+                  "1",
+                  "1",
+                  "1",
+                  "1"
+                ],
+                [
+                  "1",
+                  "0",
+                  "0",
+                  "1",
+                  "0"
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "matrix",
+            "expected": 4
+          }
+        },
+        {
+          "name": "Hàng đơn",
+          "time": "O(m·n)",
+          "space": "O(n)",
+          "idea": "Chỉ giữ hàng dp; giữ 'trái' bằng biến tạm.",
+          "code": "def maximal_square(matrix):\n    m, n = len(matrix), len(matrix[0])\n    dp = [0]*(n+1); best = 0\n    for i in range(m):\n        left = 0\n        for j in range(n):\n            if matrix[i][j] == '1':\n                up, diag = dp[j+1], left\n                left = 1 + min(up, dp[j], diag)\n                dp[j+1] = left\n                best = max(best, left)\n            else:\n                dp[j+1] = 0; left = 0\n    return best*best",
+          "static": [
+            "dp[i][j]=1+min(trái,trên,chéo) nếu matrix[i][j]=='1'",
+            "Cạnh hình vuông lớn nhất tại ô = min của 3 ô kề +1",
+            "Cập nhật max cạnh",
+            "Diện tích = max²"
+          ],
+          "tcex": {
+            "input": {
+              "matrix": [
+                [
+                  "1",
+                  "0",
+                  "1",
+                  "0",
+                  "0"
+                ],
+                [
+                  "1",
+                  "0",
+                  "1",
+                  "1",
+                  "1"
+                ],
+                [
+                  "1",
+                  "1",
+                  "1",
+                  "1",
+                  "1"
+                ],
+                [
+                  "1",
+                  "0",
+                  "0",
+                  "1",
+                  "0"
+                ]
+              ]
+            },
+            "kind": "mat",
+            "display": "matrix",
+            "expected": 4
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Cạnh = 1+min 3 ô kề.",
+        "reverse": "Cần hình vuông lớn nhất → mỗi ô mở rộng từ hình vuông nhỏ hơn kề nó."
+      },
+      "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+    }
+  ]
+}

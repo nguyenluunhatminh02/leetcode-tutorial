@@ -1,0 +1,182 @@
+{
+  "desc": "Heap: hàng đợi ưu tiên cho bài toán Top-K, trung vị, và gộp giá trị đúng thứ tự.",
+  "problems": [
+    {
+      "no": "215",
+      "title": "Kth Largest Element in an Array",
+      "cat": "Heap",
+      "diff": "Medium",
+      "statement": "Tìm phần tử lớn thứ k (1-based) trong mảng không sắp.",
+      "examples": "nums=[3,2,1,5,6,4], k=2 → 5 · [3,2,3,1,2,4,5,5,6], k=4 → 4",
+      "keyIdea": "Giữ min-heap size k: phần tử nhỏ nhất trong heap chính là phần tử lớn thứ k.",
+      "approaches": [
+        {
+          "name": "Min-heap size k",
+          "time": "O(n·log k)",
+          "space": "O(k)",
+          "idea": "Duyệt; đẩy; nếu >k pop min; cuối heap[0] là đáp án.",
+          "code": "import heapq\ndef find_kth_largest(nums, k):\n    h = []\n    for x in nums:\n        heapq.heappush(h, x)\n        if len(h) > k: heapq.heappop(h)\n    return h[0]",
+          "static": [
+            "Ví dụ nums=[3,2,1,5,6,4], k=2. Duyệt từng phần tử đẩy vào min-heap h",
+            "Đẩy 3 → h=[3]; đẩy 2 → h=[2,3]; đẩy 1 → h=[1,3,2] (pop đỉnh khi len>k)",
+            "len=3 > 2 → heappop h ra 1 → h=[2,3]",
+            "Đẩy 5 → h=[2,3,5] → pop 2 → h=[3,5]; đẩy 6 → h=[3,5,6] → pop 3 → h=[5,6]; đẩy 4 → h=[4,5,6] → pop 4 → h=[5,6]",
+            "Cuối cùng h[0]=5 — phần tử lớn thứ 2. Heap size k luôn giữ k phần tử lớn nhất, đỉnh là phần tử nhỏ nhất trong đó"
+          ]
+        },
+        {
+          "name": "heapq.nlargest",
+          "time": "O(n·log k)",
+          "space": "O(k)",
+          "idea": "Thư viện chuẩn.",
+          "code": "import heapq\ndef find_kth_largest(nums, k):\n    return heapq.nlargest(k, nums)[-1]",
+          "static": [
+            "heapq.nlargest(k, nums) trả k phần tử lớn nhất theo thứ tự giảm dần",
+            "Ví dụ nums=[3,2,1,5,6,4], k=2 → nlargest = [6, 5]",
+            "Lấy phần tử cuối [-1] = 5 — chính là phần tử lớn thứ k",
+            "Thư viện chuẩn triển khai bằng heap size k — cùng độ phức tạp O(n·log k)"
+          ]
+        },
+        {
+          "name": "Quickselect",
+          "time": "O(n) trung bình, O(n²) worst",
+          "space": "O(log n)",
+          "idea": "Chia theo pivot như quicksort nhưng chỉ đệ quy một nửa chứa vị trí k.",
+          "code": "import random\ndef find_kth_largest(nums, k):\n    def qs(a, lo, hi, target):\n        pivot = a[random.randint(lo, hi)]\n        l, m, r = lo, lo, hi\n        while m <= r:\n            if a[m] > pivot: a[l], a[m] = a[m], a[l]; l += 1; m += 1\n            elif a[m] < pivot: a[m], a[r] = a[r], a[m]; r -= 1\n            else: m += 1\n        if target < l: return qs(a, lo, l-1, target)\n        if target > r: return qs(a, r+1, hi, target)\n        return a[target]\n    return qs(nums, 0, len(nums)-1, k-1)",
+          "tcex": {
+            "input": {
+              "nums": [
+                3,
+                2,
+                1,
+                5,
+                6,
+                4
+              ],
+              "k": 2
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "lo",
+              "hi"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: giữ min-heap đúng k phần tử; mỗi lần thêm phần tử lớn hơn đỉnh thì đỉnh bị đẩy ra, heap luôn chứa k phần tử lớn nhất.",
+        "reverse": "Quy nạp ngược: khi kết thúc, đỉnh heap là phần tử nhỏ nhất trong k phần tử lớn nhất — đúng bằng phần tử lớn thứ k."
+      },
+      "note": "Quickselect phân hoạch quanh pivot chỉ đệ quy một nửa chứa vị trí k — O(n) trung bình, không cần heap."
+    },
+    {
+      "no": "502",
+      "title": "IPO",
+      "cat": "Heap",
+      "diff": "Hard",
+      "statement": "Có vốn w, tối đa k dự án; mỗi dự án cần capital[i] và cho profit[i]; chọn dự án khả thi, tối đa vốn cuối.",
+      "examples": "k=2, w=0, profits=[1,2,3], capital=[0,1,1] → 4",
+      "keyIdea": "Greedy: chọn dự án khả thi sinh lời cao nhất. Nhóm theo capital sắp, push profit vào max-heap (neg).",
+      "approaches": [
+        {
+          "name": "Heap lợi nhuận",
+          "time": "O(n·log n)",
+          "space": "O(n)",
+          "idea": "Sắp (capital, profit) theo capital; mở hé các dự án khả thi vào heap max; mỗi vòng chọn đỉnh lợi nhuận.",
+          "code": "import heapq\ndef find_maximized_capital(k, w, profits, capital):\n    proj = sorted(zip(capital, profits))\n    i = 0; avail = []\n    for _ in range(k):\n        while i < len(proj) and proj[i][0] <= w:\n            heapq.heappush(avail, -proj[i][1]); i += 1\n        if not avail: break\n        w += -heapq.heappop(avail)\n    return w",
+          "static": [
+            "Ví dụ k=2, w=0, profits=[1,2,3], capital=[0,1,1]. Sắp theo capital: (0,1),(1,2),(1,3)",
+            "Vòng 1: w=0 mở hé dự án có capital ≤ 0 → push −1 vào avail (max-heap); pop −1 → w=1",
+            "Vòng 2: w=1 mở hé (1,2),(1,3) → avail=[−3,−2]; pop −3 → w=1+3=4",
+            "Hết 2 vòng → trả 4 — chọn dự án 1 (lời 1) rồi dự án 3 (lời 3)",
+            "Greedy đúng vì vốn chỉ tăng — dự án khả thi không bao giờ hết khả thi"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: sắp dự án theo capital; mỗi vòng mở hé thêm các dự án khả thi vào max-heap rồi chọn đỉnh lợi nhuận.",
+        "reverse": "Quy nạp ngược: nếu không còn dự án khả thi (heap rỗng) thì dừng sớm — các dự án còn lại đều không mua nổi."
+      },
+      "note": "Max-heap mô phỏng bằng heapq với phủ định −profit vì heapq chỉ là min-heap."
+    },
+    {
+      "no": "373",
+      "title": "Find K Pairs with Smallest Sums",
+      "cat": "Heap",
+      "diff": "Medium",
+      "statement": "Từ hai mảng sắp nums1, nums2, trả k cặp (u,v) có tổng nhỏ nhất.",
+      "examples": "nums1=[1,7,11], nums2=[2,4,6], k=3 → [[1,2],[1,4],[1,6]]",
+      "keyIdea": "Đẩy (sum, i, j) với j=0 cho mỗi i; pop nhỏ nhất rồi đẩy (i, j+1). Mỗi cặp đúng một lần nhờ j tăng.",
+      "approaches": [
+        {
+          "name": "Heap + di chuyển một bước",
+          "time": "O(k·log k)",
+          "space": "O(k)",
+          "idea": "Ban đầu push (a[i]+b[0], i, 0). Pop → ghi nhận; push (a[i]+b[j+1], i, j+1) nếu có.",
+          "code": "import heapq\ndef k_smallest_pairs(nums1, nums2, k):\n    if not nums1 or not nums2: return []\n    h = [(nums1[i] + nums2[0], i, 0) for i in range(min(k, len(nums1)))]\n    heapq.heapify(h)\n    res = []\n    while h and len(res) < k:\n        _, i, j = heapq.heappop(h)\n        res.append([nums1[i], nums2[j]])\n        if j + 1 < len(nums2):\n            heapq.heappush(h, (nums1[i] + nums2[j+1], i, j+1))\n    return res",
+          "static": [
+            "Ví dụ nums1=[1,7,11], nums2=[2,4,6], k=3. Khởi tạo heap: (1+2,0,0),(7+2,1,0),(11+2,2,0) → [(3,0,0),(9,1,0),(13,2,0)]",
+            "Pop (3,0,0) → res=[[1,2]]; đẩy kế thừa (1+4,0,1)=(5,0,1)",
+            "Pop (5,0,1) → res=[[1,2],[1,4]]; đẩy (1+6,0,2)=(7,0,2)",
+            "Pop (7,0,2) → res=[[1,2],[1,4],[1,6]] — đủ k → trả kết quả",
+            "Mỗi cặp sinh đúng một 'kế thừa' sang phải nên không trùng lặp"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: với mỗi i, chỉ cần đẩy cặp (i,0) đầu tiên; sau khi pop (i,j) thì đẩy (i,j+1) — mỗi cặp xuất hiện đúng một lần.",
+        "reverse": "Quy nạp ngược: kết quả cần k cặp nhỏ nhất; nếu ta luôn pop cặp nhỏ nhất trong heap và sinh đúng 'kế thừa' của nó thì không bỏ sót cặp nào."
+      },
+      "note": "Nhờ hai mảng sắp, ứng viên tiếp theo của (i,j) chỉ có thể là (i,j+1) — không cần quét lại toàn bộ."
+    },
+    {
+      "no": "295",
+      "title": "Find Median from Data Stream",
+      "cat": "Heap",
+      "diff": "Hard",
+      "statement": "Thiết kế cấu trúc: addNum(x), findMedian() với luồng số chảy vào.",
+      "examples": "addNum(1),addNum(2),findMedian()→1.5,addNum(3),findMedian()→2.0",
+      "keyIdea": "Hai heap: max-heap nửa nhỏ, min-heap nửa lớn; cân bằng kích thước; median từ đỉnh hai heap.",
+      "approaches": [
+        {
+          "name": "Hai heap cân bằng",
+          "time": "O(log n) add, O(1) median",
+          "space": "O(n)",
+          "idea": "Đẩy vào lo; chuyển max của lo sang hi nếu cần; giữ |lo|−|hi| ≤ 1; median: lo[0] hoặc trung bình hai đỉnh.",
+          "code": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        self.lo = []  # max-heap (neg)\n        self.hi = []  # min-heap\n    def addNum(self, x):\n        heapq.heappush(self.lo, -x)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n    def findMedian(self):\n        if len(self.lo) > len(self.hi):\n            return -self.lo[0]\n        return (-self.lo[0] + self.hi[0]) / 2",
+          "static": [
+            "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian() — lo là max-heap nửa nhỏ (lưu −x), hi là min-heap nửa lớn",
+            "addNum(1): đẩy −1 vào lo → lo=[-1]; chuyển đỉnh lo (tức 1) sang hi → hi=[1], lo=[]; |hi|=1 > |lo|=0 → chuyển 1 về lo → lo=[-1], hi=[]",
+            "findMedian(): |lo|=1 > |hi|=0 → median = -lo[0] = 1",
+            "addNum(2): đẩy −2 vào lo → lo=[-2,-1]; chuyển đỉnh lo (tức 2) sang hi → hi=[2], lo=[-1]; |hi|=|lo|=1 → giữ nguyên",
+            "findMedian(): |lo|=|hi|=1 → median = (-lo[0] + hi[0])/2 = (1+2)/2 = 1.5",
+            "addNum(3): đẩy −3 vào lo → lo=[-3,-1], hi=[2]; chuyển đỉnh lo (tức 3) sang hi → hi=[2,3], lo=[-1]; |hi|=2 > |lo|=1 → chuyển 2 về lo → lo=[-2,-1], hi=[3]",
+            "findMedian(): |lo|=2 > |hi|=1 → median = -lo[0] = 2 — đúng dãy 1, 1.5, 2"
+          ]
+        },
+        {
+          "name": "Sort từng lần (chậm)",
+          "time": "O(n·log n) add",
+          "space": "O(n)",
+          "idea": "Giữ list, sort sau mỗi add, lấy phần tử giữa — tham chiếu dễ hiểu.",
+          "code": "class MedianFinder:\n    def __init__(self): self.a = []\n    def addNum(self, x): self.a.append(x)\n    def findMedian(self):\n        self.a.sort()\n        n = len(self.a)\n        return self.a[n//2] if n % 2 else (self.a[n//2-1] + self.a[n//2]) / 2",
+          "static": [
+            "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian()",
+            "addNum(1): a=[1]; median lẻ → 1.0",
+            "addNum(2): a=[1,2]; sort; median chẵn → (1+2)/2 = 1.5",
+            "addNum(3): a=[1,2,3]; sort; median lẻ → 2.0",
+            "Trả 1.5 rồi 2.0 — đúng ví dụ; mỗi addNum O(n·log n) vì sort lại toàn bộ"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Quy nạp tiến: mỗi addNum đẩy vào lo (nửa nhỏ), chuyển đỉnh lo sang hi (nửa lớn) rồi cân bằng lại kích thước.",
+        "reverse": "Quy nạp ngược: median luôn nằm ở đỉnh lo (khi lẻ) hoặc trung bình hai đỉnh (khi chẵn) — nếu chênh lệch kích thước ≤ 1 thì luôn truy cập O(1)."
+      },
+      "note": "max-heap nửa nhỏ dùng −x; addNum mỗi lần 2 lần push/pop → O(log n)."
+    }
+  ]
+}

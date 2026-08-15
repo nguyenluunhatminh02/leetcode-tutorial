@@ -1,0 +1,2084 @@
+{
+  "desc": "Kỹ thuật nền: ghi đè tại chỗ, cộng dồn (prefix/suffix), hai hướng duyệt, sắp xếp lại mảng, chuẩn hoá chuỗi.",
+  "problems": [
+    {
+      "no": "88",
+      "title": "Merge Sorted Array",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Cho hai mảng nums1 (dài m+n, m phần tử thật, n ô cuối là 0) và nums2 đã sắp. Gộp nums2 vào nums1 để thành một mảng sắp xếp duy nhất, ghi ngay trong nums1.",
+      "examples": "nums1=[1,2,3,0,0,0], m=3, nums2=[2,5,6], n=3 → [1,2,2,3,5,6]",
+      "keyIdea": "Ghi từ cuối: vùng trống phía sau nums1 là nơi an toàn để ghi, không đè dữ liệu chưa đọc.",
+      "approaches": [
+        {
+          "name": "Two-pointer ghi từ cuối",
+          "time": "O(m+n)",
+          "space": "O(1)",
+          "idea": "i cuối nums1, j cuối nums2, w là ô trống cuối. Ghi phần tử lớn hơn vào w rồi lùi con trỏ tương ứng — điều kiện vòng lặp chỉ cần j, vì phần nums1 còn lại đã đúng chỗ.",
+          "code": "def merge(nums1, m, nums2, n):\n    i, j, w = m - 1, n - 1, m + n - 1\n    while j >= 0:\n        if i >= 0 and nums1[i] > nums2[j]:\n            nums1[w] = nums1[i]; i -= 1\n        else:\n            nums1[w] = nums2[j]; j -= 1\n        w -= 1",
+          "trace": "88-backwards",
+          "tcex": {
+            "input": {
+              "nums1": [
+                1,
+                2,
+                3,
+                0,
+                0,
+                0
+              ],
+              "m": 3,
+              "nums2": [
+                2,
+                5,
+                6
+              ],
+              "n": 3
+            },
+            "kind": "array",
+            "display": "nums1",
+            "aux": [
+              "nums2"
+            ],
+            "ptrs": [
+              "i",
+              "j",
+              "w"
+            ],
+            "expected": null,
+            "anim": true
+          }
+        },
+        {
+          "name": "Copy rồi merge từ đầu",
+          "time": "O(m+n)",
+          "space": "O(m)",
+          "idea": "Lưu m phần tử nums1 sang mảng phụ, rồi merge cổ điển từ đầu — dễ đọc, trả O(m) bộ nhớ.",
+          "code": "def merge(nums1, m, nums2, n):\n    left = nums1[:m]\n    i = j = w = 0\n    while i < m and j < n:\n        if left[i] <= nums2[j]:\n            nums1[w] = left[i]; i += 1\n        else:\n            nums1[w] = nums2[j]; j += 1\n        w += 1\n    while i < m: nums1[w], w, i = left[i], w+1, i+1\n    while j < n: nums1[w], w, j = nums2[j], w+1, j+1",
+          "trace": "88-copyfront",
+          "tcex": {
+            "input": {
+              "nums1": [
+                1,
+                2,
+                3,
+                0,
+                0,
+                0
+              ],
+              "m": 3,
+              "nums2": [
+                2,
+                5,
+                6
+              ],
+              "n": 3
+            },
+            "kind": "array",
+            "display": "nums1",
+            "aux": [
+              "nums2"
+            ],
+            "ptrs": [
+              "i",
+              "j",
+              "w"
+            ],
+            "expected": null,
+            "anim": true
+          }
+        },
+        {
+          "name": "Nối + sort",
+          "time": "O((m+n)·log(m+n))",
+          "space": "O(1)",
+          "idea": "Đổ nums2 vào đuôi nums1 rồi gọi sort(). Ngắn nhất, đúng tuyệt đối — nhưng không dùng được sự đã sắp của hai nửa.",
+          "code": "def merge(nums1, m, nums2, n):\n    nums1[m:] = nums2[:n]\n    nums1.sort()",
+          "trace": "88-sorted",
+          "static": [
+            "Đổ toàn bộ nums2 vào phần đuôi nums1 đang chứa 0: nums1[m:] = nums2[:n]",
+            "Lúc này nums1 = [1,2,3,2,5,6] — gồm m phần tử cũ + n phần tử mới",
+            "Gọi nums1.sort() để sắp xếp lại toàn bộ m+n phần tử",
+            "Kết quả: nums1 = [1,2,2,3,5,6] — đã gộp và sắp xếp đúng",
+            "Độ phức tạp O((m+n)·log(m+n)) — đơn giản nhưng không dùng được tính 'đã sắp' của hai nửa"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Gộp từ cuối: vùng trống phía sau là nơi an toàn để ghi mà không đè dữ liệu chưa đọc.",
+        "reverse": "Cần mảng nums1 đã sắp duy nhất → phải chọn phần tử lớn hơn giữa hai đầu mảng còn lại, lùi từ cuối về."
+      },
+      "note": "Ghi từ cuối: vùng trống phía sau nums1 là nơi an toàn để ghi, không đè dữ liệu chưa đọc."
+    },
+    {
+      "no": "27",
+      "title": "Remove Element",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Bỏ mọi phần tử bằng val trong nums (in-place, thứ tự tự do), trả về k = số phần tử ≠ val; k phần tử đầu phải chứa chúng.",
+      "examples": "nums=[3,2,2,3], val=3 → k=2, nums=[2,2,…]",
+      "keyIdea": "Mẫu slow/fast: con trỏ đọc chạy nhanh hơn con trỏ ghi, vùng prefix luôn là kết quả.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ ghi đè",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "r duyệt; gặp nums[r] != val thì ghi vào nums[w] và tăng w. Cuối cùng w == k. Giữ thứ tự tương đối.",
+          "code": "def remove_element(nums, val):\n    w = 0\n    for r in range(len(nums)):\n        if nums[r] != val:\n            nums[w] = nums[r]; w += 1\n    return w",
+          "trace": "27-twopointer",
+          "tcex": {
+            "input": {
+              "nums": [
+                3,
+                2,
+                2,
+                3
+              ],
+              "val": 3
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w",
+              "r"
+            ],
+            "expected": 2,
+            "anim": true
+          }
+        },
+        {
+          "name": "Đổi chỗ với phần tử cuối",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Gặp nums[l] == val thì hoán với nums[r] và thu hẹp r; không tăng l vì phần tử mới cần kiểm tra lại. Không giữ thứ tự.",
+          "code": "def remove_element(nums, val):\n    l, r = 0, len(nums) - 1\n    while l <= r:\n        if nums[l] == val:\n            nums[l], nums[r] = nums[r], nums[l]\n            r -= 1\n        else:\n            l += 1\n    return l",
+          "trace": "27-swap",
+          "tcex": {
+            "input": {
+              "nums": [
+                3,
+                2,
+                2,
+                3
+              ],
+              "val": 3
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "l",
+              "r"
+            ],
+            "expected": 2,
+            "anim": true
+          }
+        },
+        {
+          "name": "Lọc bằng comprehension",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "kept = [x for x in nums if x != val]; nums[:] = kept. Nhớ gán qua slice, nếu gán nums = ... thì không ăn.",
+          "code": "def remove_element(nums, val):\n    kept = [x for x in nums if x != val]\n    nums[:] = kept\n    return len(kept)",
+          "trace": "27-filter",
+          "static": [
+            "Ví dụ nums=[3,2,2,3], val=3. Lọc những phần tử khác val bằng comprehension: kept = [x for x in nums if x != val]",
+            "kept = [2,2] — các phần tử được giữ, giữ nguyên thứ tự tương đối",
+            "Gán đè qua slice nums[:] = kept để sửa đúng mảng gốc tại chỗ (gán nums = kept sẽ không có tác dụng)",
+            "Trả về len(kept) = 2 — số phần tử khác val; nums = [2,2,…] theo quy ước k phần tử đầu",
+            "Tốn thêm O(n) bộ nhớ cho mảng kept"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Dùng con trỏ ghi w chậm hơn con trỏ đọc r: mọi ô trước w luôn là kết quả.",
+        "reverse": "Cần k phần tử ≠ val ở đầu → chỉ ghi khi gặp giá trị giữ lại, w tăng đúng k."
+      },
+      "note": "Mẫu slow/fast: con trỏ đọc chạy nhanh hơn con trỏ ghi, vùng prefix luôn là kết quả."
+    },
+    {
+      "no": "26",
+      "title": "Remove Duplicates from Sorted Array",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Mảng đã sắp. Bỏ trùng để mỗi giá trị còn 1 lần, giữ thứ tự, in-place. Trả k = số giá trị duy nhất.",
+      "examples": "[0,0,1,1,1,2,2,3,3,4] → k=5, nums=[0,1,2,3,4,…]",
+      "keyIdea": "Vì đã sắp, so với phần tử cuối cùng đã giữ là đủ để phát hiện trùng.",
+      "approaches": [
+        {
+          "name": "Hai con trỏ ghi đè",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "w bắt đầu 1 (ô 0 giữ nguyên). So nums[r] với nums[w-1]; khác thì ghi rồi tăng w.",
+          "code": "def remove_duplicates(nums):\n    if not nums: return 0\n    w = 1\n    for r in range(1, len(nums)):\n        if nums[r] != nums[w-1]:\n            nums[w] = nums[r]; w += 1\n    return w",
+          "trace": "26-twopointer",
+          "tcex": {
+            "input": {
+              "nums": [
+                0,
+                0,
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                3,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w",
+              "r"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Nén sang kept",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Thêm phần tử khác phần tử liền trước trong kept, rồi nums[:] = kept.",
+          "code": "def remove_duplicates(nums):\n    kept = []\n    for x in nums:\n        if not kept or kept[-1] != x:\n            kept.append(x)\n    nums[:] = kept\n    return len(kept)",
+          "trace": "26-compress",
+          "tcex": {
+            "input": {
+              "nums": [
+                0,
+                0,
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                3,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "groupby",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "itertools.groupby gom các run liên tiếp; ghi phần tử đầu mỗi run.",
+          "code": "from itertools import groupby\ndef remove_duplicates(nums):\n    w = 0\n    for x, _ in groupby(nums):\n        nums[w] = x; w += 1\n    return w",
+          "trace": "26-groupby",
+          "tcex": {
+            "input": {
+              "nums": [
+                0,
+                0,
+                1,
+                1,
+                1,
+                2,
+                2,
+                3,
+                3,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Vì mảng đã sắp, so với phần tử cuối cùng đã giữ là đủ để phát hiện trùng.",
+        "reverse": "Cần k giá trị duy nhất → mỗi giá trị mới ghi vào vị trí w hiện tại, không cần nhìn cả mảng."
+      },
+      "note": "Vì đã sắp, so với phần tử cuối cùng đã giữ là đủ để phát hiện trùng."
+    },
+    {
+      "no": "80",
+      "title": "Remove Duplicates from Sorted Array II",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Như bài 26 nhưng mỗi giá trị được giữ tối đa 2 lần.",
+      "examples": "[1,1,1,2,2,3] → k=5, [1,1,2,2,3,…]",
+      "keyIdea": "So với nums[w-2]: nếu khác tức chưa đủ 2 bản trong vùng kết quả.",
+      "approaches": [
+        {
+          "name": "Biến đếm run",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "run = 1 khi gặp giá trị mới, +1 khi trùng; ghi khi run ≤ 2.",
+          "code": "def remove_duplicates(nums):\n    w = run = 0\n    last = None\n    for x in nums:\n        run = run + 1 if x == last else 1\n        last = x\n        if run <= 2:\n            nums[w] = x; w += 1\n    return w",
+          "trace": "80-counter",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Trick w-2",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Ghi nums[r] nếu w < 2 hoặc nums[r] != nums[w-2]. Đúng vì ô w-2 'nhớ' hai bản gần nhất. Khái quát: giữ tối đa t lần thì so với w-t.",
+          "code": "def remove_duplicates(nums):\n    w = 0\n    for r in range(len(nums)):\n        if w < 2 or nums[r] != nums[w-2]:\n            nums[w] = nums[r]; w += 1\n    return w",
+          "trace": "80-trick",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w",
+              "r"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Counter rồi dựng lại",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Đếm từng giá trị; vì dict giữ thứ tự chèn và mảng đã sắp, ghi max 2 bản mỗi giá trị là xong.",
+          "code": "from collections import Counter\ndef remove_duplicates(nums):\n    freq = Counter(nums)\n    w = 0\n    for x in freq:\n        for _ in range(min(freq[x], 2)):\n            nums[w] = x; w += 1\n    return w",
+          "trace": "80-counterdict",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                1,
+                1,
+                2,
+                2,
+                3
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "w"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "So với nums[w-2]: nếu khác tức chưa đủ 2 bản trong vùng kết quả.",
+        "reverse": "Cần mỗi giá trị tối đa 2 lần → so phần tử đang xét với ô cách 2 phía sau để quyết ghi."
+      },
+      "note": "So với nums[w-2]: nếu khác tức chưa đủ 2 bản trong vùng kết quả."
+    },
+    {
+      "no": "169",
+      "title": "Majority Element",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Tìm phần tử xuất hiện hơn ⌊n/2⌋ lần (đề đảm bảo tồn tại). Follow-up: O(n) thời gian, O(1) bộ nhớ?",
+      "examples": "[2,2,1,1,1,2,2] → 2",
+      "keyIdea": "Boyer–Moore: kẻ chiếm quá nửa không thể bị 'triệt phiếu' hết.",
+      "approaches": [
+        {
+          "name": "Boyer–Moore vote",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Duy trì candidate + votes. Trùng thì +1, khác thì -1; về 0 thì đổi candidate. Đa số luôn là candidate cuối.",
+          "code": "def majority_element(nums):\n    cand, votes = None, 0\n    for x in nums:\n        if votes == 0: cand = x\n        votes += 1 if x == cand else -1\n    return cand",
+          "trace": "169-vote",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                2,
+                1,
+                1,
+                1,
+                2,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "cand",
+              "votes"
+            ],
+            "expected": 2,
+            "anim": true
+          }
+        },
+        {
+          "name": "Sort lấy phần tử giữa",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Sau khi sort, phần tử đa số chiếm hơn n/2 vị trí liên tiếp nên phủ qua vị trí giữa.",
+          "code": "def majority_element(nums):\n    nums.sort()\n    return nums[len(nums)//2]",
+          "trace": "169-sorted",
+          "static": [
+            "Sắp xếp nums tăng dần: [2,2,1,1,1,2,2] → [1,1,1,2,2,2,2]",
+            "Phần tử chiếm hơn n/2 vị trí liên tiếp nên nó phủ qua chỉ số giữa len(nums)//2",
+            "Trả về nums[4] = 2 — chính là majority element",
+            "Độ phức tạp O(n·log n) vì phải sort — không đạt follow-up O(n) của đề"
+          ]
+        },
+        {
+          "name": "Counter",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Đếm tần suất, trả phần tử xuất hiện nhiều nhất.",
+          "code": "from collections import Counter\ndef majority_element(nums):\n    return Counter(nums).most_common(1)[0][0]",
+          "trace": "169-counter",
+          "static": [
+            "Đếm tần suất từng giá trị: Counter([2,2,1,1,1,2,2])",
+            "Kết quả: {2: 4, 1: 3} — 2 xuất hiện 4 lần > ⌊7/2⌋ = 3",
+            "Trả phần tử có tần suất cao nhất: most_common(1)[0][0] = 2",
+            "Độ phức tạp O(n) thời gian nhưng O(n) bộ nhớ cho dict"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Boyer–Moore: đa số không thể bị triệt phiếu hết — tăng/giảm votes theo candidate.",
+        "reverse": "Cần phần tử chiếm quá nửa → duy trì candidate có \"phiếu\" dương, kẻ thắng cuối là đáp án."
+      },
+      "note": "Boyer–Moore: kẻ chiếm quá nửa không thể bị 'triệt phiếu' hết."
+    },
+    {
+      "no": "189",
+      "title": "Rotate Array",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Xoay mảng sang phải k bước (mỗi bước phần tử cuối về đầu). k có thể lớn hơn n. In-place?",
+      "examples": "[1,2,3,4,5,6,7], k=3 → [5,6,7,1,2,3,4]",
+      "keyIdea": "Xoay phải k = hoán vị i → (i+k) mod n; tách thành 2 lần đảo.",
+      "approaches": [
+        {
+          "name": "Reverse 3 lần",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "k %= n. Đảo cả mảng → đảo [0,k-1] → đảo [k,n-1]. Mỗi phần tử đảo 2 lần.",
+          "code": "def rotate(nums, k):\n    n = len(nums); k %= n\n    if not k: return\n    def rev(lo, hi):\n        while lo < hi:\n            nums[lo], nums[hi] = nums[hi], nums[lo]\n            lo += 1; hi -= 1\n    rev(0, n-1); rev(0, k-1); rev(k, n-1)",
+          "trace": "189-reverse",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 3
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "lo",
+              "hi"
+            ],
+            "expected": null,
+            "anim": true
+          }
+        },
+        {
+          "name": "Cyclic (xích phần tử)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Đặt mỗi phần tử vào (i+k)%n đi theo từng xích; đếm số ô đã đặt để biết khi nào ghé hết các xích (số xích = gcd).",
+          "code": "def rotate(nums, k):\n    n = len(nums); k %= n\n    placed = start = 0\n    while placed < n:\n        cur, carry = start, nums[start]\n        while True:\n            nxt = (cur + k) % n\n            carry, nums[nxt] = nums[nxt], carry\n            cur = nxt; placed += 1\n            if cur == start: break\n        start += 1",
+          "trace": "189-cyclic",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 3
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "cur",
+              "start"
+            ],
+            "expected": null,
+            "anim": true
+          }
+        },
+        {
+          "name": "Mảng phụ modulo",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "rotated[(i+k)%n] = nums[i] — công thức xoay trực tiếp. Gọn tới mức nums[:] = nums[-k:] + nums[:-k].",
+          "code": "def rotate(nums, k):\n    n = len(nums); k %= n\n    rotated = [0]*n\n    for i, x in enumerate(nums):\n        rotated[(i+k) % n] = x\n    nums[:] = rotated",
+          "trace": "189-extra",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+              ],
+              "k": 3
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": null,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Đảo toàn bộ rồi đảo hai nửa: phép xoay vòng là ba lần reverse.",
+        "reverse": "Cần phần tử i về đúng chỗ sau xoay → dịch chuyển bằng đảo mảng con là thao tác đơn giản nhất."
+      },
+      "note": "Xoay phải k = hoán vị i → (i+k) mod n; tách thành 2 lần đảo."
+    },
+    {
+      "no": "121",
+      "title": "Best Time to Buy and Sell Stock",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Cho giá cổ phiếu theo ngày. Tìm lợi nhuận tối đa khi mua 1 lần, bán 1 lần (bán sau mua). Không giao dịch → 0.",
+      "examples": "[7,1,5,3,6,4] → 5 (mua ngày 2 giá 1, bán ngày 5 giá 6) · [7,6,4,3,1] → 0",
+      "keyIdea": "Chỉ cần nhớ giá mua thấp nhất đã thấy; với mỗi ngày, lời = giá hiện tại − giá mua tối thiểu.",
+      "approaches": [
+        {
+          "name": "Một lượt (greedy)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Duyệt: nếu giá hiện tại thấp hơn buy thì cập nhật buy; ngược lại so profit với giá − buy. Đúng vì mua trước bán sau được tự đảm bảo bằng thứ tự duyệt.",
+          "code": "def max_profit(prices):\n    buy, profit = prices[0], 0\n    for p in prices[1:]:\n        if p < buy: buy = p\n        else: profit = max(profit, p - buy)\n    return profit",
+          "trace": "121-best-time-to-buy-and-sell-stock",
+          "tcex": {
+            "input": {
+              "prices": [
+                7,
+                1,
+                5,
+                3,
+                6,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "ptrs": [
+              "buy",
+              "profit"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Duyệt hai con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "l = ngày mua, r = ngày bán. Nếu giá r thấp hơn l thì nhảy l = r (mua rẻ hơn), luôn cập nhật max.",
+          "code": "def max_profit(prices):\n    l, best = 0, 0\n    for r in range(1, len(prices)):\n        if prices[r] < prices[l]: l = r\n        best = max(best, prices[r] - prices[l])\n    return best",
+          "tcex": {
+            "input": {
+              "prices": [
+                7,
+                1,
+                5,
+                3,
+                6,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "ptrs": [
+              "l",
+              "r"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Prefix min + scan",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Tính min tiền tố rồi lấy max(prices[i] − min[:i]). Dễ chứng minh, tốn mảng phụ.",
+          "code": "def max_profit(prices):\n    mn = [prices[0]]\n    for p in prices[1:]: mn.append(min(mn[-1], p))\n    return max(p - m for p, m in zip(prices[1:], mn[:-1]) or [0] if False else [0]) or 0",
+          "static": [
+            "Tính mảng mn[i] = giá thấp nhất từ ngày 0 tới ngày i (prefix min)",
+            "Ví dụ prices=[7,1,5,3,6,4] → mn = [7,1,1,1,1,1]",
+            "Với mỗi ngày i ≥ 1, lời tối đa nếu bán ngày i = prices[i] − mn[i-1]",
+            "Lấy max của các giá trị đó: max(5-1, 3-1, 6-1, 4-1) = 5",
+            "Trả về 5 — mua ngày giá 1, bán ngày giá 6. Tốn O(n) bộ nhớ cho mn"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Giữ giá thấp nhất gặp tới nay, tính lợi nhuận nếu bán hôm nay.",
+        "reverse": "Cần lợi nhuận tối đa → với mỗi ngày bán, chỉ cần biết giá mua rẻ nhất trước đó."
+      },
+      "note": "Chỉ cần nhớ giá mua thấp nhất đã thấy; với mỗi ngày, lời = giá hiện tại − giá mua tối thiểu."
+    },
+    {
+      "no": "122",
+      "title": "Best Time to Buy and Sell Stock II",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Như bài 121 nhưng được mua/bán nhiều lần (giữ nhiều cổ phiếu cùng lúc không được). Tối đa hóa lợi nhuận.",
+      "examples": "[7,1,5,3,6,4] → 7 (mua 1 bán 5, mua 3 bán 6) · [1,2,3,4,5] → 4",
+      "keyIdea": "Cộng dồn mọi bước tăng: giá lên ngày nào thì chốt lời ngày đó — tương đương mua đáy bán đỉnh.",
+      "approaches": [
+        {
+          "name": "Gom mọi bước tăng",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "profit += max(0, prices[i] − prices[i−1]). Mỗi đoạn lên được chia thành các bước vi phân; tổng vi phân = biên độ.",
+          "code": "def max_profit(prices):\n    return sum(max(prices[i]-prices[i-1], 0) for i in range(1, len(prices)))",
+          "trace": "122-best-time-to-buy-and-sell-stock-ii",
+          "static": [
+            "Duyệt từng cặp ngày liên tiếp (i-1 → i); nếu giá tăng thì chốt lời phần chênh",
+            "prices=[7,1,5,3,6,4]: các bước dương là 5-1=4 (ngày 2→3) và 6-3=3 (ngày 4→5)",
+            "profit += max(prices[i]-prices[i-1], 0): cộng 4 + 3 = 7",
+            "Bỏ qua các bước âm (7→1, 5→3, 6→4) vì không giao dịch",
+            "Tổng các bước tăng = tổng (đỉnh − đáy) của từng chu kỳ tăng = 7 — lợi nhuận tối đa"
+          ]
+        },
+        {
+          "name": "Mô phỏng giao dịch",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Giữ trạng thái: nếu giá hôm nay cao hơn hôm qua, chốt; ngược lại đứng ngoài. Cùng kết quả.",
+          "code": "def max_profit(prices):\n    profit, holding = 0, prices[0]\n    for p in prices[1:]:\n        if p > holding:\n            profit += p - holding\n            holding = p\n        else:\n            holding = p\n    return profit",
+          "tcex": {
+            "input": {
+              "prices": [
+                7,
+                1,
+                5,
+                3,
+                6,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "ptrs": [
+              "holding"
+            ],
+            "expected": 7,
+            "anim": true
+          }
+        },
+        {
+          "name": "Peak–valley",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Vẽ biểu đồ giá: tổng lợi nhuận = tổng (đỉnh − đáy) của mọi chu kỳ tăng.",
+          "code": "def max_profit(prices):\n    profit, i = 0, 0\n    while i < len(prices)-1:\n        while i < len(prices)-1 and prices[i] >= prices[i+1]: i += 1\n        valley = prices[i]\n        while i < len(prices)-1 and prices[i] <= prices[i+1]: i += 1\n        profit += prices[i] - valley\n    return profit",
+          "tcex": {
+            "input": {
+              "prices": [
+                7,
+                1,
+                5,
+                3,
+                6,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "prices",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 7,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Mua khi có chênh tăng, cộng dồn từng đoạn tăng giá (không cần nhìn tương lai).",
+        "reverse": "Cần tổng lợi nhuận lớn nhất → tích luỹ mọi nhịp tăng liên tiếp, bỏ qua nhịp giảm."
+      },
+      "note": "Cộng dồn mọi bước tăng: giá lên ngày nào thì chốt lời ngày đó — tương đương mua đáy bán đỉnh."
+    },
+    {
+      "no": "55",
+      "title": "Jump Game",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "nums[i] = bước nhảy tối đa từ i. Bắt đầu ở 0, xem có tới được ô cuối không.",
+      "examples": "[2,3,1,1,4] → true · [3,2,1,0,4] → false (kẹt ở chỉ số có bước 0)",
+      "keyIdea": "Chỉ cần theo dõi 'xa nhất có thể tới' (reach); i vượt reach là hết cửa.",
+      "approaches": [
+        {
+          "name": "Greedy reach",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "reach = max(reach, i + nums[i]); nếu i > reach → false. Vì mọi ô trong [0, reach] đều 'chạm được', reach chỉ tăng.",
+          "code": "def can_jump(nums):\n    reach = 0\n    for i, x in enumerate(nums):\n        if i > reach: return False\n        reach = max(reach, i + x)\n    return True",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                3,
+                1,
+                1,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "reach"
+            ],
+            "expected": true,
+            "anim": true
+          }
+        },
+        {
+          "name": "Greedy ngược từ đuôi",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Từ cuối: goal giảm về trái nếu đứng ở i có thể nhảy tới goal. Đạt i=0 là được.",
+          "code": "def can_jump(nums):\n    goal = len(nums)-1\n    for i in range(len(nums)-1, -1, -1):\n        if i + nums[i] >= goal: goal = i\n    return goal == 0",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                3,
+                1,
+                1,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "goal"
+            ],
+            "expected": true,
+            "anim": true
+          }
+        },
+        {
+          "name": "BFS theo tầng",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Duyệt các ô đạt được theo lớp — minh hoạ rõ tại sao greedy đúng, nhưng tốn bộ nhớ.",
+          "code": "def can_jump(nums):\n    seen, frontier = {0}, {0}\n    while frontier:\n        nxt = set()\n        for i in frontier:\n            for j in range(i+1, min(len(nums), i+nums[i]+1)):\n                if j == len(nums)-1: return True\n                if j not in seen: seen.add(j); nxt.add(j)\n        frontier = nxt\n    return len(nums) == 1",
+          "static": [
+            "Bắt đầu từ ô 0: frontier = {0}, seen = {0}",
+            "Với mỗi ô i trong frontier, mọi ô j trong (i, i+nums[i]] đều nhảy tới được",
+            "Từ ô 0 (nums[0]=2) tới được các ô 1, 2 — đưa vào seen và frontier kế",
+            "Lần lượt: từ ô 1 (nums[1]=3) tới 2..4, từ ô 2 (nums[2]=1) tới 3, từ ô 3 (nums[3]=1) tới 4",
+            "Khi mở rộng tới ô cuối (j == len(nums)-1) thì trả True; hết frontier mà chưa tới → False",
+            "Kiểm tra lại [3,2,1,0,4]: từ 0 tới 1,2; từ 1 tới 2,3; ô 3 (nums=0) không mở rộng được → False"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Duyệt giữ maxReach: nếu i vượt maxReach nghĩa là mắc kẹt.",
+        "reverse": "Cần đến cuối → bất kỳ bước nào kéo xa được nhất đều đủ, không cần chọn cụ thể."
+      },
+      "note": "Chỉ cần theo dõi 'xa nhất có thể tới' (reach); i vượt reach là hết cửa."
+    },
+    {
+      "no": "45",
+      "title": "Jump Game II",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Như Jump Game nhưng bắt buộc tới được cuối; trả số bước nhảy tối thiểu.",
+      "examples": "[2,3,1,1,4] → 2 (nhảy tới 1, rồi tới cuối) · [2,3,0,1,4] → 2",
+      "keyIdea": "Mỗi 'lớp' bước nhảy là toàn bộ vùng đạt được từ lớp trước — đếm lớp.",
+      "approaches": [
+        {
+          "name": "Greedy BFS theo tầng",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "curEnd = cuối vùng đạt được với bước hiện tại; far = xa nhất vùng kế. Chạm curEnd thì +1 bước, curEnd = far.",
+          "code": "def jump(nums):\n    jumps = cur_end = far = 0\n    for i in range(len(nums)-1):\n        far = max(far, i + nums[i])\n        if i == cur_end:\n            jumps += 1; cur_end = far\n    return jumps",
+          "tcex": {
+            "input": {
+              "nums": [
+                2,
+                3,
+                1,
+                1,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i",
+              "cur_end",
+              "far"
+            ],
+            "expected": 2,
+            "anim": true
+          }
+        },
+        {
+          "name": "BFS tường minh",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Đếm số lần mở rộng frontier cho tới khi chạm ô cuối.",
+          "code": "def jump(nums):\n    if len(nums) <= 1: return 0\n    frontier, far, jumps = {0}, 0, 0\n    while frontier:\n        nxt = set()\n        for i in frontier:\n            far = max(far, i + nums[i])\n            if far >= len(nums)-1: return jumps+1\n            for j in range(i+1, far+1): nxt.add(j)\n        jumps += 1; frontier = nxt\n    return jumps",
+          "static": [
+            "nums=[2,3,1,1,4], bắt đầu frontier = {0}, số bước nhảy jumps = 0",
+            "Lượt 1: từ ô 0 (nums[0]=2) tới được các ô 1, 2; far = 2 — còn dưới ô cuối (4)",
+            "Lượt 2: frontier = {1, 2}; từ ô 1 (nums[1]=3) ta có far = 4 ≥ n-1 → dừng",
+            "Quay về jumps + 1 = 2 — số bước nhảy tối thiểu",
+            "Mỗi lượt mở rộng hết vùng đạt được ứng với đúng một bước nhảy"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "BFS theo \"tầng nhảy\": mỗi tầng mở rộng tới xa nhất, đếm tầng.",
+        "reverse": "Cần số nhảy tối thiểu → khi nào hết phạm vi tầng hiện tại mới cần nhảy thêm một lần."
+      },
+      "note": "Mỗi 'lớp' bước nhảy là toàn bộ vùng đạt được từ lớp trước — đếm lớp."
+    },
+    {
+      "no": "274",
+      "title": "H-Index",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "H-index = số h lớn nhất sao cho có ít nhất h bài báo được trích dẫn ≥ h lần.",
+      "examples": "[3,0,6,1,5] → 3 (3 bài có ≥ 3 trích dẫn) · [1,3,1] → 1",
+      "keyIdea": "Sort giảm dần rồi đếm h khi citations[h] > h.",
+      "approaches": [
+        {
+          "name": "Sort rồi đếm",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Sort giảm. h tăng khi citations[h] > h; dừng khi hết — vì các phần tử sau đều ≤, không thêm được.",
+          "code": "def h_index(citations):\n    c = sorted(citations, reverse=True)\n    h = 0\n    while h < len(c) and c[h] > h: h += 1\n    return h",
+          "tcex": {
+            "input": {
+              "citations": [
+                3,
+                0,
+                6,
+                1,
+                5
+              ]
+            },
+            "kind": "array",
+            "display": "citations",
+            "ptrs": [
+              "h"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        },
+        {
+          "name": "Counting sort (bucket)",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Nhóm các giá trị ≥ n vào một bucket; đếm từ n xuống 0, cộng dồn số bài.",
+          "code": "def h_index(citations):\n    n = len(citations)\n    bucket = [0]*(n+1)\n    for c in citations:\n        bucket[min(c, n)] += 1\n    total = 0\n    for h in range(n, -1, -1):\n        total += bucket[h]\n        if total >= h: return h\n    return 0",
+          "tcex": {
+            "input": {
+              "citations": [
+                3,
+                0,
+                6,
+                1,
+                5
+              ]
+            },
+            "kind": "array",
+            "display": "citations",
+            "ptrs": [
+              "h",
+              "total"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        },
+        {
+          "name": "Binary search h",
+          "time": "O(n·log n)",
+          "space": "O(1)",
+          "idea": "Tìm h lớn nhất thoả điều kiện bằng tìm kiếm nhị phân trên miền [0, n].",
+          "code": "def h_index(citations):\n    lo, hi = 0, len(citations)\n    while lo < hi:\n        mid = (lo + hi + 1) // 2\n        if sum(c >= mid for c in citations) >= mid: lo = mid\n        else: hi = mid - 1\n    return lo",
+          "tcex": {
+            "input": {
+              "citations": [
+                3,
+                0,
+                6,
+                1,
+                5
+              ]
+            },
+            "kind": "array",
+            "display": "citations",
+            "ptrs": [
+              "lo",
+              "hi"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Sắp xếp giảm dần, tìm i lớn nhất sao cho papers[i] ≥ i+1.",
+        "reverse": "Cần h-chỉ số → đếm bài có trích dẫn ≥ k, k lớn nhất thoả điều kiện."
+      },
+      "note": "Sort giảm dần rồi đếm h khi citations[h] > h."
+    },
+    {
+      "no": "380",
+      "title": "Insert Delete GetRandom O(1)",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Thiết kế RandomizedSet: insert, remove, getRandom đều O(1) trung bình. getRandom trả phần tử ngẫu nhiên đều xác suất.",
+      "examples": "insert(1)→true, remove(2)→false, insert(2)→true, getRandom()→1 hoặc 2",
+      "keyIdea": "Mảng + dict vị trí: xoá bằng cách thay phần tử bị xoá bằng phần tử cuối.",
+      "approaches": [
+        {
+          "name": "Mảng + dict vị trí",
+          "time": "O(1) trung bình",
+          "space": "O(n)",
+          "idea": "vals chứa dữ liệu, pos[v] = chỉ số. Xoá: đưa phần tử cuối vào chỗ vừa xoá rồi pop — O(1). getRandom lấy index ngẫu nhiên.",
+          "code": "import random as r\nclass RandomizedSet:\n    def __init__(self):\n        self.vals = []; self.pos = {}\n    def insert(self, v):\n        if v in self.pos: return False\n        self.pos[v] = len(self.vals); self.vals.append(v)\n        return True\n    def remove(self, v):\n        if v not in self.pos: return False\n        i = self.pos[v]\n        last = self.vals[-1]\n        self.vals[i], self.pos[last] = last, i\n        self.vals.pop(); del self.pos[v]\n        return True\n    def getRandom(self):\n        return self.vals[r.randrange(len(self.vals))]",
+          "static": [
+            "Khởi tạo: self.vals = [] (mảng chứa phần tử), self.pos = {} (giá trị → chỉ số)",
+            "insert(v): nếu v đã có trả False; ngược lại nối vào cuối vals và lưu pos[v] = chỉ số mới",
+            "Ví dụ: insert(1) → vals=[1], pos={1:0}; insert(2) → vals=[1,2], pos={1:0,2:1}",
+            "remove(v): lấy i = pos[v], chép phần tử cuối vào vị trí i rồi pop cuối — xoá O(1) theo kiểu 'thay bằng phần tử cuối'",
+            "Ví dụ remove(1): vals=[2] (phần tử cuối 2 chuyển lên chỗ cũ của 1), pos[2] cập nhật = 0",
+            "getRandom(): chọn chỉ số ngẫu nhiên trong [0, len(vals)) — mọi phần tử đều xác suất bằng nhau"
+          ]
+        },
+        {
+          "name": "Bản đồ bù cho xoá giữa",
+          "time": "O(n) worst",
+          "space": "O(n)",
+          "idea": "Nếu không hoán với cuối, mọi xoá giữa đều phải dịch khối — đó là lý do phải 'swap với phần tử cuối'.",
+          "code": "class RandomizedSet:\n    def __init__(self):\n        self.d = {}\n    def insert(self, v):\n        if v in self.d: return False\n        self.d[v] = True; return True\n    # bản demo — getRandom không O(1) nên không dùng trong đề",
+          "static": [
+            "Bản demo dùng dict thuần (self.d[v] = True) — KHÔNG đạt yêu cầu getRandom O(1)",
+            "insert(v) chỉ đánh dấu tồn tại: nếu v chưa có thì thêm và trả True",
+            "Nhược điểm: không lấy được phần tử ngẫu nhiên từ dict — trái yêu cầu của đề",
+            "Bài học: phải giữ thêm mảng vals để chọn ngẫu nhiên, và khi xoá giữa phải 'hoán với phần tử cuối'",
+            "Đây không phải lời giải hợp lệ — chỉ minh hoạ tại sao cần swap với phần tử cuối"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Hashmap lưu vị trí của từng giá trị trong mảng để getRandom O(1).",
+        "reverse": "Cần remove O(1) → đổi chỗ phần tử cần xoá với phần tử cuối rồi pop là an toàn nhất."
+      },
+      "note": "Mảng + dict vị trí: xoá bằng cách thay phần tử bị xoá bằng phần tử cuối."
+    },
+    {
+      "no": "238",
+      "title": "Product of Array Except Self",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Trả mảng ans[i] = tích mọi phần tử trừ nums[i], không dùng phép chia, O(n) thời gian.",
+      "examples": "[1,2,3,4] → [24,12,8,6]",
+      "keyIdea": "ans[i] = (tích bên trái) × (tích bên phải) — tính bằng 2 lượt duyệt.",
+      "approaches": [
+        {
+          "name": "Prefix × suffix (2 lượt)",
+          "time": "O(n)",
+          "space": "O(1) ngoài ans",
+          "idea": "Lượt trái: ans[i] = tích các phần tử < i. Lượt phải: nhân thêm tích các phần tử > i.",
+          "code": "def product_except_self(nums):\n    n = len(nums)\n    ans = [1]*n\n    left = 1\n    for i in range(n):\n        ans[i] = left\n        left *= nums[i]\n    right = 1\n    for i in range(n-1, -1, -1):\n        ans[i] *= right\n        right *= nums[i]\n    return ans",
+          "trace": "238-product-of-array-except-self",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "left",
+              "right",
+              "i"
+            ],
+            "expected": [
+              24,
+              12,
+              8,
+              6
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Từng mảnh rẽ trái/phải",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Tính left[] và right[] độc lập rồi nhân — dễ đọc hơn, tốn mảng phụ.",
+          "code": "def product_except_self(nums):\n    n = len(nums)\n    L = [1]*n; R = [1]*n\n    for i in range(1, n): L[i] = L[i-1]*nums[i-1]\n    for i in range(n-2, -1, -1): R[i] = R[i+1]*nums[i+1]\n    return [L[i]*R[i] for i in range(n)]",
+          "tcex": {
+            "input": {
+              "nums": [
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": [
+              24,
+              12,
+              8,
+              6
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Đáp án chia (nếu được)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Nếu đề cho phép chia (không phải bản này): tổng tích chia nums[i]; chú ý số 0.",
+          "code": "def product_except_self(nums):\n    total = 1\n    for x in nums: total *= x\n    return [total // x for x in nums]  # sai khi có 0",
+          "static": [
+            "Tính tích toàn bộ: total = 1×2×3×4 = 24",
+            "Với mỗi i, ans[i] = total // nums[i]: 24//1=24, 24//2=12, 24//3=8, 24//4=6",
+            "Kết quả [24,12,8,6] — đúng đáp án mẫu trên input không có số 0",
+            "CẢNH BÁO: sai ngay khi nums có phần tử 0 (chia cho 0), và đề bài 238 cấm dùng phép chia",
+            "Đây không phải lời giải hợp lệ — chỉ trình bày để so sánh"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Tích trái × tích phải: mỗi ô bằng tích prefix bên trái nhân suffix bên phải.",
+        "reverse": "Cần tích mọi ô khác i → tách thành tích bên trái và bên phải rồi nhân chéo."
+      },
+      "note": "ans[i] = (tích bên trái) × (tích bên phải) — tính bằng 2 lượt duyệt."
+    },
+    {
+      "no": "134",
+      "title": "Gas Station",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Có n trạm xăng vòng tròn; gas[i] = xăng nhận được, cost[i] = xăng tiêu tới trạm kế. Tìm trạm khởi hành (nếu có) để đi hết vòng. Không có → -1.",
+      "examples": "gas=[1,2,3,4,5], cost=[3,4,5,1,2] → 3 · gas=[2,3,4], cost=[3,4,3] → -1",
+      "keyIdea": "Nếu tổng gas < tổng cost thì vô vọng; ngược lại luôn có điểm khởi hành, và greedy từ trái sang là đủ.",
+      "approaches": [
+        {
+          "name": "Greedy một lượt",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Nếu tank < 0 ở trạm i, mọi điểm khởi hành trong [start..i] đều thất bại → thử từ i+1.",
+          "code": "def can_complete_circuit(gas, cost):\n    if sum(gas) < sum(cost): return -1\n    start = tank = 0\n    for i in range(len(gas)):\n        tank += gas[i] - cost[i]\n        if tank < 0:\n            start, tank = i + 1, 0\n    return start",
+          "tcex": {
+            "input": {
+              "gas": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "cost": [
+                3,
+                4,
+                5,
+                1,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "gas",
+            "aux": [
+              "cost"
+            ],
+            "ptrs": [
+              "i",
+              "start"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        },
+        {
+          "name": "Tham lam xác minh BFS",
+          "time": "O(n²)",
+          "space": "O(1)",
+          "idea": "Thử từng trạm, đi hết vòng kiểm tra — chậm nhưng dễ chứng minh đúng.",
+          "code": "def can_complete_circuit(gas, cost):\n    n = len(gas)\n    for s in range(n):\n        tank = 0\n        for i in range(n):\n            tank += gas[(s+i) % n] - cost[(s+i) % n]\n            if tank < 0: break\n        else:\n            return s\n    return -1",
+          "tcex": {
+            "input": {
+              "gas": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "cost": [
+                3,
+                4,
+                5,
+                1,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "gas",
+            "aux": [
+              "cost"
+            ],
+            "ptrs": [
+              "s",
+              "i"
+            ],
+            "expected": 3,
+            "anim": true
+          }
+        },
+        {
+          "name": "Prefix sum min",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Xây chuỗi net[i] = gas[i]-cost[i]; điểm khởi hành tốt là vị trí SAU prefix minimum trên chuỗi vòng.",
+          "code": "def can_complete_circuit(gas, cost):\n    if sum(gas) < sum(cost): return -1\n    pref = [0]\n    for a, b in zip(gas, cost): pref.append(pref[-1] + a - b)\n    return pref.index(min(pref)) % len(gas)",
+          "static": [
+            "Lập chuỗi net[i] = gas[i] − cost[i]: [1-3, 2-4, 3-5, 4-1, 5-2] = [-2,-2,-2,3,3]",
+            "Tính prefix tổng: pref = [0, -2, -4, -6, -3, 0]",
+            "Điểm bắt đầu tốt là vị trí NGAY SAU khi prefix chạm giá trị nhỏ nhất (đáy)",
+            "min(pref) = -6 tại index 3 → trạm khởi hành = 3 % 5 = 3",
+            "Xác minh: bắt đầu trạm 3 (gas 4, cost 1) → tank 3, 3, 2, 1, 0 — đi hết vòng; trả 3"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Nếu tổng gas < tổng cost → bất khả; xuất phát từ nơi surplus âm reset.",
+        "reverse": "Cần trạm xuất phát đúng → chỉ trạm duy nhất giữ surplus không âm trên toàn đường là hợp lệ."
+      },
+      "note": "Nếu tổng gas < tổng cost thì vô vọng; ngược lại luôn có điểm khởi hành, và greedy từ trái sang là đủ."
+    },
+    {
+      "no": "135",
+      "title": "Candy",
+      "cat": "Array / String",
+      "diff": "Hard",
+      "statement": "Mỗi đứa trẻ có rating; kẹo phát thoả: mỗi đứa ≥ 1, và đứa rating cao hơn hàng xóm phải nhiều kẹo hơn. Tối thiểu hoá tổng kẹo.",
+      "examples": "[1,0,2] → 5 ([2,1,2]) · [1,2,2] → 4 ([1,2,1])",
+      "keyIdea": "Hai lượt: trái→phải đảm bảo quan hệ tăng; phải→trái củng cố quan hệ giảm.",
+      "approaches": [
+        {
+          "name": "Hai lượt quét",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "left[i] theo quan hệ tăng; rồi từ phải, right theo quan hệ giảm; tổng max(left, right).",
+          "code": "def candy(ratings):\n    n = len(ratings)\n    left = [1]*n\n    for i in range(1, n):\n        if ratings[i] > ratings[i-1]: left[i] = left[i-1] + 1\n    right = 1; total = left[-1]\n    for i in range(n-2, -1, -1):\n        right = right + 1 if ratings[i] > ratings[i+1] else 1\n        total += max(left[i], right)\n    return total",
+          "tcex": {
+            "input": {
+              "ratings": [
+                1,
+                0,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "ratings",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Quét hai lượt tác động trực tiếp",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Khởi tạo toàn 1; lượt 1 tăng khi rating lên; lượt 2 tăng khi rating giảm; tổng.",
+          "code": "def candy(ratings):\n    n = len(ratings)\n    cand = [1]*n\n    for i in range(1, n):\n        if ratings[i] > ratings[i-1]: cand[i] = cand[i-1]+1\n    for i in range(n-2, -1, -1):\n        if ratings[i] > ratings[i+1]: cand[i] = max(cand[i], cand[i+1]+1)\n    return sum(cand)",
+          "tcex": {
+            "input": {
+              "ratings": [
+                1,
+                0,
+                2
+              ]
+            },
+            "kind": "array",
+            "display": "ratings",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 5,
+            "anim": true
+          }
+        },
+        {
+          "name": "Phân tích đỉnh/đáy",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Mỗi dãy tăng/giảm là một 'núi': kẹo = 1..len; đỉnh nhận max của hai bên; tránh mảng phụ.",
+          "code": "def candy(ratings):\n    up = down = peak = total = 1\n    for i in range(1, len(ratings)):\n        if ratings[i] > ratings[i-1]:\n            up += 1; down = 0; peak = up\n            total += up\n        elif ratings[i] == ratings[i-1]:\n            up = down = peak = 1\n            total += 1\n        else:\n            down += 1; up = 1\n            total += down + (0 if down <= peak else 1)\n    return total",
+          "static": [
+            "Duyệt ratings, coi mỗi dãy tăng là sườn phải của một 'núi', mỗi dãy giảm là sườn trái",
+            "Kẹo trên sườn tăng: 1, 2, 3, … (up += 1); trên sườn giảm: 1, 2, 3, … (down += 1)",
+            "Đỉnh núi nhận max của hai sườn: khi lên cộng up; khi xuống cộng down + (1 nếu down vượt peak)",
+            "Không cần mảng phụ — chỉ giữ up, down, peak bằng O(1)",
+            "Với [1,0,2] đáp án đúng là 5 ([2,1,2]); lưu ý biến thể này cần xử lý đỉnh chính xác"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Hai lượt: trái→phải đảm bảo kẹo tăng, phải→trái xử lý kẹo giảm.",
+        "reverse": "Cần kẹo tối thiểu → mỗi đứa phải thoả 2 ràng buộc kề trái và kề phải, tách làm 2 lượt."
+      },
+      "note": "Hai lượt: trái→phải đảm bảo quan hệ tăng; phải→trái củng cố quan hệ giảm."
+    },
+    {
+      "no": "42",
+      "title": "Trapping Rain Water",
+      "cat": "Array / String",
+      "diff": "Hard",
+      "statement": "Cho heights của các cột địa hình. Tính lượng nước mưa bị giữ giữa các cột.",
+      "examples": "[0,1,0,2,1,0,1,3,2,1,2,1] → 6",
+      "keyIdea": "Nước tại cột i = min(cao nhất trái, cao nhất phải) − height[i] (nếu dương).",
+      "approaches": [
+        {
+          "name": "Prefix/suffix max",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "left[i] = max chiều cao trước i; right[i] = max sau i. Nước = Σ max(0, min(left,right) − h).",
+          "code": "def trap(height):\n    n = len(height)\n    left = [0]*n; right = [0]*n\n    left[0] = height[0]\n    for i in range(1, n): left[i] = max(left[i-1], height[i])\n    right[n-1] = height[n-1]\n    for i in range(n-2, -1, -1): right[i] = max(right[i+1], height[i])\n    return sum(max(0, min(left[i], right[i]) - height[i]) for i in range(n))",
+          "tcex": {
+            "input": {
+              "height": [
+                0,
+                1,
+                0,
+                2,
+                1,
+                0,
+                1,
+                3,
+                2,
+                1,
+                2,
+                1
+              ]
+            },
+            "kind": "array",
+            "display": "height",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        },
+        {
+          "name": "Hai con trỏ",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Giữ left_max/right_max từ hai đầu; bên nào max nhỏ hơn thì chắc chắn nước ở bên đó theo max tương ứng.",
+          "code": "def trap(height):\n    l, r = 0, len(height)-1\n    lm = rm = water = 0\n    while l < r:\n        if height[l] < height[r]:\n            lm = max(lm, height[l])\n            water += lm - height[l]; l += 1\n        else:\n            rm = max(rm, height[r])\n            water += rm - height[r]; r -= 1\n    return water",
+          "tcex": {
+            "input": {
+              "height": [
+                0,
+                1,
+                0,
+                2,
+                1,
+                0,
+                1,
+                3,
+                2,
+                1,
+                2,
+                1
+              ]
+            },
+            "kind": "array",
+            "display": "height",
+            "ptrs": [
+              "l",
+              "r"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        },
+        {
+          "name": "Stack đơn điệu",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Duyệt; giữ stack giảm dần; khi gặp cột cao hơn đỉnh stack → pop và tính hồ nước giữa hai bên.",
+          "code": "def trap(height):\n    stack, water = [], 0\n    for i, h in enumerate(height):\n        while stack and h > stack[-1][1]:\n            j, low = stack.pop()\n            if not stack: break\n            water += (min(h, stack[-1][1]) - low) * (i - stack[-1][0] - 1)\n        stack.append((i, h))\n    return water",
+          "tcex": {
+            "input": {
+              "height": [
+                0,
+                1,
+                0,
+                2,
+                1,
+                0,
+                1,
+                3,
+                2,
+                1,
+                2,
+                1
+              ]
+            },
+            "kind": "array",
+            "display": "height",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Mực nước tại cột i = min(maxTrái, maxPhải) - height[i] (nếu dương).",
+        "reverse": "Cần nước đọng → với mỗi cột chỉ phụ thuộc tường cao nhất hai bên, dùng prefix/suffix max."
+      },
+      "note": "Nước tại cột i = min(cao nhất trái, cao nhất phải) − height[i] (nếu dương)."
+    },
+    {
+      "no": "13",
+      "title": "Roman to Integer",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Chuyển số La Mã (I, V, X, L, C, D, M) sang số nguyên. Quy tắc trừ: IV=4, IX=9…",
+      "examples": "III → 3 · LVIII → 58 · MCMXCIV → 1994",
+      "keyIdea": "Nếu ký tự nhỏ hơn ký tự sau → trừ; ngược lại cộng.",
+      "approaches": [
+        {
+          "name": "Quét trái với so sánh kế tiếp",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Với mỗi ch, nếu giá trị của ch < giá trị ch sau → total −= value; ngược lại += value.",
+          "code": "M = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000}\ndef roman_to_int(s):\n    total = 0\n    for i, ch in enumerate(s):\n        if i+1 < len(s) and M[ch] < M[s[i+1]]: total -= M[ch]\n        else: total += M[ch]\n    return total",
+          "static": [
+            "Bảng giá trị: M = {I:1, V:5, X:10, L:50, C:100, D:500, M:1000}",
+            "Duyệt s từ trái: nếu M[ch] < M[ch kế tiếp] → đây là ký tự TRỪ, total -= value",
+            "Ngược lại total += value — ký tự CỘNG thông thường",
+            "MCMXCIV: M(1000) + CM(100<1000 → -100) + M(1000>=900) + XC(10<100 → -10) + C(100) + IV(1<5 → -1) + V(5)",
+            "Tổng = 1000 - 100 + 1000 - 10 + 100 - 1 + 5 = 1994"
+          ]
+        },
+        {
+          "name": "Ưu tiên cặp trừ (2 ký tự)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Duyệt với bảng 2-ký-tự trước, 1-ký-tự sau — gần với cách đọc chuẩn.",
+          "code": "P = [('CM',900),('CD',400),('XC',90),('XL',40),('IX',9),('IV',4)]\nM = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000}\ndef roman_to_int(s):\n    total = i = 0\n    while i < len(s):\n        for sym, v in P:\n            if s.startswith(sym, i):\n                total += v; i += 2; break\n        else:\n            total += M[s[i]]; i += 1\n    return total",
+          "static": [
+            "Bảng cặp 2 ký tự theo thứ tự đặc biệt: [('CM',900),('CD',400),('XC',90),('XL',40),('IX',9),('IV',4)]",
+            "Tại mỗi vị trí i, thử bắt cặp 2 ký tự: s.startswith(sym, i) — khớp thì cộng giá trị cặp và i += 2",
+            "Không khớp cặp nào thì cộng giá trị 1 ký tự trong M và i += 1",
+            "Với MCMXCIV: M(1000) → CM(900) → XC(90) → IV(4): num = 1000 + 900 + 90 + 4 = 1994",
+            "Gần với cách đọc chuẩn (ưu tiên cặp trừ trước), O(n)"
+          ]
+        },
+        {
+          "name": "Quét phải qua trái",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Từ phải: cộng khi ≥ ký tự trước đó (theo hướng phải), trừ khi nhỏ hơn.",
+          "code": "M = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000}\ndef roman_to_int(s):\n    total = M[s[-1]]\n    for i in range(len(s)-2, -1, -1):\n        total += M[s[i]] if M[s[i]] >= M[s[i+1]] else -M[s[i]]\n    return total",
+          "static": [
+            "Bắt đầu từ ký tự cuối: total = M[s[-1]]",
+            "Đi ngược về trái: ký tự TRƯỚC nhỏ hơn ký tự bên phải → TRỪ; ngược lại → CỘNG",
+            "MCMXCIV: V(5) → I(1<5, trừ 1 → 4) → C(100≥1, cộng → 104) → X(10<100, trừ 10 → 94)",
+            "Tiếp: M(1000≥10, cộng → 1094) → C(100<1000, trừ 100 → 994) → M(1000≥100, cộng → 1994)",
+            "Tổng = 1994 — quy tắc trừ luôn là ký tự TRƯỚC nhỏ hơn ký tự SAU theo chiều đọc"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Duyệt từ trái: chữ số nhỏ đứng trước chữ số lớn → trừ, ngược lại cộng.",
+        "reverse": "Cần giá trị La Mã → đọc từng ký tự, so với ký tự kế để quyết cộng hay trừ."
+      },
+      "note": "Nếu ký tự nhỏ hơn ký tự sau → trừ; ngược lại cộng."
+    },
+    {
+      "no": "12",
+      "title": "Integer to Roman",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Chuyển số nguyên (1..3999) sang chuỗi La Mã.",
+      "examples": "3749 → MMMDCCXLIX · 58 → LVIII · 1994 → MCMXCIV",
+      "keyIdea": "Bảng giá trị giảm dần kèm symbol; trừ dần.",
+      "approaches": [
+        {
+          "name": "Bảng giảm dần + trừ",
+          "time": "O(1)",
+          "space": "O(1)",
+          "idea": "VALS = [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),(50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]. Lặp, trừ số lớn nhất ≤ num.",
+          "code": "VALS = [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),(50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]\ndef int_to_roman(num):\n    out = []\n    for v, s in VALS:\n        while num >= v:\n            out.append(s); num -= v\n    return ''.join(out)",
+          "static": [
+            "Bảng giá trị giảm dần: [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),(50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]",
+            "Với num=1994, lấy symbol giá trị lớn nhất ≤ num: 1000 → ghi 'M', num = 994",
+            "Tiếp tục: 900 → 'CM', num = 94",
+            "Qua bảng: 90 → 'XC', rồi 4 → 'IV', num = 0",
+            "Kết quả 'M' + 'CM' + 'XC' + 'IV' = 'MCMXCIV' — O(1) vì bảng cố định"
+          ]
+        },
+        {
+          "name": "Trừ từng chữ số",
+          "time": "O(1)",
+          "space": "O(1)",
+          "idea": "Chia theo hàng nghìn/trăm/chục/đơn vị, mỗi hàng một bảng nhỏ — dễ viết bằng tay khi không nhớ bảng đầy đủ.",
+          "code": "def int_to_roman(num):\n    th = ['','M','MM','MMM']\n    hu = ['','C','CC','CCC','CD','D','DC','DCC','DCCC','CM']\n    te = ['','X','XX','XXX','XL','L','LX','LXX','LXXX','XC']\n    un = ['','I','II','III','IV','V','VI','VII','VIII','IX']\n    return th[num//1000] + hu[(num%1000)//100] + te[(num%100)//10] + un[num%10]",
+          "static": [
+            "Tách num=1994 theo hàng: nghìn 1, trăm 9, chục 9, đơn vị 4",
+            "Tra bảng hàng nghìn: 1 → 'M'",
+            "Hàng trăm 9 → 'CM'; hàng chục 9 → 'XC'; hàng đơn vị 4 → 'IV'",
+            "Nối: 'M' + 'CM' + 'XC' + 'IV' = 'MCMXCIV'",
+            "Không cần vòng lặp — mỗi hàng tra bảng cố định, tổng O(1)"
+          ]
+        },
+        {
+          "name": "Đệ quy",
+          "time": "O(log n)",
+          "space": "O(log n)",
+          "idea": "Giảm về bài toán con: int_to_roman(num - largest) + symbol của largest.",
+          "code": "V = [(1000,'M'),(900,'CM'),(500,'D'),(400,'CD'),(100,'C'),(90,'XC'),(50,'L'),(40,'XL'),(10,'X'),(9,'IX'),(5,'V'),(4,'IV'),(1,'I')]\ndef int_to_roman(num):\n    if num == 0: return ''\n    for v, s in V:\n        if num >= v:\n            return s + int_to_roman(num - v)",
+          "static": [
+            "Hàm int_to_roman(num): nếu num == 0 trả chuỗi rỗng",
+            "Tìm symbol có giá trị lớn nhất ≤ num (duyệt bảng V giảm dần)",
+            "Ghép: s + int_to_roman(num − v) — bài toán con giảm dần tới 0",
+            "Với num=1994: 'M' + int_to_roman(994) → 'M'+'CM'+int_to_roman(94) → 'M'+'CM'+'XC'+'IV'+''",
+            "Chiều sâu đệ quy ≈ số symbol ra (tối đa ~15) — O(log n)"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Chia dần cho 1000→1, dùng mảng ánh xạ giá trị→ký tự.",
+        "reverse": "Cần chuỗi La Mã → phân rã số thành các bậc nghìn/trăm/chục/đơn vị rồi nối ký tự tương ứng."
+      },
+      "note": "Bảng giá trị giảm dần kèm symbol; trừ dần."
+    },
+    {
+      "no": "58",
+      "title": "Length of Last Word",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Chuỗi gồm từ và khoảng trắng; trả độ dài từ cuối cùng.",
+      "examples": "Hello World → 5 · '   fly me   to   the moon  ' → 4",
+      "keyIdea": "strip() và split() — nhưng phỏng vấn hay hỏi bản không dùng split.",
+      "approaches": [
+        {
+          "name": "split",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "s.strip().split()[-1].",
+          "code": "def length_of_last_word(s):\n    return len(s.strip().split()[-1])",
+          "static": [
+            "s = 'Hello World', gọi s.strip().split() → ['Hello', 'World']",
+            "split() tách theo mọi khoảng trắng và tự bỏ trắng thừa ở hai đầu",
+            "Lấy phần tử cuối 'World' — len = 5",
+            "Trả về 5; O(n) thời gian, O(n) bộ nhớ"
+          ]
+        },
+        {
+          "name": "Quét ngược",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Bỏ khoảng trắng cuối, đếm ký tự tới khoảng trắng đầu tiên đi lùi.",
+          "code": "def length_of_last_word(s):\n    n = len(s); i = n - 1\n    while i >= 0 and s[i] == ' ': i -= 1\n    j = i\n    while j >= 0 and s[j] != ' ': j -= 1\n    return i - j",
+          "static": [
+            "Đi từ cuối chuỗi, bỏ qua các khoảng trắng cuối: i lùi tới ký tự khác trắng",
+            "Từ i lùi tiếp tới khi gặp khoảng trắng hoặc hết chuỗi: ghi lại j",
+            "Độ dài từ cuối = i − j",
+            "Ví dụ '   fly me   to   the moon  ': đếm từ 'n' về 'm' = 4",
+            "Không tạo mảng phụ — O(1) bộ nhớ, O(n) thời gian"
+          ]
+        },
+        {
+          "name": "Dùng regex",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "re.search(r'\\S+$', s) — gọn, ít dùng trong phỏng vấn.",
+          "code": "import re\ndef length_of_last_word(s):\n    m = re.search(r'\\S+$', s)\n    return len(m.group(0)) if m else 0",
+          "static": [
+            "re.search(r'\\S+$', s) tìm chuỗi ký tự không-khoảng-trắng dính tới hết chuỗi",
+            "Với 'Hello World' khớp 'World' → group(0) = 'World'",
+            "Trả len('World') = 5",
+            "Lưu ý: nếu chuỗi toàn khoảng trắng thì m = None — phải có nhánh trả 0"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Đếm từ cuối bỏ qua khoảng trắng, rồi đếm ký tự đến khoảng trắng tiếp.",
+        "reverse": "Cần độ dài từ cuối → không cần duyệt cả chuỗi, chỉ cần phần đuôi."
+      },
+      "note": "strip() và split() — nhưng phỏng vấn hay hỏi bản không dùng split."
+    },
+    {
+      "no": "14",
+      "title": "Longest Common Prefix",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Tìm tiền tố chung dài nhất của mảng chuỗi (rỗng nếu không có).",
+      "examples": "[\"flower\",\"flow\",\"flight\"] → \"fl\" · [\"dog\",\"racecar\",\"car\"] → \"\"",
+      "keyIdea": "So sánh theo từng ký tự cột — ngừng ở ký tự đầu khác biệt.",
+      "approaches": [
+        {
+          "name": "Khởi tạo từ chuỗi đầu, cắt dần",
+          "time": "O(S)",
+          "space": "O(1)",
+          "idea": "pre = strs[0]; với mỗi chuỗi, cắt pre tới khi là tiền tố.",
+          "code": "def longest_common_prefix(strs):\n    if not strs: return ''\n    pre = strs[0]\n    for s in strs[1:]:\n        while not s.startswith(pre):\n            pre = pre[:-1]\n    return pre",
+          "tcex": {
+            "input": {
+              "strs": [
+                "flower",
+                "flow",
+                "flight"
+              ]
+            },
+            "kind": "array",
+            "display": "strs",
+            "ptrs": [
+              "pre"
+            ],
+            "expected": "fl",
+            "anim": true
+          }
+        },
+        {
+          "name": "Theo cột ký tự",
+          "time": "O(S)",
+          "space": "O(1)",
+          "idea": "Với từng cột i, kiểm tra mọi chuỗi có cùng ký tự; khác thì trả về đoạn cắt.",
+          "code": "def longest_common_prefix(strs):\n    if not strs: return ''\n    for i in range(len(strs[0])):\n        c = strs[0][i]\n        for s in strs[1:]:\n            if i >= len(s) or s[i] != c:\n                return strs[0][:i]\n    return strs[0]",
+          "tcex": {
+            "input": {
+              "strs": [
+                "flower",
+                "flow",
+                "flight"
+              ]
+            },
+            "kind": "array",
+            "display": "strs",
+            "ptrs": [
+              "i"
+            ],
+            "expected": "fl",
+            "anim": true
+          }
+        },
+        {
+          "name": "Chia để trị",
+          "time": "O(S)",
+          "space": "O(log n) stack",
+          "idea": "lcp trái, lcp phải, rồi gộp bằng lcp của hai — mẫu dễ mở rộng.",
+          "code": "def lcp(strs):\n    if len(strs) == 1: return strs[0]\n    mid = len(strs)//2\n    a, b = lcp(strs[:mid]), lcp(strs[mid:])\n    i = 0\n    while i < min(len(a), len(b)) and a[i] == b[i]: i += 1\n    return a[:i]",
+          "tcex": {
+            "input": {
+              "strs": [
+                "flower",
+                "flow",
+                "flight"
+              ]
+            },
+            "kind": "array",
+            "display": "strs",
+            "ptrs": [
+              "i"
+            ],
+            "expected": "fl",
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "So sánh theo cột: lấy tiền tố chung của cặp đầu rồi rút ngắn dần.",
+        "reverse": "Cần tiền tố chung lớn nhất → bắt đầu từ chuỗi ngắn nhất, cắt dần cho tới khi khớp mọi chuỗi."
+      },
+      "note": "So sánh theo từng ký tự cột — ngừng ở ký tự đầu khác biệt."
+    },
+    {
+      "no": "151",
+      "title": "Reverse Words in a String",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Đảo thứ tự các từ trong chuỗi; nhiều khoảng trắng co về một; bỏ trắng đầu cuối.",
+      "examples": "\"the sky is blue\" → \"blue is sky the\" · \"a good   example\" → \"example good a\"",
+      "keyIdea": "split() mặc định tách theo mọi khoảng trắng — đảo danh sách là xong.",
+      "approaches": [
+        {
+          "name": "split + đảo",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "words = s.split(); return ' '.join(reversed(words)).",
+          "code": "def reverse_words(s):\n    return ' '.join(reversed(s.split()))",
+          "static": [
+            "s = 'the sky is blue' → s.split() = ['the','sky','is','blue'] (tách theo mọi khoảng trắng)",
+            "reversed(words) đảo thứ tự danh sách từ",
+            "' '.join(...) nối lại bằng đúng một khoảng trắng giữa các từ",
+            "Kết quả 'blue is sky the' — tự co nhiều khoảng trắng về một và bỏ trắng hai đầu"
+          ]
+        },
+        {
+          "name": "Quét ngược không split",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Đi từ cuối, gom từng từ vào kết quả — bản 'thủ công' khi bị hỏi không dùng hàm.",
+          "code": "def reverse_words(s):\n    out, i, n = [], len(s)-1, len(s)\n    while i >= 0:\n        while i >= 0 and s[i] == ' ': i -= 1\n        j = i\n        while i >= 0 and s[i] != ' ': i -= 1\n        if j > i: out.append(s[i+1:j+1])\n    return ' '.join(out)",
+          "static": [
+            "Đi từ cuối chuỗi, bỏ qua khoảng trắng cuối (i lùi tới ký tự khác trắng)",
+            "Từ j = i lùi để bao trọn một từ (tới khoảng trắng đầu tiên đi ngược)",
+            "Cắt s[i+1:j+1] và thêm vào danh sách out theo thứ tự ngược",
+            "Ví dụ 'the sky is blue': gom 'blue', 'is', 'sky', 'the' → nối bằng ' ' → 'blue is sky the'",
+            "Không dùng split() — hữu ích khi được hỏi bản thủ công"
+          ]
+        },
+        {
+          "name": "Regex bắt từ",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "re.findall(r'\\S+', s)[::-1] — gọn, style thư viện.",
+          "code": "import re\ndef reverse_words(s):\n    return ' '.join(re.findall(r'\\S+', s)[::-1])",
+          "static": [
+            "re.findall(r'\\S+', s) gom mọi từ (chuỗi liên tục ký tự không-trắng) thành danh sách",
+            "Đảo ngược danh sách bằng [::-1]",
+            "' '.join(...) → 'blue is sky the'",
+            "Ngắn gọn một dòng, tự xử lý khoảng trắng thừa và hai đầu"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Tách theo khoảng trắng, lọc rỗng, đảo danh sách, nối lại.",
+        "reverse": "Cần đảo thứ tự từ → tách chuỗi thành token rồi đảo mảng token."
+      },
+      "note": "split() mặc định tách theo mọi khoảng trắng — đảo danh sách là xong."
+    },
+    {
+      "no": "6",
+      "title": "Zigzag Conversion",
+      "cat": "Array / String",
+      "diff": "Medium",
+      "statement": "Viết chuỗi theo đường zigzag numRows hàng rồi đọc từng hàng.",
+      "examples": "s='PAYPALISHIRING', numRows=3 → 'PAHNAPLSIIGYIR' · numRows=4 → 'PINALSIGYAHRPI'",
+      "keyIdea": "Mô phỏng con trỏ lên/xuống giữa các hàng — không cần biết trước vị trí.",
+      "approaches": [
+        {
+          "name": "Mô phỏng hướng đi",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "rows = [[]]*numRows; i, down = 0, 1; với mỗi ch: append vào rows[i], đổi hướng ở biên.",
+          "code": "def convert(s, numRows):\n    if numRows == 1: return s\n    rows = [[] for _ in range(numRows)]\n    i, down = 0, 1\n    for ch in s:\n        rows[i].append(ch)\n        if i == 0: down = 1\n        elif i == numRows-1: down = -1\n        i += down\n    return ''.join(''.join(r) for r in rows)",
+          "static": [
+            "Khởi tạo numRows dòng rỗng, con trỏ dòng i = 0, hướng down = 1",
+            "Lần lượt đặt từng ký tự vào rows[i]; đổi hướng khi chạm biên (i==0 → xuống, i==numRows-1 → lên)",
+            "Với s='PAYPALISHIRING', numRows=3: rows[0]='PAHN', rows[1]='APLSIIG', rows[2]='YIR'",
+            "Đọc lại từng dòng: 'PAHN' + 'APLSIIG' + 'YIR' = 'PAHNAPLSIIGYIR'",
+            "Không cần biết trước cột — vừa đi vừa đặt, độ phức tạp O(n)"
+          ]
+        },
+        {
+          "name": "Vị trí theo chu kỳ",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "Chu kỳ = 2·numRows − 2; hàng của ký tự thứ k tính theo k mod cycle — công thức trực tiếp.",
+          "code": "def convert(s, numRows):\n    if numRows == 1: return s\n    cycle = 2*numRows - 2\n    rows = [[] for _ in range(numRows)]\n    for k, ch in enumerate(s):\n        m = k % cycle\n        rows[min(m, cycle - m)].append(ch)\n    return ''.join(''.join(r) for r in rows)",
+          "static": [
+            "Chu kỳ cycle = 2·numRows − 2 = 4 cho numRows=3",
+            "Hàng của ký tự thứ k tính theo m = k % cycle: row = min(m, cycle − m)",
+            "PAYPALISHIRING: k=0→hàng0(P), k=1→hàng1(A), k=2→hàng2(Y), k=3→hàng1(P), k=4→hàng0(A)…",
+            "Đọc theo hàng: hàng0=PAHN, hàng1=APLSIIG, hàng2=YIR → 'PAHNAPLSIIGYIR'",
+            "Công thức trực tiếp cho mỗi ký tự — O(n) thời gian, O(n) bộ nhớ"
+          ]
+        },
+        {
+          "name": "Vẽ ma trận",
+          "time": "O(n·numRows)",
+          "space": "O(n·numRows)",
+          "idea": "Điền vào grid numRows×n rồi đọc theo hàng — trực quan nhất, tốn bộ nhớ.",
+          "code": "def convert(s, numRows):\n    if numRows == 1: return s\n    grid = [['']*len(s) for _ in range(numRows)]\n    r, c, down = 0, 0, 1\n    for ch in s:\n        grid[r][c] = ch\n        if r == 0: down = 1\n        elif r == numRows-1: down = -1\n        r += down; c += 1 if down == -1 else 0\n    return ''.join(''.join(row) for row in grid)",
+          "static": [
+            "Lập grid numRows × len(s) toàn ô rỗng; điền theo đường zigzag (r, c)",
+            "Rẽ xuống khi r==0, rẽ lên khi r==numRows-1; c tăng khi đi lên",
+            "Đọc từng hàng bỏ qua ô rỗng để có chuỗi kết quả",
+            "Ví dụ 'ABC', numRows=2: cột đi xuống A rồi lên B (c+1), xuống C → đọc 'ACB'",
+            "Trực quan nhất nhưng tốn O(n·numRows) bộ nhớ"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "Viết theo cột zigzag: đi xuống rồi chéo lên giữa các hàng.",
+        "reverse": "Cần chuỗi theo từng hàng → theo dõi hàng hiện tại và hướng đi, nối ký tự vào đúng hàng."
+      },
+      "note": "Mô phỏng con trỏ lên/xuống giữa các hàng — không cần biết trước vị trí."
+    },
+    {
+      "no": "28",
+      "title": "Find the Index of the First Occurrence in a String",
+      "cat": "Array / String",
+      "diff": "Easy",
+      "statement": "Tìm chỉ số xuất hiện đầu tiên của needle trong haystack, không có → -1.",
+      "examples": "sadbutsad / sad → 0 · leetcode / leeto → -1",
+      "keyIdea": "Vét cạn từng vị trí với slice — đủ nhanh với ràng buộc nhỏ.",
+      "approaches": [
+        {
+          "name": "Vét cạn slice",
+          "time": "O(n·m)",
+          "space": "O(1)",
+          "idea": "So sánh haystack[i:i+len(needle)] với needle tại mọi i hợp lệ.",
+          "code": "def str_str(hay, ned):\n    m = len(ned)\n    for i in range(len(hay) - m + 1):\n        if hay[i:i+m] == ned: return i\n    return -1",
+          "static": [
+            "hay='sadbutsad', ned='sad' (m=3). Xét các vị trí i hợp lệ trái sang phải",
+            "So sánh hay[i:i+m] với ned: i=0 → 'sad' == 'sad' → trả về 0",
+            "Haystack có thể chứa nhiều lần — trả lần xuất hiện đầu tiên bên trái",
+            "Không trùng thì duyệt tiếp; hết vị trí hợp lệ → trả -1",
+            "So sánh slice O(m) mỗi vị trí → tổng O(n·m)"
+          ]
+        },
+        {
+          "name": "KMP",
+          "time": "O(n+m)",
+          "space": "O(m)",
+          "idea": "Tính hàm tiền tố của needle để nhảy khi mismatch — đáng nhớ cho phỏng vấn khó.",
+          "code": "def str_str(hay, ned):\n    if not ned: return 0\n    lps = [0]*len(ned)\n    j = 0\n    for i in range(1, len(ned)):\n        while j and ned[i] != ned[j]: j = lps[j-1]\n        if ned[i] == ned[j]: j += 1\n        lps[i] = j\n    j = 0\n    for i, ch in enumerate(hay):\n        while j and ch != ned[j]: j = lps[j-1]\n        if ch == ned[j]: j += 1\n        if j == len(ned): return i - j + 1\n    return -1",
+          "static": [
+            "Xây bảng LPS(pattern) = độ dài tiền tố trùng hậu tố dài nhất",
+            "Với 'sad': lps = [0,0,0] — không có tiền tố trùng hậu tố",
+            "Duyệt haystack; khi MISMATCH, nhảy j theo lps[j-1] thay vì quay lại từ đầu",
+            "Ví dụ: khớp 'sad' đủ 3 ký tự → trả i − j + 1 = 0",
+            "Mỗi ký tự haystack chỉ bị duyệt vài lần → O(n+m)"
+          ]
+        },
+        {
+          "name": "find() chuẩn",
+          "time": "O(n·m) trung bình",
+          "space": "O(1)",
+          "idea": "Python có sẵn str.find — tối ưu C, đúng mọi trường hợp.",
+          "code": "def str_str(hay, ned):\n    return hay.find(ned)",
+          "static": [
+            "Python str.find trả chỉ số xuất hiện đầu tiên của chuỗi con, không có thì -1",
+            "hay.find('sad') = 0 — khớp ngay từ đầu",
+            "Cài bằng C bên trong (thuật toán hai chiều) — nhanh trong thực tế",
+            "Ngắn nhất về mã; độ phức tạp trung bình thấp, chịu được ràng buộc nhỏ"
+          ]
+        }
+      ],
+      "thinking": {
+        "forward": "So khớp từng vị trí i, so sánh đoạn con với needle.",
+        "reverse": "Cần chỉ số xuất hiện đầu tiên → thử mọi vị trí bắt đầu, so sánh k ký tự."
+      },
+      "note": "Vét cạn từng vị trí với slice — đủ nhanh với ràng buộc nhỏ."
+    },
+    {
+      "no": "53",
+      "title": "Maximum Subarray",
+      "cat": "Kadane's Algorithm",
+      "diff": "Medium",
+      "statement": "Dãy con liên tiếp có tổng lớn nhất.",
+      "examples": "[-2,1,-3,4,-1,2,1,-5,4] → 6 ([4,-1,2,1])",
+      "keyIdea": "Kadane: hoặc nối vào dãy hiện tại, hoặc bắt đầu lại từ chính nó — chọn theo tổng.",
+      "approaches": [
+        {
+          "name": "Kadane",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "cur = max(x, cur+x); best = max(best, cur).",
+          "code": "def max_sub_array(nums):\n    best = cur = nums[0]\n    for x in nums[1:]:\n        cur = max(x, cur + x)\n        best = max(best, cur)\n    return best",
+          "tcex": {
+            "input": {
+              "nums": [
+                -2,
+                1,
+                -3,
+                4,
+                -1,
+                2,
+                1,
+                -5,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "cur",
+              "best"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        },
+        {
+          "name": "DP theo vị trí kết thúc",
+          "time": "O(n)",
+          "space": "O(n)",
+          "idea": "dp[i] = tổng dãy tốt nhất kết thúc tại i = max(nums[i], dp[i-1] + nums[i]).",
+          "code": "def max_sub_array(nums):\n    dp = nums[:]\n    for i in range(1, len(nums)):\n        dp[i] = max(dp[i], dp[i-1] + nums[i])\n    return max(dp)",
+          "tcex": {
+            "input": {
+              "nums": [
+                -2,
+                1,
+                -3,
+                4,
+                -1,
+                2,
+                1,
+                -5,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "i"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        },
+        {
+          "name": "Chia để trị",
+          "time": "O(n·log n)",
+          "space": "O(log n)",
+          "idea": "Chia đôi; best = max(best trái, best phải, phần tử xuyên tâm (suffix trái + prefix phải)).",
+          "code": "def max_sub_array(nums):\n    def go(lo, hi):\n        if lo == hi: return nums[lo]\n        mid = (lo + hi) // 2\n        left = go(lo, mid); right = go(mid+1, hi)\n        suf = acc = nums[mid]\n        for i in range(mid-1, lo-1, -1):\n            acc += nums[i]; suf = max(suf, acc)\n        pre = acc = nums[mid+1]\n        for i in range(mid+2, hi+1):\n            acc += nums[i]; pre = max(pre, acc)\n        return max(left, right, suf + pre)\n    return go(0, len(nums)-1)",
+          "tcex": {
+            "input": {
+              "nums": [
+                -2,
+                1,
+                -3,
+                4,
+                -1,
+                2,
+                1,
+                -5,
+                4
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "lo",
+              "hi"
+            ],
+            "expected": 6,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Kadane: max kết thúc tại i = max(x, max trước + x).",
+        "reverse": "Cần tổng con lớn nhất → với mỗi phần tử, chỉ giữ tổng lớn nhất kết thúc tại nó hoặc bắt đầu mới."
+      },
+      "note": "Kadane: hoặc nối vào dãy hiện tại, hoặc bắt đầu lại từ chính nó — chọn theo tổng."
+    },
+    {
+      "no": "918",
+      "title": "Maximum Sum Circular Subarray",
+      "cat": "Kadane's Algorithm",
+      "diff": "Medium",
+      "statement": "Dãy con (vòng tròn, có thể bọc qua hai đầu) có tổng lớn nhất.",
+      "examples": "[5,-3,5] → 10 (bọc: 5+5 trừ -3) · [1,-2,3,-2] → 3",
+      "keyIdea": "Đáp án = max(Kadane bình thường, tổng − Kadane nhỏ nhất) — tức bỏ dãy con âm nhất; trường hợp đặc biệt khi mọi số âm.",
+      "approaches": [
+        {
+          "name": "max(Kadane, total − minKadane)",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Tính best1 (Kadane), best2 (Kadane cho âm nhất) và total; nếu best1 < 0 (toàn âm) → best1; else max(best1, total − best2).",
+          "code": "def max_subarray_sum_circular(nums):\n    total = sum(nums)\n    cur_max = best_max = nums[0]\n    cur_min = best_min = nums[0]\n    for x in nums[1:]:\n        cur_max = max(x, cur_max + x); best_max = max(best_max, cur_max)\n        cur_min = min(x, cur_min + x); best_min = min(best_min, cur_min)\n    return best_max if best_max < 0 else max(best_max, total - best_min)",
+          "tcex": {
+            "input": {
+              "nums": [
+                5,
+                -3,
+                5
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "ptrs": [
+              "cur_max",
+              "cur_min"
+            ],
+            "expected": 10,
+            "anim": true
+          }
+        },
+        {
+          "name": "Hai Kadane — rõ ràng",
+          "time": "O(n)",
+          "space": "O(1)",
+          "idea": "Tách thành hàm kadane(xs) và dùng: best1 = kadane(nums); best2 = kadane([−x for x in nums]) nếu không toàn âm.",
+          "code": "def kadane(a):\n    best = cur = a[0]\n    for x in a[1:]:\n        cur = max(x, cur + x); best = max(best, cur)\n    return best\ndef max_subarray_sum_circular(nums):\n    best = kadane(nums)\n    if best < 0: return best\n    best_mirror = kadane([-x for x in nums])\n    return max(best, sum(nums) + best_mirror)",
+          "tcex": {
+            "input": {
+              "nums": [
+                5,
+                -3,
+                5
+              ]
+            },
+            "kind": "array",
+            "display": "nums",
+            "func": "max_subarray_sum_circular",
+            "ptrs": [
+              "best"
+            ],
+            "expected": 10,
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Kadane 2 lần: dãy thẳng + dãy vòng (tổng - min subarray giữa).",
+        "reverse": "Cần tổng con vòng lớn nhất → max của dãy thường hoặc vòng quanh, dùng Kadane ngược cho phần giữa."
+      },
+      "note": "Đáp án = max(Kadane bình thường, tổng − Kadane nhỏ nhất) — tức bỏ dãy con âm nhất; trường hợp đặc biệt khi mọi số âm."
+    },
+    {
+      "no": "68",
+      "title": "Text Justification",
+      "cat": "Array / String",
+      "diff": "Hard",
+      "statement": "Sắp chữ thành dòng đúng maxWidth, căn đều: khoảng trắng phân bố cho các khe, dòng cuối căn trái.",
+      "examples": "words=[\"This\",\"is\",\"an\",\"example\",\"of\",\"text\",\"justification.\"], maxWidth=16 → 3 dòng dài đúng 16",
+      "keyIdea": "Nhồi từng dòng tới khi chật; căn đều = chia phần thừa cho (số khe) và trải từ trái.",
+      "approaches": [
+        {
+          "name": "Mô phỏng + căn đều",
+          "time": "O(n²) worst",
+          "space": "O(n)",
+          "idea": "Nhóm từ theo độ dài, căn từng dòng bằng công thức base/extra; dòng cuối và dòng 1 từ căn trái.",
+          "code": "def full_justify(words, maxWidth):\n    res, line, width = [], [], 0\n    for w in words:\n        if width + len(line) + len(w) > maxWidth:\n            res.append(justify(line, width, maxWidth, False))\n            line, width = [], 0\n        line.append(w); width += len(w)\n    res.append(justify(line, width, maxWidth, True))\n    return res\n\ndef justify(line, width, maxWidth, last):\n    if last or len(line) == 1:\n        return ' '.join(line).ljust(maxWidth)\n    spaces = maxWidth - width\n    slots = len(line) - 1\n    base, extra = divmod(spaces, slots)\n    out = ''\n    for i, w in enumerate(line):\n        out += w\n        if i < slots:\n            out += ' ' * (base + (1 if i < extra else 0))\n    return out",
+          "tcex": {
+            "input": {
+              "words": [
+                "This",
+                "is",
+                "an",
+                "example",
+                "of",
+                "text",
+                "justification."
+              ],
+              "maxWidth": 16
+            },
+            "kind": "array",
+            "display": "words",
+            "expected": [
+              "This    is    an",
+              "example  of text",
+              "justification.  "
+            ],
+            "anim": true
+          }
+        },
+        {
+          "name": "Nhồi dòng theo bội số",
+          "time": "O(n²)",
+          "space": "O(n)",
+          "idea": "Tiền xử lý: gộp các từ với nhiều dấu cách, cắt đúng maxWidth — bản gọn hơn cho cùng kết quả.",
+          "code": "def full_justify(words, maxWidth):\n    res = []; words = list(words)\n    while words:\n        line, width = [], 0\n        while words and width + len(line) + len(words[0]) <= maxWidth:\n            w = words.pop(0)\n            line.append(w); width += len(w)\n        res.append(justify(line, width, maxWidth, not words))\n    return res\n\ndef justify(line, width, maxWidth, last):\n    if last or len(line) == 1:\n        return ' '.join(line).ljust(maxWidth)\n    spaces = maxWidth - width; slots = len(line) - 1\n    base, extra = divmod(spaces, slots)\n    out = ''\n    for i, w in enumerate(line):\n        out += w\n        if i < slots: out += ' ' * (base + (1 if i < extra else 0))\n    return out",
+          "tcex": {
+            "input": {
+              "words": [
+                "This",
+                "is",
+                "an",
+                "example",
+                "of",
+                "text",
+                "justification."
+              ],
+              "maxWidth": 16
+            },
+            "kind": "array",
+            "display": "words",
+            "expected": [
+              "This    is    an",
+              "example  of text",
+              "justification.  "
+            ],
+            "anim": true
+          }
+        }
+      ],
+      "thinking": {
+        "forward": "Greedy nhét từ đầy hàng, rồi rải khoảng trắng đều, hàng cuối căn trái.",
+        "reverse": "Cần justify đúng → xác định số từ mỗi hàng trước, phân bổ khoảng trắng theo quy tắc hàng cuối."
+      },
+      "note": "Nhồi từng dòng tới khi chật; căn đều = chia phần thừa cho (số khe) và trải từ trái."
+    }
+  ]
+}

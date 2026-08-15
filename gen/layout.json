@@ -1,0 +1,4 @@
+module.exports = {
+  // tách dòng HTML (tuỳ chọn — chưa dùng)
+  wrap: 0,
+};

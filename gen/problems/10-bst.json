@@ -1,0 +1,195 @@
+{
+ "desc": "BST: inorder luôn tăng. Tận dụng để kiểm tra hợp lệ, tìm phần tử thứ k, và khoảng cách tối thiểu.",
+ "problems": [
+  {
+   "no": "530",
+   "title": "Minimum Absolute Difference in BST",
+   "cat": "Binary Search Tree",
+   "diff": "Easy",
+   "statement": "Tìm hiệu tuyệt đối nhỏ nhất giữa hai nút bất kỳ trong BST (giá trị không trùng).",
+   "examples": "[4,2,6,1,3] → 1 · [1,0,48,null,null,12,49] → 1",
+   "keyIdea": "Trong BST, hiệu nhỏ nhất luôn giữa hai nút kề nhau trong inorder.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt inorder cho dãy tăng dần; hiệu nhỏ nhất giữa mọi cặp nút bất kỳ chính là hiệu nhỏ nhất giữa hai phần tử liên tiếp của dãy đó.",
+    "reverse": "Quy nạp ngược: muốn kết luận hiệu nhỏ nhất thì phải so các cặp kề trong inorder — nếu bỏ sót một cặp kề, có thể bỏ lỡ đáp án."
+   },
+   "note": "Chú giải: nhờ tính chất BST (inorder tăng nghiêm ngặt), bài toán 'min chênh lệch mọi cặp' rút về 'min chênh lệch hai phần tử liên tiếp' — dãy có thứ tự nên không cần so O(n²).",
+   "approaches": [
+    {
+     "name": "Inorder theo dõi prev",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "Duyệt inorder; giữ prev; cập nhật diff = min(diff, val−prev).",
+     "code": "def get_minimum_difference(root):\n    prev = None; best = 10**9\n    def dfs(n):\n        nonlocal prev, best\n        if not n: return\n        dfs(n.left)\n        if prev is not None: best = min(best, n.val - prev)\n        prev = n.val\n        dfs(n.right)\n    dfs(root)\n    return best",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        6,
+        1,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 1,
+      "anim": true
+     }
+    },
+    {
+     "name": "Inorder rồi quét",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Gom toàn bộ inorder vào list rồi lấy min chênh lệch hai phần tử liên tiếp — tách rõ hai bước.",
+     "code": "def get_minimum_difference(root):\n    vals = []\n    def dfs(n):\n        if not n: return\n        dfs(n.left); vals.append(n.val); dfs(n.right)\n    dfs(root)\n    return min(vals[i+1] - vals[i] for i in range(len(vals) - 1))",
+     "static": [
+      "Duyệt inorder cây [4,2,6,1,3]: gom dãy [1, 2, 3, 4, 6].",
+      "So các cặp liên tiếp: |2-1| = 1, |3-2| = 1, |4-3| = 1, |6-4| = 2.",
+      "min = 1 — hiệu nhỏ nhất giữa hai nút bất kỳ trong BST."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "230",
+   "title": "Kth Smallest Element in a BST",
+   "cat": "Binary Search Tree",
+   "diff": "Medium",
+   "statement": "Tìm phần tử nhỏ thứ k (1-based) trong BST.",
+   "examples": "root=[3,1,4,null,2], k=1 → 1 · root=[5,3,6,2,4,null,null,1], k=3 → 3",
+   "keyIdea": "Inorder duyệt tăng dần; phần tử thứ k gặp là đáp án.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt inorder theo đúng thứ tự tăng; đếm tới k phần tử thì phần tử đang đứng là kết quả — có thể dừng sớm.",
+    "reverse": "Quy nạp ngược: muốn biết phần tử thứ k mà không cần duyệt hết thì phải dừng ngay khi đếm đủ k — stack inorder cho phép dừng giữa chừng."
+   },
+   "note": "Chú giải: đây là cây BST nhưng ta không dùng so sánh giá trị để tìm — chỉ dựa vào thứ tự inorder; k khá nhỏ nên dừng sớm tiết kiệm.",
+   "approaches": [
+    {
+     "name": "Inorder dừng ở k",
+     "time": "O(h+k)",
+     "space": "O(h)",
+     "idea": "Duyệt inorder đệ quy, đếm tới k rồi dừng.",
+     "code": "def kth_smallest(root, k):\n    cnt = 0; res = None\n    def dfs(n):\n        nonlocal cnt, res\n        if not n or res is not None: return\n        dfs(n.left)\n        cnt += 1\n        if cnt == k: res = n.val; return\n        dfs(n.right)\n    dfs(root)\n    return res",
+     "tcex": {
+      "input": {
+       "root": [
+        5,
+        3,
+        6,
+        2,
+        4,
+        null,
+        null,
+        1
+       ],
+       "k": 3
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 3,
+      "anim": true
+     }
+    },
+    {
+     "name": "Stack inorder",
+     "time": "O(h+k)",
+     "space": "O(h)",
+     "idea": "Dùng stack đẩy trái, pop tăng count tới k.",
+     "code": "def kth_smallest(root, k):\n    st = []; cur = root\n    while True:\n        while cur:\n            st.append(cur); cur = cur.left\n        cur = st.pop(); k -= 1\n        if k == 0: return cur.val\n        cur = cur.right",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        1,
+        4,
+        null,
+        2
+       ],
+       "k": 1
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": 1,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "98",
+   "title": "Validate Binary Search Tree",
+   "cat": "Binary Search Tree",
+   "diff": "Medium",
+   "statement": "Xem cây nhị phân có phải BST hợp lệ (trái < gốc < phải, mọi nút) không.",
+   "examples": "[2,1,3] → true · [5,1,4,null,null,3,6] → false",
+   "keyIdea": "Truyền khoảng (lo,hi) xuống; mỗi nút phải nằm trong khoảng; bản đơn giản hay mắc lỗi vì chỉ so cha-con.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi nút được ràng buộc bởi khoảng (lo, hi); đi sang trái thu hẹp hi xuống giá trị nút, sang phải thu hẹp lo — càng xuống càng chặt.",
+    "reverse": "Quy nạp ngược: muốn xác nhận toàn cây là BST thì mọi nút phải thoả khoảng được thừa hưởng từ tổ tiên — một nút vi phạm là đủ phủ định."
+   },
+   "note": "Chú giải: lỗi kinh điển là chỉ so nút con với nút cha — vd cây [5,1,4,null,null,3,6] có 3 nằm bên phải 1 nhưng nhỏ hơn 5 (gốc) nên không hợp lệ; phải truyền cả khoảng.",
+   "approaches": [
+    {
+     "name": "Truyền khoảng [lo,hi]",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "dfs(n, lo, hi): nếu n.val ≤ lo hoặc ≥ hi → False; kiểm tra con trái với (lo, n.val), con phải (n.val, hi).",
+     "code": "def is_valid_bst(root):\n    def dfs(n, lo, hi):\n        if not n: return True\n        if not (lo < n.val < hi): return False\n        return dfs(n.left, lo, n.val) and dfs(n.right, n.val, hi)\n    return dfs(root, -float('inf'), float('inf'))",
+     "tcex": {
+      "input": {
+       "root": [
+        5,
+        1,
+        4,
+        null,
+        null,
+        3,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": false,
+      "anim": true
+     }
+    },
+    {
+     "name": "Inorder tăng dần",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "BST ⇔ inorder là dãy tăng nghiêm ngặt.",
+     "code": "def is_valid_bst(root):\n    prev = -float('inf')\n    def dfs(n):\n        nonlocal prev\n        if not n: return True\n        if not dfs(n.left): return False\n        if n.val <= prev: return False\n        prev = n.val\n        return dfs(n.right)\n    return dfs(root)",
+     "tcex": {
+      "input": {
+       "root": [
+        2,
+        1,
+        3
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": true,
+      "anim": true
+     }
+    }
+   ]
+  }
+ ]
+}

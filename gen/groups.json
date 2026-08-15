@@ -1,0 +1,22 @@
+[
+  {"file":"01-array-string","name":"Mảng & Chuỗi","cats":["Array / String","Kadane's Algorithm"],"icon":"🔢"},
+  {"file":"02-two-pointers","name":"Hai con trỏ","cats":["Two Pointers"],"icon":"👆"},
+  {"file":"03-sliding-window","name":"Cửa sổ trượt","cats":["Sliding Window"],"icon":"🪟"},
+  {"file":"04-matrix","name":"Ma trận","cats":["Matrix"],"icon":"▦"},
+  {"file":"05-hashmap","name":"Bảng băm","cats":["Hashmap"],"icon":"🗂️"},
+  {"file":"06-intervals","name":"Khoảng","cats":["Intervals"],"icon":"📏"},
+  {"file":"07-stack","name":"Ngăn xếp","cats":["Stack"],"icon":"📚"},
+  {"file":"08-linked-list","name":"Danh sách liên kết","cats":["Linked List"],"icon":"🔗"},
+  {"file":"09-binary-tree","name":"Cây nhị phân","cats":["Binary Tree General","Binary Tree BFS"],"icon":"🌳"},
+  {"file":"10-bst","name":"Cây tìm kiếm nhị phân","cats":["Binary Search Tree"],"icon":"🌲"},
+  {"file":"11-graph","name":"Đồ thị","cats":["Graph General","Graph BFS"],"icon":"🕸️"},
+  {"file":"12-trie","name":"Trie","cats":["Trie"],"icon":"🔤"},
+  {"file":"13-backtracking","name":"Backtracking","cats":["Backtracking"],"icon":"🔁"},
+  {"file":"14-divide-conquer","name":"Chia để trị","cats":["Divide & Conquer"],"icon":"⚔️"},
+  {"file":"15-binary-search","name":"Tìm kiếm nhị phân","cats":["Binary Search"],"icon":"🎯"},
+  {"file":"16-heap","name":"Heap & hàng đợi ưu tiên","cats":["Heap"],"icon":"⛰️"},
+  {"file":"17-bit-manipulation","name":"Thao tác bit","cats":["Bit Manipulation"],"icon":"1️⃣0️⃣"},
+  {"file":"18-math","name":"Toán học","cats":["Math"],"icon":"➕"},
+  {"file":"19-dp-1d","name":"Quy hoạch động 1 chiều","cats":["1D DP"],"icon":"📈"},
+  {"file":"20-dp-multi","name":"Quy hoạch động đa chiều","cats":["Multidimensional DP"],"icon":"🧮"}
+]

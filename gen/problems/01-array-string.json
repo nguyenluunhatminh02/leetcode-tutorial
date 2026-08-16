@@ -4012,8 +4012,8 @@
      "name": "Chỉ cần nhìn chữ số cuối",
      "time": "O(n)",
      "space": "O(1)",
-     "idea": "Giải thích tại sao chữ số cuối quyết định: một số lẻ khi tận cùng thuộc {1,3,5,7,9}; không cần chuyển nguyên chuỗi thành số.",
-     "code": "def largest_odd_number(num):\n    for i in range(len(num)-1, -1, -1):\n        if int(num[i]) % 2 == 1:\n            return num[:i+1]\n    return ''",
+     "idea": "Nếu chữ số tận cùng đã lẻ thì cả chuỗi là đáp án (không cần quét); chỉ khi tận cùng chẵn mới tìm chữ số lẻ gần cuối nhất.",
+     "code": "def largest_odd_number(num):\n    if int(num[-1]) % 2 == 1:\n        return num\n    for i in range(len(num)-2, -1, -1):\n        if int(num[i]) % 2 == 1:\n            return num[:i+1]\n    return \"\"",
      "static": [
       "Số lẻ khi chữ số tận cùng là một trong {1,3,5,7,9}",
       "Chữ số tận cùng càng về PHẢI thì tiền tố càng dài → giá trị càng lớn",

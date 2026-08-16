@@ -785,7 +785,7 @@
      "time": "O(n)",
      "space": "O(1)",
      "idea": "Với mỗi nút có left: tìm rightmost của left; nối right vào đó; left dời lên thành right; left=None.",
-     "code": "def flatten(root):\n    cur = root\n    while cur:\n        if cur.left:\n            rm = cur.left\n            while rm.right: rm = rm.right\n            rm.right = cur.right\n            cur.right = cur.left\n            cur.left = None\n        cur = cur.right",
+     "code": "def flatten(root):\n    cur = root\n    while cur:\n        if cur.left:\n            rm = cur.left\n            while rm.right: rm = rm.right\n            rm.right = cur.right\n            cur.right = cur.left\n            cur.left = None\n        cur = cur.right\n    return root",
      "tcex": {
       "input": {
        "root": [
@@ -1919,9 +1919,9 @@
        "root": "tree"
       },
       "expected": [
-       3.0,
+       3,
        14.5,
-       11.0
+       11
       ],
       "anim": true
      }

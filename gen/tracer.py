@@ -629,30 +629,35 @@ class Tracer:
         return {'error': stage, 'trace': msg[-3000:]}
 
     def _serialize_node(self, head):
-        """Tuần tự hoá head (node cây giả / linked list) REVERSED khi cần — dùng để
-        so sánh ans node với expected list và hiển thị."""
+        """Tuần tự hoá head theo kind (tree → BFS, ll → chuỗi next).
+        Quan trọng: phân biệt bằng self.kind, KHÔNG bằng việc left có None hay không
+        (cây sau flatten có thể toàn left=None nhưng vẫn là cây)."""
+        # Phân biệt cây hay list: kind ưu tiên, nhưng nếu kind không phải tree
+        # mà node có left/right thật (vd 654 trả cây với kind=array), vẫn BFS.
+        l = object.__getattribute__(head, 'left') if hasattr(head, 'left') else None
+        r = object.__getattribute__(head, 'right') if hasattr(head, 'right') else None
+        is_tree = (self.kind == 'tree') or (l is not None or r is not None)
+        if is_tree:
+            order = []
+            q = [head]; vi = set()
+            while q:
+                nd = q.pop(0)
+                if nd is None:
+                    continue
+                vi.add(id(nd))
+                order.append(object.__getattribute__(nd, 'value'))
+                l = object.__getattribute__(nd, 'left'); r = object.__getattribute__(nd, 'right')
+                q.append(l)
+                q.append(r)
+            return order
+        # kind ll (hoặc default): chuỗi next
         order = []
         seen = set()
         cur = head
         while cur is not None and id(cur) not in seen:
             seen.add(id(cur))
             order.append(object.__getattribute__(cur, 'value'))
-            nxt = object.__getattribute__(cur, 'next')
-            if hasattr(cur, 'left') and object.__getattribute__(cur, 'left') is not None:
-                # cây: BFS
-                order = []
-                q = [head]; vi = set()
-                while q:
-                    nd = q.pop(0)
-                    if nd is None:
-                        order.append(None); continue
-                    vi.add(id(nd))
-                    order.append(object.__getattribute__(nd, 'value'))
-                    l = object.__getattribute__(nd, 'left'); r = object.__getattribute__(nd, 'right')
-                    if l is not None: q.append(l)
-                    if r is not None: q.append(r)
-                break
-            cur = nxt
+            cur = object.__getattribute__(cur, 'next')
         return order
 
 

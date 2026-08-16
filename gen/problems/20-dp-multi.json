@@ -537,7 +537,7 @@
      "time": "O(m·n)",
      "space": "O(n)",
      "idea": "Cuộn bảng về 1 hàng.",
-     "code": "def is_interleave(s1, s2, s3):\n    m, n = len(s1), len(s2)\n    if m + n != len(s3): return False\n    dp = [False]*(n+1)\n    dp[0] = True\n    for i in range(m+1):\n        for j in range(n+1):\n            if i == 0 and j == 0: continue\n            dp[j] = False\n            if i > 0 and s1[i-1] == s3[i+j-1]: dp[j] |= dp[j]\n            if j > 0 and s2[j-1] == s3[i+j-1]: dp[j] |= dp[j-1]\n    return dp[n]",
+     "code": "def is_interleave(s1, s2, s3):\n    m, n = len(s1), len(s2)\n    if m + n != len(s3):\n        return False\n    dp = [False] * (n + 1)\n    dp[0] = True\n    for i in range(m + 1):\n        for j in range(n + 1):\n            if i == 0 and j == 0:\n                continue\n            ok = False\n            if i > 0 and s1[i-1] == s3[i+j-1]:\n                ok = ok or dp[j]\n            if j > 0 and s2[j-1] == s3[i+j-1]:\n                ok = ok or dp[j-1]\n            dp[j] = ok\n    return dp[n]",
      "static": [
       "dp[i][j]: s1[:i]+s2[:j] có khớp s3[:i+j]?",
       "Khởi tạo hàng 0/cột 0 bằng cách so sánh tiền tố",

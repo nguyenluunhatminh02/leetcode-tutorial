@@ -136,6 +136,10 @@ def make_explain(p, ap):
                     out.append(f'Con trỏ {names[0]} dịch tới {fmt(vals[0])} — phạm vi xét được thu hẹp')
                 else:
                     out.append('')
+            elif src:
+                # bước điều hướng (loop head / if / return): mô tả dòng code đang thực thi
+                lmsg = 'Duyệt' if re.match(r'(for |while )', src) else ('Kiểm tra điều kiện' if src.startswith('if ') else ('Trả về kết quả' if src.startswith('return') else 'Đang thực thi'))
+                out.append(f'{lmsg}: {src[:60]}')
             else:
                 out.append('')
             continue
@@ -151,6 +155,8 @@ def make_explain(p, ap):
     return out
 
 def main():
+    import sys
+    force = '--force' in sys.argv
     cache = {}
     if os.path.exists(CACHE):
         cache = json.load(open(CACHE, encoding='utf8'))
@@ -167,7 +173,7 @@ def main():
                     continue
                 key = f'{no}::{ap["name"]}'
                 tot += 1
-                if key in cache:
+                if not force and key in cache:
                     continue
                 exp = make_explain(p, ap)
                 cache[key] = exp

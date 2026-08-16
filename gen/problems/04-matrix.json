@@ -491,11 +491,11 @@
      }
     },
     {
-     "name": "Đảo dọc rồi transpose",
+     "name": "Transpose rồi đảo ngang",
      "time": "O(n²)",
      "space": "O(1)",
-     "idea": "Reverse từng hàng rồi transpose cũng ra kết quả (thứ tự hai bước đổi).",
-     "code": "def rotate(matrix):\n    for row in matrix: row.reverse()\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    return matrix",
+     "idea": "Transpose ma trận (đổi chỗ đối xứng qua đường chéo chính) rồi đảo ngược từng hàng — kết quả là xoay 90° theo chiều kim đồng hồ.",
+     "code": "def rotate(matrix):\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    for row in matrix:\n        row.reverse()\n    return matrix",
      "tcex": {
       "input": {
        "matrix": [
@@ -657,7 +657,7 @@
      "time": "O(m·n)",
      "space": "O(m·n)",
      "idea": "Lấy hàng đầu, rồi đệ quy trên phần còn lại đã xoay ngược chiều kim đồng hồ (zip(*matrix[::-1]).",
-     "code": "def spiral_order(matrix):\n    if not matrix: return []\n    if len(matrix) == 1:\n        return list(matrix[0])\n    top = list(matrix[0])\n    rest = [list(row[:-1]) for row in matrix[1:]]\n    rest = list(zip(*rest))[::-1]\n    return top + spiral_order([list(r) for r in rest])",
+     "code": "def spiral_order(matrix):\n    out = []\n    while matrix:\n        out += matrix.pop(0)\n        if matrix and matrix[0]:\n            for row in matrix:\n                out.append(row.pop())\n        if matrix:\n            out += matrix.pop()[::-1]\n        if matrix and matrix[0]:\n            for row in matrix[::-1]:\n                out.append(row.pop(0))\n    return out",
      "tcex": {
       "input": {
        "matrix": [

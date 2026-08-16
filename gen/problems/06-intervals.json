@@ -214,7 +214,7 @@
      "time": "O(log n + k)",
      "space": "O(n)",
      "idea": "Dùng bisect tìm ranh giới chồng lấn rồi gộp một lần; nhanh hơn khi chưa cần duyệt hết.",
-     "code": "from bisect import bisect_left, bisect_right\ndef insert(intervals, newInterval):\n    ns = newInterval[0]; ne = newInterval[1]\n    i = bisect_left(intervals, [ns, 1e9])\n    j = bisect_right(intervals, [ne, 1e9])\n    left = intervals[:i]\n    overlap = intervals[i:j]\n    if overlap:\n        ns = min(ns, overlap[0][0]); ne = max(ne, overlap[-1][1])\n    return left + [[ns, ne]] + intervals[j:]",
+     "code": "def insert(intervals, newInterval):\n    ns, ne = newInterval\n    left, right = [], []\n    for it in intervals:\n        if it[1] < ns:\n            left.append(it)\n        elif it[0] > ne:\n            right.append(it)\n        else:\n            ns = min(ns, it[0])\n            ne = max(ne, it[1])\n    return left + [[ns, ne]] + right",
      "tcex": {
       "input": {
        "intervals": [

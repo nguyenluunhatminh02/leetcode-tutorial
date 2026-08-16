@@ -196,7 +196,7 @@
      "time": "O(2^n)",
      "space": "O(n)",
      "done": true,
-     "idea": "Đếm số lần mỗi giá trị; với mỗi giá trị x chọn 0..cnt[x] lần — sinh x nhân bản trước khi sang giá trị kế.",
+     "idea": "Dùng Counter đếm tần suất từng giá trị; backtrack duyệt theo khối (cùng giá trị dùng nhiều lần ≤ freq). Vì các phần tử trong khối như nhau nên không tạo hoán vị trùng.",
      "code": "def combination_sum2_counter(cands, target):\n    from collections import Counter\n    cnt = Counter(cands)\n    res = []\n    def bt(keys, idx, rem, path):\n        if rem == 0:\n            res.append(path[:]); return\n        if idx == len(keys): return\n        x = keys[idx]\n        for k in range(cnt[x] + 1):\n            if k > 0 and x * k > rem: break\n            bt(keys, idx+1, rem - x*k, path + [x]*k)\n    bt(list(cnt), 0, target, [])\n    return res",
      "static": [
       "Với candidates=[10,1,2,7,6,1,5], Counter = {10:1, 1:2, 2:1, 7:1, 6:1, 5:1}.",

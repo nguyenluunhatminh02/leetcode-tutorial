@@ -215,7 +215,7 @@
    "title": "Pow(x, n)",
    "cat": "Math",
    "diff": "Medium",
-   "statement": "Tính x^n (n có thể âm) trong O(log n).",
+   "statement": "Tính x^n (số mũ n có thể âm). Trả kết quả dạng double.",
    "examples": "2.0^10 → 1024.0 · 2.1^3 → 9.261 · 2^-2 → 0.25",
    "keyIdea": "Luỹ thừa nhanh: x^(2k) = (x²)^k, x^(2k+1) = x·(x²)^k; n âm = 1/x^(−n).",
    "approaches": [
@@ -259,7 +259,7 @@
     "forward": "Phân rã bài số học về dạng nhỏ hơn (chia đôi, đệ quy, chia hết) rồi dùng kết quả con để ghép.",
     "reverse": "Cần đáp án → xác định tính chất số học quyết định (chữ số, chia hết, đối xứng) trước khi lập trình."
    },
-   "note": "Chú ý biên: số âm, 0, tràn int, float."
+   "note": "Chú ý biên: n âm, n=0, x=0, tràn float."
   },
   {
    "no": "66",

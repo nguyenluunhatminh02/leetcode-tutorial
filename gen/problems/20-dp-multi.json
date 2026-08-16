@@ -808,7 +808,7 @@
     "forward": "4 biến trạng thái qua 2 giao dịch.",
     "reverse": "Cần lợi nhuận 2 giao dịch → theo dõi buy/sell tối ưu từng giai đoạn."
    },
-   "note": "DP 2D: trạng thái = vị trí (i,j), chuyển tiếp = min/max của các ô kề."
+   "note": "DP trạng thái: 4 biến (first_buy, first_sell, second_buy, second_sell) — mỗi giao dịch phải mua trước khi bán, giao dịch 2 sau giao dịch 1."
   },
   {
    "no": "188",

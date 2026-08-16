@@ -1701,7 +1701,7 @@
    "title": "Diameter of Binary Tree",
    "cat": "Binary Tree General",
    "diff": "Easy",
-   "statement": "Đường kính = số nút trên đường dài nhất giữa HAI LÁ (có thể không qua gốc).",
+   "statement": "Đường kính của cây nhị phân = số nút trên đường dài nhất giữa HAI NÚT bất kỳ (có thể không qua gốc).",
    "examples": "root=[1,2,3,4,5] → 3 (đường 4→2→1→3 hay 5→2→1→3) · [1,2] → 1",
    "keyIdea": "Tại mỗi nút, đường dài nhất đi qua nó = chiều cao trái + chiều cao phải; cập nhật max trong lúc đệ quy.",
    "thinking": {

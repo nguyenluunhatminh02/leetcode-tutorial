@@ -118,15 +118,13 @@
      "time": "O(n·L)",
      "space": "O(numWords)",
      "idea": "Tiền xử lý danh sách các 'từ' tại mỗi vị trí có thể bắt đầu một từ, rồi chạy cửa sổ trên danh sách đó.",
-     "code": "def find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words); res = []\n    starts = [s[i:i+L] for i in range(len(s) - L + 1)]\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(starts), L):\n            if i >= off + m:\n                old = starts[i - m]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = starts[i]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append((i - m + 1) * L)\n    return sorted(set(res))",
+     "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words:\n        return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words); res = []\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(s) - L + 1, L):\n            if (i - off) // L >= m:\n                old = s[i - m * L: i - (m - 1) * L]\n                have[old] -= 1\n                if have[old] < need[old]:\n                    used -= 1\n            w = s[i:i + L]\n            have[w] += 1\n            if have[w] <= need[w]:\n                used += 1\n            if used == m:\n                res.append(i - (m - 1) * L)\n    return sorted(set(res))",
      "static": [
-      "Tiền xử lý: cắt danh sách starts chứa từng 'từ' độ dài L tại mọi vị trí.",
-      "Với mỗi offset off (0..L-1), duyệt danh sách starts theo bước L.",
-      "Thêm từ mới w vào cửa sổ: tăng have[w], nếu chưa vượt need thì used++.",
-      "Khi cửa sổ vượt quá m từ: loại bỏ từ cũ nhất, giảm used nếu cần.",
-      "Nếu used == len(need): cả m từ trong cửa sổ đều khớp nhu cầu — ghi vị trí bắt đầu.",
-      "Vị trí ghi = (i - m + 1) * L (đổi chỉ số từ sang chỉ số ký tự).",
-      "Kết thúc: trả danh sách đã sắp xếp, ví dụ [0, 9] cho s = 'barfoothefoobarman'."
+      "Với mỗi offset off (0..L-1) duyệt các vị trí bắt đầu từ off theo bước L (đảm bảo các từ liền kề đúng kích thước L).",
+      "Cửa sổ trượt m từ: khi vượt quá m từ, loại từ cũ nhất s[i-m*L:i-(m-1)*L] khỏi have và giảm used nếu cần.",
+      "Thêm từ mới w = s[i:i+L]: tăng have[w], nếu have[w] <= need[w] thì used++.",
+      "Nếu used == m (đủ m từ khớp đúng nhu cầu): ghi vị trí bắt đầu i - (m-1)*L.",
+      "Với s='barfoothefoobarman', words=['foo','bar']: off=0 duyệt i=0,3,6,... ghi được vị trí 0 và 9 → [0,9]."
      ]
     }
    ],
@@ -232,7 +230,12 @@
       ],
       "expected": 2,
       "anim": true
-     }
+     },
+     "static": [
+      "Xây pref với pref[0]=0, pref[i]=tổng nums[0..i-1]; mỗi r tìm k sớm nhất sao cho pref[r]-pref[k] ≥ target.",
+      "Với target=7, nums=[2,3,1,2,4,3]: r=4 (pref=8) → k=bisect_left(pref,1)=0 → dãy 4 → best=4; r=5 (pref=11) → k=bisect_left(pref,4)=1 → dãy [3,1,2,4,3]? thực ra k=2 → best=2.",
+      "Trả best nhỏ nhất = 2, đúng ví dụ."
+     ]
     },
     {
      "name": "Hai con trỏ vét trường hợp âm",

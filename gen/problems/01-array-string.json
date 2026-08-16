@@ -1197,7 +1197,7 @@
      "time": "O(n)",
      "space": "O(1)",
      "idea": "re.search(r'\\S+$', s) — gọn, ít dùng trong phỏng vấn.",
-     "code": "import re\ndef length_of_last_word(s):\n    m = re.search(r'\\S+$', s)\n    return len(m.group(0)) if m else 0",
+     "code": "import re\ndef length_of_last_word(s):\n    m = re.search(r\"S+(?=s*$)\", s)\n    return len(m.group(0)) if m else 0",
      "static": [
       "re.search(r'\\S+$', s) tìm chuỗi ký tự không-khoảng-trắng dính tới hết chuỗi",
       "Với 'Hello World' khớp 'World' → group(0) = 'World'",
@@ -1647,7 +1647,7 @@
      "time": "O(n)",
      "space": "O(n)",
      "idea": "Tính min tiền tố rồi lấy max(prices[i] − min[:i]). Dễ chứng minh, tốn mảng phụ.",
-     "code": "def max_profit(prices):\n    mn = [prices[0]]\n    for p in prices[1:]: mn.append(min(mn[-1], p))\n    return max(p - m for p, m in zip(prices[1:], mn[:-1]) or [0] if False else [0]) or 0",
+     "code": "def max_profit(prices):\n    mn = prices[0]\n    best = 0\n    for i in range(1, len(prices)):\n        if prices[i] < mn:\n            mn = prices[i]\n        elif prices[i] - mn > best:\n            best = prices[i] - mn\n    return best",
      "static": [
       "Tính mảng mn[i] = giá thấp nhất từ ngày 0 tới ngày i (prefix min)",
       "Ví dụ prices=[7,1,5,3,6,4] → mn = [7,1,1,1,1,1]",
@@ -1904,11 +1904,11 @@
      }
     },
     {
-     "name": "Phân tích đỉnh/đáy",
-     "time": "O(n)",
-     "space": "O(1)",
-     "idea": "Mỗi dãy tăng/giảm là một 'núi': kẹo = 1..len; đỉnh nhận max của hai bên; tránh mảng phụ.",
-     "code": "def candy(ratings):\n    up = down = peak = total = 1\n    for i in range(1, len(ratings)):\n        if ratings[i] > ratings[i-1]:\n            up += 1; down = 0; peak = up\n            total += up\n        elif ratings[i] == ratings[i-1]:\n            up = down = peak = 1\n            total += 1\n        else:\n            down += 1; up = 1\n            total += down + (0 if down <= peak else 1)\n    return total",
+     "name": "Sắp xếp theo độ cao (tăng dần)",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Xử lý các trẻ theo rating tăng dần: mỗi trẻ được kẹo = max(1, kẹo hàng xóm thấp hơn + 1). Sắp xếp (rating, vị trí) rồi cấp dần theo thứ tự đó.",
+     "code": "def candy(ratings):\n    n = len(ratings)\n    cand = [1] * n\n    order = sorted(range(n), key=lambda i: ratings[i])\n    for i in order:\n        if i > 0 and ratings[i-1] < ratings[i]:\n            cand[i] = max(cand[i], cand[i-1] + 1)\n        if i < n-1 and ratings[i+1] < ratings[i]:\n            cand[i] = max(cand[i], cand[i+1] + 1)\n    return sum(cand)",
      "static": [
       "Duyệt ratings, coi mỗi dãy tăng là sườn phải của một 'núi', mỗi dãy giảm là sườn trái",
       "Kẹo trên sườn tăng: 1, 2, 3, … (up += 1); trên sườn giảm: 1, 2, 3, … (down += 1)",
@@ -2015,11 +2015,11 @@
      }
     },
     {
-     "name": "Quét trái-phải không nhân bù",
+     "name": "Duyệt giữ min/max tích (Kadane)",
      "time": "O(n)",
      "space": "O(1)",
-     "idea": "Tích tối ưu luôn bắt đầu ngay sau một số 0 (hoặc tại biên); quét trái nhân dồn rồi quét phải, reset ở chỗ 0.",
-     "code": "def max_product(nums):\n    best = nums[0]\n    prod = 1\n    for x in nums:\n        prod = 1 if x == 0 else prod * x\n        best = max(best, prod)\n    prod = 1\n    for x in reversed(nums):\n        prod = 1 if x == 0 else prod * x\n        best = max(best, prod)\n    return best",
+     "idea": "Giữ đồng thời tích con lớn nhất (cur_max) và nhỏ nhất (cur_min): khi gặp số âm thì đổi chỗ chúng, vì nhân 2 số âm ra dương. Tích tại mỗi bước = max(x, cur*x).",
+     "code": "def max_product(nums):\n    cur_max = cur_min = best = nums[0]\n    for x in nums[1:]:\n        if x < 0:\n            cur_max, cur_min = cur_min, cur_max\n        cur_max = max(x, cur_max * x)\n        cur_min = min(x, cur_min * x)\n        best = max(best, cur_max)\n    return best",
      "static": [
       "Quét trái, nhân dồn prod *= x; khi gặp 0 thì reset prod = 1 (tích mới bắt đầu lại sau 0)",
       "Với [2,3,-2,4]: các tích 2, 6, -12, -48 → best = 6",
@@ -3178,7 +3178,7 @@
      "time": "O(n)",
      "space": "O(1)",
      "idea": "Một lượt vừa tìm max vừa tìm phần tử lớn nhì; kiểm tra max ≥ 2×second.",
-     "code": "def dominant_index(nums):\n    if len(nums) == 1: return 0\n    mx = second = -10**9\n    mx_i = 0\n    for i, x in enumerate(nums):\n        if x > mx:\n            second, mx, mx_i = mx, x, i\n        elif x > second:\n            second = x\n    return mx_i if mx >= 2*second else -1",
+     "code": "def dominant_index(nums):\n    if len(nums) == 1:\n        return 0\n    mx = second = -10**9\n    mx_i = 0\n    for i, x in enumerate(nums):\n        if x > mx:\n            second, mx, mx_i = mx, x, i\n        elif x > second and x != mx:\n            second = x\n    if mx < 2 * second:\n        return -1\n    return mx_i if nums.count(mx) == 1 else -1",
      "static": [
       "Duyệt một lượt giữ mx (lớn nhất) và second (lớn nhì)",
       "Với [3,6,1,0]: khi gặp 6 → mx=6, second=3; 1, 0 không vượt second",

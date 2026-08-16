@@ -17,10 +17,9 @@
      "idea": "a, b = 1, 1; for i in range(2, n+1): a, b = b, a+b.",
      "code": "def climb_stairs(n):\n    a, b = 1, 1\n    for _ in range(2, n+1):\n        a, b = b, a + b\n    return b",
      "static": [
-      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-      "n=4: 1,1,2,3,5 → 5 cách",
-      "Giữ 2 biến trượt thay vì cả mảng",
-      "Trả về biến cuối"
+      "Duy trì hai biến a=1 (dp[0]), b=1 (dp[1]); mỗi bước xoay: c = a+b.",
+      "n=4: c=2 → a=1,b=2; c=3 → a=2,b=3; c=5 → a=3,b=5.",
+      "Kết thúc bằng b=5 — đúng 5 cách cho 4 bậc."
      ],
      "tcex": {
       "input": {
@@ -37,10 +36,10 @@
      "idea": "dp[0]=dp[1]=1; dp[i] = dp[i-1]+dp[i-2].",
      "code": "def climb_stairs(n):\n    dp = [0]*(n+1)\n    dp[0] = dp[1] = 1\n    for i in range(2, n+1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]",
      "static": [
-      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-      "n=4: 1,1,2,3,5 → 5 cách",
-      "Giữ 2 biến trượt thay vì cả mảng",
-      "Trả về biến cuối"
+      "Khởi tạo dp[0]=1, dp[1]=1 (1 bậc có 1 cách); n=4 → dp[2..4].",
+      "dp[2] = dp[1]+dp[0] = 1+1 = 2 (đi 1 rồi 2, hoặc 2 rồi 1).",
+      "dp[3] = dp[2]+dp[1] = 2+1 = 3; dp[4] = dp[3]+dp[2] = 3+2 = 5.",
+      "Kết quả dp[4] = 5 cách — đúng ví dụ LeetCode."
      ],
      "tcex": {
       "input": {
@@ -57,10 +56,8 @@
      "idea": "reduce tuple (a,b) → (b, a+b) — style hàm thuần.",
      "code": "from functools import reduce\ndef climb_stairs(n):\n    return reduce(lambda ab, _: (ab[1], ab[0] + ab[1]), range(n), (1, 1))[0]",
      "static": [
-      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-      "n=4: 1,1,2,3,5 → 5 cách",
-      "Giữ 2 biến trượt thay vì cả mảng",
-      "Trả về biến cuối"
+      "Tổ hợp: số cách = fibonacci; dùng tuple (a,b) = (dp[i-2], dp[i-1]).",
+      "n=4: (1,1) → (1,2) → (2,3) → (3,5); trả b=5."
      ],
      "tcex": {
       "input": {

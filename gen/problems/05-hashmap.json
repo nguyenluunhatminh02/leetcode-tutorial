@@ -383,8 +383,8 @@
     }
    ],
    "thinking": {
-    "forward": "BFS theo \"tầng nhảy\": mỗi tầng mở rộng tới xa nhất, đếm tầng.",
-    "reverse": "Cần số nhảy tối thiểu → khi nào hết phạm vi tầng hiện tại mới cần nhảy thêm một lần."
+    "forward": "Lặp tính tổng bình phương các chữ số; nếu tổng về 1 thì hạnh phúc; nếu rơi vào chu trình đã gặp thì false.",
+    "reverse": "Cần xác định có bao giờ về 1 không → theo dõi các số đã gặp (set); chu trình hoặc lặp lại số cũ đều kết luận được."
    },
    "note": "Chuỗi số hoặc hội tụ về 1, hoặc rơi vào chu kỳ — dùng set nhớ các số đã gặp để phát hiện vòng lặp."
   },
@@ -564,8 +564,8 @@
     }
    ],
    "thinking": {
-    "forward": "Mực nước tại cột i = min(maxTrái, maxPhải) - height[i] (nếu dương).",
-    "reverse": "Cần nước đọng → với mỗi cột chỉ phụ thuộc tường cao nhất hai bên, dùng prefix/suffix max."
+    "forward": "Quy nạp tiến: mỗi ký tự của s tăng đếm, mỗi ký tự của t giảm đếm; cuối tất cả đếm bằng 0 thì anagram.",
+    "reverse": "Cần so sánh tần suất ký tự hai chuỗi → dùng dict đếm từng ký tự, hoặc sort hai chuỗi rồi so khớp từng vị trí."
    },
    "note": "Hai chuỗi là anagram ⇔ cùng tần suất ký tự."
   },

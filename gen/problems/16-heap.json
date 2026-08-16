@@ -42,7 +42,7 @@
      "time": "O(n) trung bình, O(n²) worst",
      "space": "O(log n)",
      "idea": "Chia theo pivot như quicksort nhưng chỉ đệ quy một nửa chứa vị trí k.",
-     "code": "import random\ndef find_kth_largest(nums, k):\n    def qs(a, lo, hi, target):\n        pivot = a[random.randint(lo, hi)]\n        l, m, r = lo, lo, hi\n        while m <= r:\n            if a[m] > pivot: a[l], a[m] = a[m], a[l]; l += 1; m += 1\n            elif a[m] < pivot: a[m], a[r] = a[r], a[m]; r -= 1\n            else: m += 1\n        if target < l: return qs(a, lo, l-1, target)\n        if target > r: return qs(a, r+1, hi, target)\n        return a[target]\n    return qs(nums, 0, len(nums)-1, k-1)",
+     "code": "def find_kth_largest(nums, k):\n    def qs(a, lo, hi, target):\n        pivot = a[hi]\n        l, m, r = lo, lo, hi\n        while m <= r:\n            if a[m] > pivot:\n                a[l], a[m] = a[m], a[l]; l += 1; m += 1\n            elif a[m] < pivot:\n                a[m], a[r] = a[r], a[m]; r -= 1\n            else:\n                m += 1\n        if target < l:\n            return qs(a, lo, l-1, target)\n        if target > r:\n            return qs(a, r+1, hi, target)\n        return a[target]\n    return qs(nums, 0, len(nums)-1, k-1)",
      "tcex": {
       "input": {
        "nums": [

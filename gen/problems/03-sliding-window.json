@@ -77,7 +77,7 @@
      "time": "O(n·L)",
      "space": "O(numWords)",
      "idea": "Với mỗi offset trong [0, L): duyệt cửa sổ gồm numWords từ; dùng bộ đếm nhu cầu − có được; đủ thì ghi vị trí; trượt thêm 1 từ.",
-     "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words)\n    res = []\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(s) - L + 1, L):\n            if i >= off + m * L:\n                old = s[i - m * L:i - m * L + L]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = s[i:i + L]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append(i - (m - 1) * L)\n    return res",
+     "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words)\n    res = []\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(s) - L + 1, L):\n            if i >= off + m * L:\n                old = s[i - m * L:i - m * L + L]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = s[i:i + L]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == m:\n                res.append(i - (m - 1) * L)\n    return res",
      "tcex": {
       "input": {
        "s": "barfoothefoobarman",

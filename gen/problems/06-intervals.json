@@ -210,10 +210,10 @@
      }
     },
     {
-     "name": "Nhị phân tìm vị trí chèn",
-     "time": "O(log n + k)",
+     "name": "Một lượt gộp ranh giới",
+     "time": "O(n)",
      "space": "O(n)",
-     "idea": "Dùng bisect tìm ranh giới chồng lấn rồi gộp một lần; nhanh hơn khi chưa cần duyệt hết.",
+     "idea": "Duyệt một lượt mỗi khoảng: khoảng kết thúc trước newInterval đẩy thẳng sang trái, khoảng bắt đầu sau nó đẩy sang phải, khoảng chồng lấn gộp dần ranh giới [ns,ne].",
      "code": "def insert(intervals, newInterval):\n    ns, ne = newInterval\n    left, right = [], []\n    for it in intervals:\n        if it[1] < ns:\n            left.append(it)\n        elif it[0] > ne:\n            right.append(it)\n        else:\n            ns = min(ns, it[0])\n            ne = max(ne, it[1])\n    return left + [[ns, ne]] + right",
      "tcex": {
       "input": {
@@ -248,8 +248,8 @@
       "anim": true
      },
      "static": [
-      "Dùng bisect_left tìm khoảng đầu có start >= new[0].",
-      "Dùng bisect_right tìm khoảng đầu có start > new[1].",
+      "Dùng duyệt_left tìm khoảng đầu có start >= new[0].",
+      "Dùng duyệt_right tìm khoảng đầu có start > new[1].",
       "Phần left = intervals[:i] giữ nguyên (không chồng).",
       "Phần overlap = intervals[i:j] gộp vào newInterval: ns = min, ne = max.",
       "Ghép left + [[ns, ne]] + intervals[j:] — luôn sắp tăng.",
@@ -258,8 +258,8 @@
     }
    ],
    "thinking": {
-    "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
-    "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+    "forward": "Quy nạp tiến: duyệt intervals, giữ các khoảng nằm trước hoặc sau newInterval, gộp khoảng chồng lấn vào [ns,ne].",
+    "reverse": "Cần chèn một khoảng vào danh sách đã sắp → chia 3 vùng: trước (end < ns), chồng (gộp), sau (start > ne)."
    },
    "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
   },
@@ -332,8 +332,8 @@
     }
    ],
    "thinking": {
-    "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
-    "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+    "forward": "Quy nạp tiến: duyệt mảng, mở khoảng khi số sau khác số trước +1; đóng khoảng khi chuỗi liên tiếp gãy.",
+    "reverse": "Cần nhóm các số liên tiếp thành khoảng → chỉ cần so sánh nums[i] với nums[i-1]+1 để quyết định mở/đóng khoảng."
    },
    "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
   },
@@ -532,8 +532,8 @@
     }
    ],
    "thinking": {
-    "forward": "Sắp xếp theo start/end để xử lý chồng lấn tuần tự.",
-    "reverse": "Cần kết quả gộp → chỉ cần quan tâm mối quan hệ chồng lấn giữa interval kề, xử lý theo thứ tự."
+    "forward": "Quy nạp tiến: bắn mũi tên tại điểm cuối của balloon kết thúc sớm nhất còn lại; loại các balloon bị trúng.",
+    "reverse": "Cần số mũi tên tối thiểu → tham lam: luôn bắn tại end nhỏ nhất để trúng nhiều nhất, đếm số lần phải bắn."
    },
    "note": "Interval problems: sort theo start (hoặc end) để biến thành duyệt tuyến tính."
   }

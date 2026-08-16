@@ -122,7 +122,10 @@ def make_explain(p, ap):
         has_action = (s.get('swap') or s.get('write') or s.get('read') or s.get('append') or s.get('pop'))
         if s.get('end'):
             ans = s.get('answer')
-            bits.append(f'→ Đáp án: {fmt(ans)}')
+            if ans is None:
+                bits.append('→ Đáp án: thay đổi được thực hiện tại chỗ (in-place, hàm không trả về)')
+            else:
+                bits.append(f'→ Đáp án: {fmt(ans)}')
         if not has_action and not s.get('end'):
             # step không hành động: ưu tiên note hiện có nếu đã mô tả tốt (>40 ký tự).
             if note and len(note) > 40 and not re.match(r'^(Đọc|ghi|So sánh)', note):

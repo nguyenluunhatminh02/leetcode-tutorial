@@ -325,7 +325,7 @@
    "cat": "Linked List",
    "diff": "Medium",
    "statement": "Xoay danh sách sang phải k vị trí.",
-   "examples": "head=[1,2,3,4,5], k=2 → [4,5,1,2,3] · k=6 (lớn hơn L) → [2,3,1] cho L=3",
+   "examples": "head=[1,2,3,4,5], k=2 → [4,5,1,2,3] · head=[0,1,2], k=4 → [2,0,1]",
    "keyIdea": "Chuẩn hoá k %= L; tìm nút thứ L−k (điểm cắt), nối đuôi vào đầu.",
    "thinking": {
     "forward": "Quy nạp tiến: xoay phải k vị trí tương đương kéo k nút cuối lên đầu; điểm cắt nằm ở nút thứ L−k tính từ đầu.",
@@ -873,7 +873,7 @@
    "cat": "Linked List",
    "diff": "Easy",
    "statement": "Tìm nút giao nhau (chia sẻ) của hai danh sách liên kết; không có giao thì None. Dùng ví dụ [4,1,8,4,5] và [5,6,1,8,4,5]. Trailer chỉ là mô tả — dữ liệu thật chỉ có hai danh sách.",
-   "examples": "A=[4,1,8,4,5], B=[5,6,1,8,4,5] → nút 8 (cùng vị trí khác nhau) · không giao → None",
+   "examples": "A=[4,1,8,4,5], B=[5,6,1,8,4,5] → nút có giá trị 8 (giao điểm) · A=[2,6,4], B=[1,5] → không giao → null",
    "keyIdea": "Bù độ lệch độ dài rồi chạy song song: hai con trỏ đuổi nhau tới khi về cùng chiều dài còn lại.",
    "thinking": {
     "forward": "Quy nạp tiến: nếu cho con trỏ dài đi trước (la−lb) bước thì hai bên cùng quãng đường còn lại; từ đó hai con trỏ luôn cách nhau một khoảng cố định và chạm nhau đúng tại nút giao (nếu có).",

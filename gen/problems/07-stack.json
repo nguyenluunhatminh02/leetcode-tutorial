@@ -436,7 +436,7 @@
      "time": "O(1)",
      "space": "O(n)",
      "idea": "Khi push min mới, lưu (x cũ, min mới) — cách khác cùng nguyên tắc.",
-     "code": "class MinStack:\n    def __init__(self):\n        self.st = []; self.min = None\n    def push(self, x):\n        if self.min is None: self.min = x; self.st.append(x)\n        elif x < self.min:\n            self.st.append(2*x - self.min); self.min = x\n        else: self.st.append(x)\n    def pop(self):\n        v = self.st.pop()\n        if v < self.min:\n            self.min = 2*self.min - v\n    def top(self):\n        v = self.st[-1]\n        return v if v >= self.min else self.min\n    def getMin(self): return self.min",
+     "code": "class MinStack:\n    def __init__(self):\n        self.st = []; self.min = None\n    def push(self, x):\n        if not self.st:\n            self.min = x; self.st.append(x)\n        elif x < self.min:\n            self.st.append(2*x - self.min); self.min = x\n        else:\n            self.st.append(x)\n    def pop(self):\n        v = self.st.pop()\n        if self.st and v < self.min:\n            self.min = 2*self.min - v\n        elif not self.st:\n            self.min = None\n    def top(self):\n        return self.st[-1]\n    def getMin(self):\n        return self.min",
      "static": [
       "Khởi tạo st rỗng, min = None.",
       "push(-2): min chưa có nên đặt min = -2, st = [-2].",

@@ -478,10 +478,9 @@
      "code": "def find_duplicate_floyd(nums):\n    slow = fast = nums[0]\n    while True:\n        slow = nums[slow]\n        fast = nums[nums[fast]]\n        if slow == fast: break\n    slow = nums[0]\n    while slow != fast:\n        slow = nums[slow]\n        fast = nums[fast]\n    return slow",
      "static": [
       "Với nums=[1,3,4,2,2], coi nums[i] là vị trí tiếp theo: 0→1→3→2→4→2... (vòng 2→4→2).",
-      "Giai đoạn 1 (tìm giao): slow=[1,3,2,4,2], fast=[3,2,2,2,2] → gặp nhau tại 2.",
-      "Giai đoạn 2: đặt slow=nums[0]=1, fast giữ 2; slow=[1,3,2], fast=[2,2] → gặp tại 2.",
-      "Điểm vào vòng trùng với giá trị lặp: 2 là đáp án.",
-      "O(n) thời gian, O(1) bộ nhớ — nhanh nhất nhưng trừu tượng hơn nhị phân giá trị."
+      "Giai đoạn 1: slow đi 1 bước (1,3,2,4), fast đi 2 bước (3,2,2,2) — gặp nhau tại giá trị 2.",
+      "Giai đoạn 2: đặt slow=nums[0]=1, giữ fast; slow đi 1 bước (1,3,2), fast đi 1 (2,2)? — thực tế: slow: 1→3→2, fast: 2→2→2 — gặp tại 2.",
+      "Gặp tại 2 → trả 2, đúng ví dụ."
      ]
     },
     {

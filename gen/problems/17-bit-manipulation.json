@@ -809,7 +809,7 @@
      "time": "O(1)",
      "space": "O(1)",
      "idea": "1 << num.bit_length() rồi trừ 1 ra mask ngay.",
-     "code": "def find_complement(num):\n    return num ^ ((1 << num.bit_length()) - 1)",
+     "code": "def find_complement(num):\n    if num == 0:\n        return 1\n    return num ^ ((1 << num.bit_length()) - 1)",
      "tcex": {
       "input": {
        "num": 5

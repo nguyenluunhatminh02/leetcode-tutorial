@@ -77,6 +77,9 @@ pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code
 .cell.wr{background:#1a2f5c;border-color:var(--acc);animation:pulse .5s}
 .cell.sw{background:#4c1120;border-color:var(--bad)}
 .cell.act{background:#33250a;border-color:var(--warn)}
+/* ô bị hoán đổi: nhấp nhẹ (chuyển cảnh mượt cho swap) */
+.cell.sw{animation:swwig .38s ease}
+@keyframes swwig{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}55%{transform:translateX(5px)}75%{transform:translateX(-2px)}}
 .ci{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:10px;color:#5b6377;font-variant-numeric:tabular-nums}
 /* ---------- player v2: mat / node (ll/tree) / stack / hash / set / aux ---------- */
 .run:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
@@ -110,6 +113,9 @@ pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code
 .nid{position:absolute;bottom:-15px;left:0;right:0;text-align:center;font-size:9.5px;color:#5b6377;font-variant-numeric:tabular-nums}
 .nstate{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:9px;background:#1b2740;border:1px solid var(--line);border-radius:4px;padding:0 5px;color:var(--acc2);white-space:nowrap;z-index:2}
 .arrow{color:var(--mut);font-size:16px;font-weight:700;padding:0 2px;align-self:center}
+/* node mới xuất hiện: fade-in (trơn, không nhảy) */
+.node.fadein{animation:fadein .35s ease-out}
+@keyframes fadein{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 /* hash */
 .cells.hash{flex-direction:column;gap:5px;width:max-content}
 .hpair{display:flex;align-items:center;gap:8px;border:1px solid #2a3550;border-radius:8px;background:#101828;padding:2px 4px;transition:background .18s,border-color .18s}
@@ -135,7 +141,7 @@ pre.code .s{color:#c3e88d} pre.code .c{color:#5c6478;font-style:italic} pre.code
 .note .result{color:var(--acc2);font-weight:700}
 @keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
 .ptrs{position:absolute;inset:0;pointer-events:none}
-.ptr{position:absolute;top:1px;font-size:11px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.ptr{position:absolute;top:1px;font-size:11px;font-weight:700;color:var(--acc2);transform:translateX(-50%);background:#0b1e2b;border:1px solid #1e5a6f;border-radius:5px;padding:1px 6px;white-space:nowrap;transition:left .3s cubic-bezier(.2,.7,.3,1),top .3s cubic-bezier(.2,.7,.3,1)}
 @media (max-width:640px){.wrap{padding:14px 10px 70px}section.card{padding:16px 12px}.cell{width:36px;height:34px}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 
@@ -150,6 +156,23 @@ pre.code.pane .curline{background:rgba(122,162,255,.16)}
 .nst{position:absolute;top:-9px;right:-12px;font-size:9px;font-weight:700;background:#0b1e2b;border:1px solid #1e5a6f;border-radius:4px;padding:0 4px;color:var(--acc2);z-index:4;display:none}
 .node.rd .nst{display:block;border-color:var(--warn);color:var(--warn);background:#33250a}
 .node.wr .nst{display:block;border-color:var(--acc);color:var(--acc);background:#0b1e2b}
+/* ---------- graph (force-directed SVG) ---------- */
+.graph-box{position:relative;width:100%;min-height:220px;border:1px solid var(--line);border-radius:12px;background:radial-gradient(#151d2e 1px,transparent 1px);background-size:24px 24px;overflow:hidden}
+.graph-box svg{display:block;width:100%;height:100%}
+.gedge{stroke:#2f3c5c;stroke-width:1.6px;transition:stroke .18s}
+.gnode circle{fill:#141c30;stroke:#3a4560;stroke-width:1.8px;cursor:default;transition:fill .18s,stroke .18s,r .18s}
+.gnode text{fill:var(--ink);font-size:13px;font-weight:700;text-anchor:middle;dominant-baseline:central;font-variant-numeric:tabular-nums;pointer-events:none}
+.gnode.rd circle{fill:#4a2c10;stroke:var(--warn);animation:pulse .5s}
+.gnode.wr circle{fill:#1a2f5c;stroke:var(--acc);animation:pulse .5s}
+.gnode.act circle{fill:#33250a;stroke:var(--warn)}
+.gnode.done circle{fill:#153a2b;stroke:#2f7d5a}
+.edge-rd{stroke:var(--warn)!important;stroke-width:2.6px}
+.edge-wr{stroke:var(--acc)!important;stroke-width:2.6px}
+.graph-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:7px;font-size:11.5px;color:var(--mut)}
+.graph-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid #3a4560;margin-right:4px;vertical-align:-1px}
+.graph-legend .r i{background:#4a2c10;border-color:var(--warn)}
+.graph-legend .w i{background:#1a2f5c;border-color:var(--acc)}
+.graph-legend .a i{background:#33250a;border-color:var(--warn)}
 </style>
 </head>
 <body>
@@ -201,6 +224,8 @@ function hlpy(code){
 /* ---------- Player v2 (animation thủ công, đa cấu trúc) ---------- */
 const isNodeTarget=t=>t&&typeof t==="object"&&"node" in t;
 function _pickKind(step){
+  if(step.graph&&step.graph.kind==="graph")return "graph";
+  if(step.graph&&step.graph.nodes)return "graph";
   if(step.mat!==undefined)return "mat";
   if(step.ll!==undefined)return "ll";
   if(step.tree!==undefined)return "tree";
@@ -218,11 +243,19 @@ class Player{
     this.box=el("div","cells");this.ptrLayer=el("div","ptrs");
     this.wrap.appendChild(this.box);this.wrap.appendChild(this.ptrLayer);
     this.auxBox=el("div","aux");this.auxBox.style.display="none";
-    this.cellEls=[];this.ptrEls=new Map();this.nodeEls=new Map();this.rowEls=[];this.hashEls=[];this.hideCache=new Map();
+    this.cellEls=[];this.ptrEls=new Map();this.nodeEls=new Map();this.rowEls=[];this.hashEls=[];this.hideCache=new Map();this._swapAnim="";this._moves=[];
     // detect kind ổn định từ step đầu có dữ liệu
     this.kind=_pickKind(steps[0]);
-    for(const st of steps){const k=_pickKind(st);if(k!=="array"){this.kind=k;break}}
+    // graph/ll/tree thường xuất hiện ở step sau (step 0 hay là môi trường/note):
+    // KL đúng của toàn approach là kind NẶNG NHẤT, không phải step đầu
+    if(this.kind!=="array"&&this.kind!=="mat"&&this.kind!=="stack"&&this.kind!=="hash"&&this.kind!=="set")this.kind=_pickKind(steps[0]);
+    for(const st of steps){
+      const k=_pickKind(st);
+      if(k==="graph"||k==="ll"||k==="tree"||k==="mat"){this.kind=k;break}
+      if(k!=="array"&&this.kind==="array")this.kind=k;
+    }
     this.buildCells();this.buildPtrs();this.buildControls();
+    if(this.kind==="graph"){this._renderLegend()}
     // code pane: hiển thị code + sáng dòng hiện tại (nếu step có line)
     this.codePane=null;
     if(this._hasLines()){this.buildCodePane()}
@@ -289,6 +322,14 @@ class Player{
     if(k==="ll"||k==="tree"){
       this.box.classList.add(k==="tree"?"tree":"ll");
       this.tbox=el("div","tbox");this.tbox.appendChild(this.box);this.wrap.appendChild(this.tbox);
+      return;
+    }
+    if(k==="graph"){
+      this.box.classList.add("graph");
+      this.graphBox=el("div","graph-box");
+      this.box.appendChild(this.graphBox);
+      this.graphEls=new Map(); // node id -> {bg(elt), elt, text}
+      this.graphArcs=[];
       return;
     }
     // array: dựng từ step đầu
@@ -361,13 +402,156 @@ class Player{
   /* ---------- render dữ liệu node (ll/tree) ---------- */
   renderNodes(s){
     const data=s[this.kind];
-    if(!data||!data.nodes){if(this.box)this.box.innerHTML="";this.nodeEls.clear();return}
+    if(!data||!data.nodes){
+      /* graph: chỉ xoá nội dung SVG bên trong graphBox, không phá container */
+      if(this.kind==="graph"){if(this.graphBox)this.graphBox.innerHTML="";return}
+      if(this.box)this.box.innerHTML="";this.nodeEls.clear();return
+    }
     if(this.kind==="ll"){
       this._renderLL(data);
+    }else if(this.kind==="graph"){
+      this._renderGraph(s);
     }else{
       this._renderTree(data);
     }
-    this._applyNodeHighlights(s);
+    if(this.kind!=="graph")this._applyNodeHighlights(s);
+  }
+  /* ---------- force-directed graph ---------- */
+  _graphLayout(data,W,H){
+    const ids=data.nodes.map(n=>n.id);
+    const key=ids.slice().sort().join(",");
+    /* spring dùng ĐỒ THỊ HOÀN CHỈNH (step cuối cùng có cùng id-set) để node
+       đứng đúng vị trí cuối ngay từ đầu — cạnh chỉ được VẼ dần theo từng step */
+    if(this._glyKey!==key){
+      this._gly=null;this._glyKey=key;
+      for(let i=this.steps.length-1;i>=0;i--){
+        const s=this.steps[i];
+        if(s.graph&&s.graph.nodes&&s.graph.nodes.map(n=>n.id).slice().sort().join(",")===key){this._gly=s.graph;break}
+      }
+    }
+    const full=this._gly||data;
+    const cached=this._graphLayoutCache;
+    /* cache trùng key + đủ pos → giữ nguyên vị trí (không nhảy khi chỉ đổi cạnh) */
+    if(cached&&cached.key===key&&ids.every(id=>cached.pos[id]))return cached;
+    const pos={};
+    ids.forEach((id,i)=>{
+      if(cached&&cached.pos&&cached.pos[id]){pos[id]={x:cached.pos[id].x,y:cached.pos[id].y};return}
+      /* vòng tròn ban đầu (ổn định hơn random) — thứ tự nút tương đối ổn định giữa các step */
+      const a0=0.7*i/Math.max(1,ids.length),a=a0+0.08*(Math.random()-.5);
+      const R0=Math.min(100,W/3);
+      pos[id]={x:W/2+Math.cos(2*Math.PI*a)*R0,y:H/2+Math.sin(2*Math.PI*a)*R0};
+    });
+    const iter=110;
+    const pairs=[];for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)pairs.push([ids[i],ids[j]]);
+    const edgeSeen=new Set(),edges=[];
+    full.nodes.forEach(n=>(n.neighbors||[]).forEach(v=>{
+      if(!pos[v])return;
+      if(edgeSeen.has(n.id+"-"+v)||edgeSeen.has(v+"-"+n.id))return;
+      edgeSeen.add(n.id+"-"+v);edges.push([n.id,v]);
+    }));
+    for(let it=0;it<iter;it++){
+      for(const [a,b]of pairs){
+        let dx=pos[a].x-pos[b].x,dy=pos[a].y-pos[b].y;
+        let d2=dx*dx+dy*dy;if(d2<1)d2=1;
+        const d=Math.sqrt(d2),f=2000/d2;
+        pos[a].x+=dx/d*f;pos[a].y+=dy/d*f;
+        pos[b].x-=dx/d*f;pos[b].y-=dy/d*f;
+      }
+      for(const [u,v]of edges){
+        if(!pos[v])continue;
+        let dx=pos[v].x-pos[u].x,dy=pos[v].y-pos[u].y;
+        const d=Math.sqrt(dx*dx+dy*dy)||1,f=(d-125)*0.07;
+        pos[u].x+=dx/d*f;pos[u].y+=dy/d*f;
+        pos[v].x-=dx/d*f;pos[v].y-=dy/d*f;
+      }
+      ids.forEach(id=>{pos[id].x+=(W/2-pos[id].x)*0.02;pos[id].y+=(H/2-pos[id].y)*0.02});
+    }
+    this._graphLayoutCache={key,pos,ids,edges};
+    return this._graphLayoutCache;
+  }
+  _renderGraph(s){
+    const data=s.graph;
+    if(!data||!data.nodes){if(this.graphBox)this.graphBox.innerHTML="";return}
+    // ---- 1. force layout (tự viết, không cần d3) ----
+    const W=this.graphBox.clientWidth||560, H=this.graphBox.clientHeight||260;
+    const L=this._graphLayout(data,W,H);
+    const pos=L.pos,ids=L.ids;
+    // ---- 2. vẽ SVG ----
+    this.graphBox.innerHTML="";
+    const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    svg.setAttribute("viewBox","0 0 "+W+" "+H);
+    svg.style.width="100%";svg.style.height=H+"px";
+    // cạnh
+    const edgeSet=new Set();
+    data.nodes.forEach(n=>(n.neighbors||[]).forEach(v=>{
+      const k1=n.id+"-"+v,k2=v+"-"+n.id;
+      if(edgeSet.has(k1)||edgeSet.has(k2))return;edgeSet.add(k1);
+      if(pos[v]===undefined)return;
+      const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+      line.setAttribute("x1",pos[n.id].x);line.setAttribute("y1",pos[n.id].y);
+      line.setAttribute("x2",pos[v].x);line.setAttribute("y2",pos[v].y);
+      line.setAttribute("class","gedge");
+      svg.appendChild(line);
+    }));
+    // node
+    const pick=s.ptr?Object.values(s.ptr).map(v=>typeof v==="number"?v:(isNodeTarget(v)?v.node:-1)).filter(v=>v>=0):[];
+    this.graphEls=new Map();
+    data.nodes.forEach(n=>{
+      const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+      g.setAttribute("class","gnode");
+      const cx=pos[n.id].x,cy=pos[n.id].y;
+      const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",24);
+      const t=document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x",cx);t.setAttribute("y",cy);
+      t.textContent=String(n.value!==undefined?n.value:n.id);
+      g.appendChild(c);g.appendChild(t);
+      svg.appendChild(g);
+      this.graphEls.set(n.id,g);
+      g.setAttribute("data-visited",n.visited?"1":"0");
+    });
+    this.graphBox.appendChild(svg);
+    // ---- 3. highlight ----
+    this.graphEls.forEach(g=>g.classList.remove("rd","wr","act"));
+    if(s.read)[].concat(s.read).forEach(r=>{
+      const t=r.target;
+      let id=-1;
+      if(typeof t==="number")id=t;
+      else if(Array.isArray(t)&&t.length)id=t[0];
+      else if(t&&typeof t==="object"&&t.node!==undefined)id=t.node;
+      const g=this.graphEls.get(id);if(g)g.classList.add("rd");
+    });
+    if(s.write&&s.write.dest!==undefined&&!s.write.bake){
+      const dt=s.write.dest;
+      let id=-1;
+      if(typeof dt==="number")id=dt;
+      else if(Array.isArray(dt)&&dt.length)id=dt[0];
+      else if(dt&&typeof dt==="object"&&dt.node!==undefined)id=dt.node;
+      const g=this.graphEls.get(id);if(g)g.classList.add("wr");
+    }
+    pick.forEach(id=>{const g=this.graphEls.get(id);if(g)g.classList.add("act")});
+    /* visited → nền xanh mờ (vĩnh viễn trong suốt thuật toán) */
+    this.graphEls.forEach((g,id)=>{
+      const nd=data.nodes.find(n=>n.id===id);
+      if(nd&&nd.visited)g.classList.add("done");
+    });
+  }
+  _renderLegend(){
+    if(this.kind!=="graph")return;
+    if(this.legendEl){this.legendEl.remove();this.legendEl=null}
+    const lg=el("div","graph-legend");
+    lg.appendChild(legendItem("r","đang đọc"));
+    lg.appendChild(legendItem("w","đang ghi"));
+    lg.appendChild(legendItem("a","con trỏ/đang xử lý"));
+    lg.appendChild(legendItem("done","đã duyệt xong"));
+    this.wrap.appendChild(lg);
+    this.legendEl=lg;
+    function legendItem(cls,label){
+      const s=el("span",cls);
+      s.appendChild(el("i"));
+      s.appendChild(document.createTextNode(label));
+      return s;
+    }
   }
   _renderLL(data){
     /* dãy node nằm ngang: node đứng yên, cập nhật giá trị + độ rộng value */
@@ -380,6 +564,7 @@ class Player{
       seen.add(cur);
       const nd=data.nodes[cur];if(!nd)break;
       const nodeEl=el("div","node");
+      nodeEl.classList.add("fadein");
       nodeEl.appendChild(el("span","cv",String(nd.value)));
       nodeEl.appendChild(el("span","nid",String(cur)));
       this.llRow.appendChild(nodeEl);this.nodeEls.set(cur,nodeEl);
@@ -423,6 +608,9 @@ class Player{
     const W=Object.keys(pos).reduce((mx,id)=>Math.max(mx,pos[id]+1),0)||0;
     const L=H>0?90:72,Wd=W>0?88:72;
     this.tgrid.style.gridTemplateColumns="repeat("+Math.max(1,W)+",88px)";
+    /* FLIP: ghi nhận vị trí node trước khi di chuyển (node move trượt mượt) */
+    this._prevRects=this._prevRects||new Map();
+    this.nodeEls.forEach((n,id)=>{this._prevRects.set(+id,n.getBoundingClientRect())});
     /* tạo/cập nhật node theo id */
     for(const id in data.nodes){
       const nd=data.nodes[id];
@@ -430,6 +618,7 @@ class Player{
       let n=this.nodeEls.get(+id);
       if(!n){
         n=el("div","node tnd");
+        n.classList.add("fadein");
         n.appendChild(el("span","cv",""));
         n.appendChild(el("span","nid",""));
         n.appendChild(el("span","nstate",""));
@@ -446,6 +635,18 @@ class Player{
       n.style.gridRow=(depth[+id]!==undefined?depth[+id]:0)+1;
       n.style.gridColumn=(pos[+id]!==undefined?pos[+id]:0)+1;
       n.style.display="";
+      /* FLIP part 2: đo chênh lệch, đặt inverse translate rồi cho transition trượt về */
+      const pr=this._prevRects.get(+id);
+      if(pr&&pr.left!==0&&pr.width>0){
+        const b=n.getBoundingClientRect();
+        if(Math.abs(b.left-pr.left)+Math.abs(b.top-pr.top)>1){
+          n.style.transition="none";
+          n.style.transform="translate("+(pr.left-b.left)+"px,"+(pr.top-b.top)+"px)";
+          void n.offsetWidth;
+          n.style.transition="transform .45s cubic-bezier(.2,.7,.3,1)";
+          n.style.transform="";
+        }
+      }
     }
     /* ẩn node cũ không còn trong dữ liệu */
     this.nodeEls.forEach((n,id)=>{
@@ -625,7 +826,7 @@ class Player{
   stepTo(i){
     this.idx=Math.max(0,Math.min(this.steps.length-1,i));
     const s=this.steps[this.idx];
-    if(this.kind==="ll"||this.kind==="tree")this.renderNodes(s);
+    if(this.kind==="ll"||this.kind==="tree"||this.kind==="graph")this.renderNodes(s);
     else this.renderCells(s);
     this.renderAux(s);
     this.renderCode(s);

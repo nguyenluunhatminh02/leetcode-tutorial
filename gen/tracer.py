@@ -244,6 +244,8 @@ class Tracer:
         self._snap = None          # snapshot hiện tại (replay)
         self._line_snap = {}       # line -> snapshot cuối tại dòng đó
         self._stack_last = None    # (kind stack) nội dung st ở dòng trước
+        self.graph_display = tcex.get('graph_display')  # tên biến local dạng adjacency để snapshot thành graph
+        self._snap_gv = None       # biến graph hiện tại (từ frame, gán mỗi dòng) để _snapshot dùng
 
     # ---------- settrace ----------
     def trace(self, frame, event, arg):
@@ -265,6 +267,13 @@ class Tracer:
         return self.trace
 
     def _collect(self, frame, ln):
+        # cập nhật bản snapshot graph (biến local dạng adj) mỗi dòng;
+        # fallback sang param nếu graph_display trỏ param (vd isConnected)
+        if self.graph_display is not None:
+            gv = frame.f_locals.get(self.graph_display, frame.f_globals.get(self.graph_display))
+            if gv is None and self._params and self.graph_display in self._params:
+                gv = self._params[self.graph_display]
+            self._snap_gv = gv if gv is not None else self._snap_gv
         # snapshot hiện tại (trạng thái TRƯỚC khi dòng này chạy) → sự kiện snap
         snap = self._snapshot()
         self.events.append(Ev(ln, 'snap', (snap,)))
@@ -298,6 +307,12 @@ class Tracer:
             self.events.append(Ev(ln, 'ptr', tuple(changed)))
 
     def _snapshot(self):
+        if self.graph_display is not None and self._snap_gv is not None:
+            # graph_display: snapshot biến local dạng adj hiện tại (ưu tiên cao nhất)
+            g = self._snap_gv
+            if isinstance(g, TList):
+                g = [list(r) if isinstance(r, TList) else r for r in list(list.__iter__(g))]
+            return {'graph': self._graph_from_adj(g)}
         if self.kind == 'mat' and isinstance(self._disp, list):
             return {'mat': [list(r) for r in self._disp]}
         if self.kind == 'stack' and self._disp is not None:
@@ -330,9 +345,46 @@ class Tracer:
                     if isinstance(ch, TNode):
                         stack.append(ch)
             return {self.kind: {'root': root.id if root else None, 'nodes': nodes}}
+        if self.kind == 'graph' and isinstance(self._disp, list):
+            # kind graph native: self._disp là list[TNode] đã build từ input (param_kinds graph)
+            return self._snapshot_graph_nodes(self._disp)
         if isinstance(self._disp, TList):
             return {'array': list(list.__iter__(self._disp))}
         return {'array': []}
+
+    def _snapshot_graph_nodes(self, nodes):
+        """kind graph native: tuần tự hoá list[TNode] → {nodes, edges}."""
+        arr = []
+        seen = set()
+        for nd in nodes:
+            if nd is None or nd.id is None or id(nd) in seen:
+                continue
+            seen.add(id(nd))
+            nb = []
+            neigh = object.__getattribute__(nd, 'neighbors') or []
+            for w in neigh:
+                nb.append(w.id if w.id is not None else -1)
+            state = object.__getattribute__(nd, 'state')
+            arr.append({'id': nd.id, 'value': nd.value, 'state': state, 'neighbors': nb, 'visited': bool(object.__getattribute__(nd, 'visited'))})
+        return {'kind': 'graph', 'nodes': arr}
+
+    def _graph_from_adj(self, g):
+        """Chuyển adjacency → {nodes, edges}.
+        Hỗ trợ: dict {u:[vs]}, list-of-lists, list-of-lists BOOL (ma trận kề, vd isConnected)."""
+        if isinstance(g, dict):
+            adj = {int(k): [int(x) for x in vs] for k, vs in g.items()}
+        elif g and all(isinstance(r, (list, tuple)) for r in g):
+            # ma trận kề: ô (i,j)=1/True → cạnh i-j (bỏ vòng tự)
+            if all(v in (0, 1, True, False) for r in g for v in r if isinstance(v, int) or isinstance(v, bool)):
+                adj = {}
+                for i, row in enumerate(g or []):
+                    adj[i] = [j for j, v in enumerate(row) if v and j != i]
+            else:
+                adj = {i: [int(x) for x in row] for i, row in enumerate(g or [])}
+        else:
+            adj = {}
+        nodes = {u: {'id': u, 'value': u, 'state': None, 'visited': False, 'neighbors': adj.get(u, [])} for u in adj}
+        return {'kind': 'graph', 'nodes': list(nodes.values())}
 
     # ---------- proxy callbacks ----------
     def proxy_ev(self, tlist, kind, idx, val=None):
@@ -406,12 +458,14 @@ class Tracer:
 
         params = chosen.__code__.co_varnames[:chosen.__code__.co_argcount]
         callargs = {}
+        self._params = {}   # param (đã convert) để graph_display trỏ param dùng được
         self._root = None; self._disp = None
         try:
             for p in params:
                 if p not in input_dict:
                     continue
                 callargs[p] = self._conv(p, input_dict[p])
+                self._params[p] = callargs[p]
         except Exception:
             return self._err('input', traceback.format_exc())
         if self._disp is None:

@@ -338,7 +338,8 @@
       "aux": [],
       "expected": true,
       "param_kinds": {},
-      "anim": true
+      "anim": true,
+      "graph_display": "adj"
      }
     },
     {
@@ -378,7 +379,8 @@
       "aux": [],
       "expected": true,
       "param_kinds": {},
-      "anim": true
+      "anim": true,
+      "graph_display": "adj"
      }
     }
    ]
@@ -441,7 +443,8 @@
        3
       ],
       "param_kinds": {},
-      "anim": true
+      "anim": true,
+      "graph_display": "adj"
      }
     }
    ]
@@ -791,7 +794,8 @@
       "param_kinds": {
        "isConnected": "mat"
       },
-      "anim": true
+      "anim": true,
+      "graph_display": "isConnected"
      }
     },
     {

@@ -1,428 +1,742 @@
 {
-  "desc": "Tìm kiếm nhị phân: giảm nửa miền tìm mỗi bước. Chìa khóa là bất biến lo/hi và khi nào dừng (lo < hi vs lo <= hi).",
-  "problems": [
+ "desc": "Tìm kiếm nhị phân: giảm nửa miền tìm mỗi bước. Chìa khóa là bất biến lo/hi và khi nào dừng (lo < hi vs lo <= hi).",
+ "problems": [
+  {
+   "no": "4",
+   "title": "Median of Two Sorted Arrays",
+   "cat": "Binary Search",
+   "diff": "Hard",
+   "statement": "Tìm median của hai mảng sắp trong O(log(m+n)).",
+   "examples": "nums1=[1,3], nums2=[2] → 2.0 · nums1=[1,2], nums2=[3,4] → 2.5",
+   "keyIdea": "BS trên mảng ngắn: chọn số phần tử phân bổ bên trái; điều kiện maxL ≤ minR để tìm cut chuẩn.",
+   "approaches": [
     {
-      "no": "35",
-      "title": "Search Insert Position",
-      "cat": "Binary Search",
-      "diff": "Easy",
-      "statement": "Tìm chỉ số chèn để giữ mảng tăng (vị trí đầu tiên >= target).",
-      "examples": "nums=[1,3,5,6], target=5 → 2 · target=2 → 1 · target=7 → 4",
-      "keyIdea": "Binary search chuẩn: khi lo,hi giao nhau, lo là vị trí chèn.",
-      "approaches": [
-        {
-          "name": "BS lo < hi",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "mid; nếu nums[mid] < target → lo = mid+1 else hi = mid; kết thúc lo là đáp án.",
-          "code": "def search_insert(nums, target):\n    lo, hi = 0, len(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < target: lo = mid + 1\n        else: hi = mid\n    return lo",
-          "tcex": {
-            "input": {
-              "nums": [
-                1,
-                3,
-                5,
-                6
-              ],
-              "target": 5
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": 2,
-            "anim": true
-          }
-        },
-        {
-          "name": "bisect_left",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "Thư viện chuẩn chính là vị trí chèn.",
-          "code": "from bisect import bisect_left\ndef search_insert(nums, target):\n    return bisect_left(nums, target)",
-          "static": [
-            "Ví dụ nums=[1,3,5,6], target=5. bisect_left(nums, target) tìm vị trí chèn đầu tiên giữ thứ tự tăng",
-            "So sánh từ giữa: miền [0,4) → mid=2, nums[2]=5 ≥ 5 → thu về [0,2)",
-            "mid=1, nums[1]=3 < 5 → thu về [2,2) — lo == hi dừng",
-            "Trả lo=2 — chèn 5 vào vị trí 2, đúng đáp án",
-            "bisect_left tương đương BS tự viết với điều kiện nums[mid] < target"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: mỗi lần gọi lo < hi, miền tìm [lo,hi) bị thu hẹp; bất biến là mọi vị trí chèn hợp lệ đều nằm trong miền, nên khi lo == hi thì lo là đáp án.",
-        "reverse": "Quy nạp ngược: muốn trả lo đúng, ta cần đảm bảo hi luôn là vị trí 'đủ lớn' (nums[hi] ≥ target) và lo luôn 'thiếu' — quy nạp ngược kiểm tra điều kiện dừng lo == hi vẫn giữ bất biến."
+     "name": "BS cut trên mảng ngắn",
+     "time": "O(log(min(m,n)))",
+     "space": "O(1)",
+     "idea": "Xét cutA phần tử từ A; cutB = total//2 − cutA; điều kiện A[cutA-1] ≤ B[cutB] và B[cutB-1] ≤ A[cutA]; tính median theo chẵn/lẻ.",
+     "code": "def find_median_sorted_arrays(a, b):\n    if len(a) > len(b): a, b = b, a\n    m, n = len(a), len(b)\n    lo, hi = 0, m\n    while lo <= hi:\n        i = (lo + hi) // 2\n        j = (m + n + 1) // 2 - i\n        l1 = a[i-1] if i > 0 else -10**9\n        r1 = a[i] if i < m else 10**9\n        l2 = b[j-1] if j > 0 else -10**9\n        r2 = b[j] if j < n else 10**9\n        if l1 <= r2 and l2 <= r1:\n            if (m + n) % 2: return max(l1, l2)\n            return (max(l1, l2) + min(r1, r2)) / 2\n        elif l1 > r2: hi = i - 1\n        else: lo = i + 1",
+     "tcex": {
+      "input": {
+       "a": [
+        1,
+        3
+       ],
+       "b": [
+        2
+       ]
       },
-      "note": "Vị trí chèn = vị trí phần tử đầu tiên ≥ target. Điều kiện lo < hi thay vì lo <= hi tránh lặp vô hạn khi hi = mid."
+      "kind": "array",
+      "display": "a",
+      "aux": [
+       "b"
+      ],
+      "ptrs": [
+       "lo",
+       "hi",
+       "i",
+       "j"
+      ],
+      "expected": 2,
+      "anim": true
+     }
     },
     {
-      "no": "74",
-      "title": "Search a 2D Matrix",
-      "cat": "Binary Search",
-      "diff": "Medium",
-      "statement": "Ma trận mỗi hàng tăng và phần tử cuối hàng < phần tử đầu hàng sau → coi như mảng 1D tăng.",
-      "examples": "matrix=[[1,3,5,7],[10,11,16,20],[23,30,34,60]], target=3 → true",
-      "keyIdea": "Ánh xạ chỉ số 1D ↔ (r,c): r = i//n, c = i%n; binary search trên [0, m*n).",
-      "approaches": [
-        {
-          "name": "BS 1D hoá",
-          "time": "O(log(m·n))",
-          "space": "O(1)",
-          "idea": "lo=0, hi=m*n; mid → r,c; nums[r][c] vs target.",
-          "code": "def search_matrix(matrix, target):\n    m, n = len(matrix), len(matrix[0])\n    lo, hi = 0, m*n\n    while lo < hi:\n        mid = (lo + hi) // 2\n        v = matrix[mid//n][mid%n]\n        if v == target: return True\n        elif v < target: lo = mid + 1\n        else: hi = mid\n    return False",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  3,
-                  5,
-                  7
-                ],
-                [
-                  10,
-                  11,
-                  16,
-                  20
-                ],
-                [
-                  23,
-                  30,
-                  34,
-                  60
-                ]
-              ],
-              "target": 3
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": true,
-            "anim": true
-          }
-        },
-        {
-          "name": "Đi tìm dòng rồi tìm cột",
-          "time": "O(log m + log n)",
-          "space": "O(1)",
-          "idea": "BS hàng tìm dòng chứa (dòng cuối có đầu ≤ target), rồi BS cột trong dòng đó.",
-          "code": "from bisect import bisect_right, bisect_left\ndef search_matrix(matrix, target):\n    rows = [r[0] for r in matrix]\n    r = bisect_right(rows, target) - 1\n    if r < 0: return False\n    c = bisect_left(matrix[r], target)\n    return c < len(matrix[r]) and matrix[r][c] == target",
-          "static": [
-            "Ví dụ matrix 3×4, target=3. Bước 1: BS hàng — dãy đầu cột [1,10,23], tìm dòng có đầu ≤ 3 lớn nhất",
-            "bisect_right(rows, 3)−1 = 0 → dòng 0, vì các dòng sau có đầu cột > 3",
-            "Bước 2: BS cột trong dòng 0 = [1,3,5,7] tìm target 3",
-            "bisect_left([1,3,5,7], 3) = 1 → matrix[0][1] == 3 → True",
-            "Hai nhị phân O(log m + log n) — nhanh hơn BS 1D hoá đôi chút"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: ánh xạ ma trận m×n thành mảng 1D dài m·n; mỗi bước BS rút gọn miền [lo,hi) còn một nửa, bất biến giữ nguyên tính tăng.",
-        "reverse": "Quy nạp ngược: trước khi kết thúc, ta chỉ cần kiểm tra ô giữa; nếu bằng target trả True, nếu không tiếp tục thu hẹp nửa còn lại — đảm bảo không bỏ sót ô nào."
-      },
-      "note": "r = mid//n, c = mid%n là phép đảo của i = r*n + c — chìa khoá biến ma trận thành mảng."
-    },
-    {
-      "no": "162",
-      "title": "Find Peak Element",
-      "cat": "Binary Search",
-      "diff": "Medium",
-      "statement": "Peak = phần tử lớn hơn hai hàng xóm (biên coi là −∞). Mảng không nhất thiết sắp. Trả index bất kỳ.",
-      "examples": "[1,2,3,1] → 2 · [1,2,1,3,5,6,4] → 5 (hoặc 1)",
-      "keyIdea": "BS dựa trên chiều dốc: nếu nums[mid] < nums[mid+1] thì peak nằm bên phải; ngược lại bên trái — luôn có peak nhờ biên −∞.",
-      "approaches": [
-        {
-          "name": "BS theo dốc",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "lo, hi; mid; so với mid+1; dốc lên → lo=mid+1; dốc xuống → hi=mid; lo cuối là peak.",
-          "code": "def find_peak_element(nums):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < nums[mid+1]: lo = mid + 1\n        else: hi = mid\n    return lo",
-          "tcex": {
-            "input": {
-              "nums": [
-                1,
-                2,
-                3,
-                1
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": 2,
-            "anim": true
-          }
-        },
-        {
-          "name": "Quét tuyến tính",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "Đi lên tới khi dừng tăng — chậm nhưng hiển nhiên.",
-          "code": "def find_peak_element(nums):\n    for i in range(len(nums)-1):\n        if nums[i] > nums[i+1]: return i\n    return len(nums)-1",
-          "static": [
-            "Ví dụ [1,2,3,1]: duyệt i từ 0; tìm vị trí đầu tiên dừng tăng — nums[i] > nums[i+1]",
-            "i=0: nums[0]=1 > nums[1]=2? không → đi tiếp",
-            "i=1: nums[1]=2 > nums[2]=3? không → đi tiếp",
-            "i=2: nums[2]=3 > nums[3]=1? đúng → trả 2",
-            "Nếu mảng tăng tới hết thì trả len−1 (đỉnh ở biên phải, biên phải coi là −∞)"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: nếu nums[mid] < nums[mid+1] thì peak nằm bên phải (dốc lên có đích), ngược lại bên trái — mỗi bước cắt nửa miền nhưng vẫn giữ 'có peak trong [lo,hi]'.",
-        "reverse": "Quy nạp ngược: biên coi là −∞ nên bất kỳ đoạn nào cũng có cực đại; thu hẹp về một phần tử là đỉnh thoả nums[i] > nums[i+1]."
-      },
-      "note": "Không cần mảng sắp — chỉ cần tính 'dốc' cục bộ là đủ để quyết định rẽ hướng."
-    },
-    {
-      "no": "33",
-      "title": "Search in Rotated Sorted Array",
-      "cat": "Binary Search",
-      "diff": "Medium",
-      "statement": "Mảng sắp nhưng bị xoay; tìm target (không có → -1).",
-      "examples": "nums=[4,5,6,7,0,1,2], target=0 → 4 · target=3 → -1",
-      "keyIdea": "Sau khi xoay, một nửa luôn sắp tăng. So sánh để xác định target nằm nửa sắp nào.",
-      "approaches": [
-        {
-          "name": "BS nửa sắp",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "Nếu nums[lo] <= nums[mid]: nửa trái sắp; nếu target trong [lo,mid] → hi=mid-1 else lo=mid+1; ngược lại đối xứng.",
-          "code": "def search(nums, target):\n    lo, hi = 0, len(nums)-1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if nums[mid] == target: return mid\n        if nums[lo] <= nums[mid]:\n            if nums[lo] <= target < nums[mid]: hi = mid - 1\n            else: lo = mid + 1\n        else:\n            if nums[mid] < target <= nums[hi]: lo = mid + 1\n            else: hi = mid - 1\n    return -1",
-          "tcex": {
-            "input": {
-              "nums": [
-                4,
-                5,
-                6,
-                7,
-                0,
-                1,
-                2
-              ],
-              "target": 0
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": 4,
-            "anim": true
-          }
-        },
-        {
-          "name": "Tìm pivot rồi BS",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "Nhị phân tìm điểm xoay (nơi giảm), chia hai mảng con sắp rồi BS chuẩn.",
-          "code": "from bisect import bisect_left\ndef search(nums, target):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]: lo = mid + 1\n        else: hi = mid\n    pivot = lo\n    arr = nums[pivot:] + nums[:pivot]\n    k = bisect_left(arr, target)\n    if k < len(arr) and arr[k] == target:\n        return (pivot + k) % len(nums)\n    return -1",
-          "static": [
-            "Ví dụ nums=[4,5,6,7,0,1,2], target=0. Bước 1 tìm pivot (điểm xoay) bằng BS: so nums[mid] với nums[hi]",
-            "BS: mid=3, nums[3]=7 > nums[6]=2 → lo=4; mid=5, nums[5]=1 > nums[6]=2? không → hi=5; mid=4, nums[4]=0 > nums[6]=2? không → hi=4 → pivot=4",
-            "Mảng xoay quanh pivot 4: arr = [0,1,2,4,5,6,7]",
-            "Bước 2: bisect_left(arr, 0) = 0 → (pivot + k) % 7 = 4",
-            "Trả 4 — vị trí gốc của target trong nums"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: sau khi xoay, ít nhất một nửa là dãy tăng đúng; so target với biên nửa sắp đó để quyết định giữ nửa nào.",
-        "reverse": "Quy nạp ngược: nếu nums[lo] <= nums[mid], nửa trái sắp tăng — target nằm trong [lo,mid] thì bỏ phải, ngược lại bỏ trái; lặp tới khi mid trúng target."
-      },
-      "note": "Điều kiện lo <= hi vì phải kiểm tra chính ô mid có bằng target không trước khi thu hẹp."
-    },
-    {
-      "no": "34",
-      "title": "Find First and Last Position of Element in Sorted Array",
-      "cat": "Binary Search",
-      "diff": "Medium",
-      "statement": "Trả [first, last] vị trí xuất hiện target trong mảng sắp; không có → [-1,-1].",
-      "examples": "nums=[5,7,7,8,8,10], target=8 → [3,4]",
-      "keyIdea": "Hai lần BS: lần 1 tìm vị trí đầu (nums[mid] < target), lần 2 vị trí cuối (nums[mid] <= target).",
-      "approaches": [
-        {
-          "name": "Hai bisect về phía",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "bisect_left cho đầu; bisect_right −1 cho cuối; kiểm tra tồn tại.",
-          "code": "from bisect import bisect_left, bisect_right\ndef search_range(nums, target):\n    l = bisect_left(nums, target)\n    if l == len(nums) or nums[l] != target: return [-1, -1]\n    r = bisect_right(nums, target) - 1\n    return [l, r]",
-          "static": [
-            "Ví dụ nums=[5,7,7,8,8,10], target=8. bisect_left tìm vị trí đầu tiên ≥ 8",
-            "bisect_left([5,7,7,8,8,10], 8) = 3 — vị trí đầu của 8",
-            "Kiểm tra nums[3] == 8 đúng — không phải trường hợp không tồn tại",
-            "bisect_right([5,7,7,8,8,10], 8) − 1 = 5 − 1 = 4 — vị trí cuối của 8",
-            "Trả [3, 4] — hai biên tìm bằng hai hàm lệch nhau đúng một dấu ≤"
-          ]
-        },
-        {
-          "name": "BS tự viết hai pha",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "Tự viết hai vòng lo<=hi với điều kiện khác nhau cho đầu/cuối.",
-          "code": "def search_range(nums, target):\n    def first():\n        lo, hi = 0, len(nums)-1; ans = -1\n        while lo <= hi:\n            mid = (lo+hi)//2\n            if nums[mid] >= target: ans = mid; hi = mid-1\n            else: lo = mid+1\n        return ans\n    def last():\n        lo, hi = 0, len(nums)-1; ans = -1\n        while lo <= hi:\n            mid = (lo+hi)//2\n            if nums[mid] <= target: ans = mid; lo = mid+1\n            else: hi = mid-1\n        return ans\n    f = first()\n    return [f, last()] if f != -1 and nums[f] == target else [-1, -1]",
-          "tcex": {
-            "input": {
-              "nums": [
-                5,
-                7,
-                7,
-                8,
-                8,
-                10
-              ],
-              "target": 8
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": [
-              3,
-              4
-            ],
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: lần BS thứ nhất dùng điều kiện nums[mid] < target để chốt biên trái, lần thứ hai dùng nums[mid] <= target để chốt biên phải.",
-        "reverse": "Quy nạp ngược: muốn vị trí ĐẦU, ta cần ans là 'ứng viên ≥ target' và luôn đẩy hi xuống khi gặp phần tử ≥ target — ngược lại cho vị trí CUỐI."
-      },
-      "note": "Hai điều kiện lệch nhau đúng một dấu = — đó là lý do bisect_left/bisect_right tách biệt."
-    },
-    {
-      "no": "153",
-      "title": "Find Minimum in Rotated Sorted Array",
-      "cat": "Binary Search",
-      "diff": "Medium",
-      "statement": "Tìm min của mảng sắp bị xoay (giá trị phân biệt).",
-      "examples": "[3,4,5,1,2] → 1 · [4,5,6,7,0,1,2] → 0 · [11,13,15,17] → 11",
-      "keyIdea": "min là điểm chuyển dốc: BS so nums[mid] với nums[hi] — nhỏ hơn thì min ở trái, lớn hơn ở phải. Nếu tăng cả mảng, lo vẫn về 0.",
-      "approaches": [
-        {
-          "name": "BS so với nums[hi]",
-          "time": "O(log n)",
-          "space": "O(1)",
-          "idea": "while lo < hi: mid; if nums[mid] > nums[hi]: lo = mid+1 else hi = mid; trả nums[lo].",
-          "code": "def find_min(nums):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]: lo = mid + 1\n        else: hi = mid\n    return nums[lo]",
-          "tcex": {
-            "input": {
-              "nums": [
-                3,
-                4,
-                5,
-                1,
-                2
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi",
-              "mid"
-            ],
-            "expected": 1,
-            "anim": true
-          }
-        },
-        {
-          "name": "min() thẳng",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "Tham chiếu khi không cần log n.",
-          "code": "def find_min(nums):\n    return min(nums)",
-          "static": [
-            "Ví dụ [3,4,5,1,2]: min(nums) = 1 — tham chiếu tuyến tính cho trường hợp không yêu cầu log n",
-            "Duyệt qua từng phần tử, giữ giá trị nhỏ nhất thấy được",
-            "O(n) thời gian, O(1) bộ nhớ — đơn giản nhưng không dùng tính sắp/xoay của mảng",
-            "Dùng khi n nhỏ hoặc cần code ngắn gọn dễ hiểu"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: so nums[mid] với nums[hi]; nếu mid lớn hơn hi thì điểm rơi (min) nằm bên phải, ngược lại bên trái — thu hẹp tới khi lo == hi.",
-        "reverse": "Quy nạp ngược: nếu mảng tăng đều (không xoay), điều kiện nums[mid] > nums[hi] không bao giờ đúng → lo trượt về 0, min đúng là nums[0]."
-      },
-      "note": "Không cần so với nums[lo] vì điểm chuyển dốc duy nhất nằm cạnh giá trị nhỏ nhất toàn cục."
-    },
-    {
-      "no": "4",
-      "title": "Median of Two Sorted Arrays",
-      "cat": "Binary Search",
-      "diff": "Hard",
-      "statement": "Tìm median của hai mảng sắp trong O(log(m+n)).",
-      "examples": "nums1=[1,3], nums2=[2] → 2.0 · nums1=[1,2], nums2=[3,4] → 2.5",
-      "keyIdea": "BS trên mảng ngắn: chọn số phần tử phân bổ bên trái; điều kiện maxL ≤ minR để tìm cut chuẩn.",
-      "approaches": [
-        {
-          "name": "BS cut trên mảng ngắn",
-          "time": "O(log(min(m,n)))",
-          "space": "O(1)",
-          "idea": "Xét cutA phần tử từ A; cutB = total//2 − cutA; điều kiện A[cutA-1] ≤ B[cutB] và B[cutB-1] ≤ A[cutA]; tính median theo chẵn/lẻ.",
-          "code": "def find_median_sorted_arrays(a, b):\n    if len(a) > len(b): a, b = b, a\n    m, n = len(a), len(b)\n    lo, hi = 0, m\n    while lo <= hi:\n        i = (lo + hi) // 2\n        j = (m + n + 1) // 2 - i\n        l1 = a[i-1] if i > 0 else -10**9\n        r1 = a[i] if i < m else 10**9\n        l2 = b[j-1] if j > 0 else -10**9\n        r2 = b[j] if j < n else 10**9\n        if l1 <= r2 and l2 <= r1:\n            if (m + n) % 2: return max(l1, l2)\n            return (max(l1, l2) + min(r1, r2)) / 2\n        elif l1 > r2: hi = i - 1\n        else: lo = i + 1",
-          "tcex": {
-            "input": {
-              "a": [
-                1,
-                3
-              ],
-              "b": [
-                2
-              ]
-            },
-            "kind": "array",
-            "display": "a",
-            "aux": [
-              "b"
-            ],
-            "ptrs": [
-              "lo",
-              "hi",
-              "i",
-              "j"
-            ],
-            "expected": 2.0,
-            "anim": true
-          }
-        },
-        {
-          "name": "Gộp rồi lấy giữa",
-          "time": "O(m+n)",
-          "space": "O(m+n)",
-          "idea": "Merge hai mảng rồi lấy phần tử giữa — dễ hiểu, không thoả O(log).",
-          "code": "def find_median_sorted_arrays(a, b):\n    m = n = 0; merge = []\n    while m < len(a) and n < len(b):\n        if a[m] < b[n]: merge.append(a[m]); m += 1\n        else: merge.append(b[n]); n += 1\n    merge += a[m:] + b[n:]\n    L = len(merge)\n    if L % 2: return float(merge[L//2])\n    return (merge[L//2-1] + merge[L//2]) / 2",
-          "static": [
-            "Ví dụ a=[1,3], b=[2]: merge hai mảng đã sắp thành một dãy tăng duy nhất",
-            "merge = [1,2,3] (so sánh đầu hai mảng, lấy nhỏ hơn)",
-            "Độ dài L = 3 lẻ → median = merge[L//2] = merge[1] = 2.0",
-            "Trả 2.0 — đúng median của dãy gộp; ví dụ chẵn a=[1,2], b=[3,4] → (2+3)/2 = 2.5",
-            "O(m+n) thời gian và bộ nhớ — dễ hiểu nhưng không thoả yêu cầu O(log(m+n))"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: chọn cutA phần tử của A; bắt buộc cutB = (m+n+1)//2 − cutA; kiểm tra l1 ≤ r2 và l2 ≤ r1 để biết cut chuẩn.",
-        "reverse": "Quy nạp ngược: khi l1 > r2 tức cutA quá phải (A lấy nhiều) → kéo hi xuống; ngược lại tăng lo — BS tìm chỗ phân bổ cân bằng nhất."
-      },
-      "note": "BS chạy trên mảng ngắn nên O(log(min(m,n))) — biến bài Hard thành hai mũi nhọn."
+     "name": "Gộp rồi lấy giữa",
+     "time": "O(m+n)",
+     "space": "O(m+n)",
+     "idea": "Merge hai mảng rồi lấy phần tử giữa — dễ hiểu, không thoả O(log).",
+     "code": "def find_median_sorted_arrays(a, b):\n    m = n = 0; merge = []\n    while m < len(a) and n < len(b):\n        if a[m] < b[n]: merge.append(a[m]); m += 1\n        else: merge.append(b[n]); n += 1\n    merge += a[m:] + b[n:]\n    L = len(merge)\n    if L % 2: return float(merge[L//2])\n    return (merge[L//2-1] + merge[L//2]) / 2",
+     "static": [
+      "Ví dụ a=[1,3], b=[2]: merge hai mảng đã sắp thành một dãy tăng duy nhất",
+      "merge = [1,2,3] (so sánh đầu hai mảng, lấy nhỏ hơn)",
+      "Độ dài L = 3 lẻ → median = merge[L//2] = merge[1] = 2.0",
+      "Trả 2.0 — đúng median của dãy gộp; ví dụ chẵn a=[1,2], b=[3,4] → (2+3)/2 = 2.5",
+      "O(m+n) thời gian và bộ nhớ — dễ hiểu nhưng không thoả yêu cầu O(log(m+n))"
+     ]
     }
-  ]
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: chọn cutA phần tử của A; bắt buộc cutB = (m+n+1)//2 − cutA; kiểm tra l1 ≤ r2 và l2 ≤ r1 để biết cut chuẩn.",
+    "reverse": "Quy nạp ngược: khi l1 > r2 tức cutA quá phải (A lấy nhiều) → kéo hi xuống; ngược lại tăng lo — BS tìm chỗ phân bổ cân bằng nhất."
+   },
+   "note": "BS chạy trên mảng ngắn nên O(log(min(m,n))) — biến bài Hard thành hai mũi nhọn."
+  },
+  {
+   "no": "33",
+   "title": "Search in Rotated Sorted Array",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "statement": "Mảng sắp nhưng bị xoay; tìm target (không có → -1).",
+   "examples": "nums=[4,5,6,7,0,1,2], target=0 → 4 · target=3 → -1",
+   "keyIdea": "Sau khi xoay, một nửa luôn sắp tăng. So sánh để xác định target nằm nửa sắp nào.",
+   "approaches": [
+    {
+     "name": "BS nửa sắp",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "Nếu nums[lo] <= nums[mid]: nửa trái sắp; nếu target trong [lo,mid] → hi=mid-1 else lo=mid+1; ngược lại đối xứng.",
+     "code": "def search(nums, target):\n    lo, hi = 0, len(nums)-1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if nums[mid] == target: return mid\n        if nums[lo] <= nums[mid]:\n            if nums[lo] <= target < nums[mid]: hi = mid - 1\n            else: lo = mid + 1\n        else:\n            if nums[mid] < target <= nums[hi]: lo = mid + 1\n            else: hi = mid - 1\n    return -1",
+     "tcex": {
+      "input": {
+       "nums": [
+        4,
+        5,
+        6,
+        7,
+        0,
+        1,
+        2
+       ],
+       "target": 0
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": 4,
+      "anim": true
+     }
+    },
+    {
+     "name": "Tìm pivot rồi BS",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "Nhị phân tìm điểm xoay (nơi giảm), chia hai mảng con sắp rồi BS chuẩn.",
+     "code": "from bisect import bisect_left\ndef search(nums, target):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]: lo = mid + 1\n        else: hi = mid\n    pivot = lo\n    arr = nums[pivot:] + nums[:pivot]\n    k = bisect_left(arr, target)\n    if k < len(arr) and arr[k] == target:\n        return (pivot + k) % len(nums)\n    return -1",
+     "static": [
+      "Ví dụ nums=[4,5,6,7,0,1,2], target=0. Bước 1 tìm pivot (điểm xoay) bằng BS: so nums[mid] với nums[hi]",
+      "BS: mid=3, nums[3]=7 > nums[6]=2 → lo=4; mid=5, nums[5]=1 > nums[6]=2? không → hi=5; mid=4, nums[4]=0 > nums[6]=2? không → hi=4 → pivot=4",
+      "Mảng xoay quanh pivot 4: arr = [0,1,2,4,5,6,7]",
+      "Bước 2: bisect_left(arr, 0) = 0 → (pivot + k) % 7 = 4",
+      "Trả 4 — vị trí gốc của target trong nums"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: sau khi xoay, ít nhất một nửa là dãy tăng đúng; so target với biên nửa sắp đó để quyết định giữ nửa nào.",
+    "reverse": "Quy nạp ngược: nếu nums[lo] <= nums[mid], nửa trái sắp tăng — target nằm trong [lo,mid] thì bỏ phải, ngược lại bỏ trái; lặp tới khi mid trúng target."
+   },
+   "note": "Điều kiện lo <= hi vì phải kiểm tra chính ô mid có bằng target không trước khi thu hẹp."
+  },
+  {
+   "no": "34",
+   "title": "Find First and Last Position of Element in Sorted Array",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "statement": "Trả [first, last] vị trí xuất hiện target trong mảng sắp; không có → [-1,-1].",
+   "examples": "nums=[5,7,7,8,8,10], target=8 → [3,4]",
+   "keyIdea": "Hai lần BS: lần 1 tìm vị trí đầu (nums[mid] < target), lần 2 vị trí cuối (nums[mid] <= target).",
+   "approaches": [
+    {
+     "name": "Hai bisect về phía",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "bisect_left cho đầu; bisect_right −1 cho cuối; kiểm tra tồn tại.",
+     "code": "from bisect import bisect_left, bisect_right\ndef search_range(nums, target):\n    l = bisect_left(nums, target)\n    if l == len(nums) or nums[l] != target: return [-1, -1]\n    r = bisect_right(nums, target) - 1\n    return [l, r]",
+     "static": [
+      "Ví dụ nums=[5,7,7,8,8,10], target=8. bisect_left tìm vị trí đầu tiên ≥ 8",
+      "bisect_left([5,7,7,8,8,10], 8) = 3 — vị trí đầu của 8",
+      "Kiểm tra nums[3] == 8 đúng — không phải trường hợp không tồn tại",
+      "bisect_right([5,7,7,8,8,10], 8) − 1 = 5 − 1 = 4 — vị trí cuối của 8",
+      "Trả [3, 4] — hai biên tìm bằng hai hàm lệch nhau đúng một dấu ≤"
+     ]
+    },
+    {
+     "name": "BS tự viết hai pha",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "Tự viết hai vòng lo<=hi với điều kiện khác nhau cho đầu/cuối.",
+     "code": "def search_range(nums, target):\n    def first():\n        lo, hi = 0, len(nums)-1; ans = -1\n        while lo <= hi:\n            mid = (lo+hi)//2\n            if nums[mid] >= target: ans = mid; hi = mid-1\n            else: lo = mid+1\n        return ans\n    def last():\n        lo, hi = 0, len(nums)-1; ans = -1\n        while lo <= hi:\n            mid = (lo+hi)//2\n            if nums[mid] <= target: ans = mid; lo = mid+1\n            else: hi = mid-1\n        return ans\n    f = first()\n    return [f, last()] if f != -1 and nums[f] == target else [-1, -1]",
+     "tcex": {
+      "input": {
+       "nums": [
+        5,
+        7,
+        7,
+        8,
+        8,
+        10
+       ],
+       "target": 8
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": [
+       3,
+       4
+      ],
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: lần BS thứ nhất dùng điều kiện nums[mid] < target để chốt biên trái, lần thứ hai dùng nums[mid] <= target để chốt biên phải.",
+    "reverse": "Quy nạp ngược: muốn vị trí ĐẦU, ta cần ans là 'ứng viên ≥ target' và luôn đẩy hi xuống khi gặp phần tử ≥ target — ngược lại cho vị trí CUỐI."
+   },
+   "note": "Hai điều kiện lệch nhau đúng một dấu = — đó là lý do bisect_left/bisect_right tách biệt."
+  },
+  {
+   "no": "35",
+   "title": "Search Insert Position",
+   "cat": "Binary Search",
+   "diff": "Easy",
+   "statement": "Tìm chỉ số chèn để giữ mảng tăng (vị trí đầu tiên >= target).",
+   "examples": "nums=[1,3,5,6], target=5 → 2 · target=2 → 1 · target=7 → 4",
+   "keyIdea": "Binary search chuẩn: khi lo,hi giao nhau, lo là vị trí chèn.",
+   "approaches": [
+    {
+     "name": "BS lo < hi",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "mid; nếu nums[mid] < target → lo = mid+1 else hi = mid; kết thúc lo là đáp án.",
+     "code": "def search_insert(nums, target):\n    lo, hi = 0, len(nums)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < target: lo = mid + 1\n        else: hi = mid\n    return lo",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        3,
+        5,
+        6
+       ],
+       "target": 5
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": 2,
+      "anim": true
+     }
+    },
+    {
+     "name": "bisect_left",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "Thư viện chuẩn chính là vị trí chèn.",
+     "code": "from bisect import bisect_left\ndef search_insert(nums, target):\n    return bisect_left(nums, target)",
+     "static": [
+      "Ví dụ nums=[1,3,5,6], target=5. bisect_left(nums, target) tìm vị trí chèn đầu tiên giữ thứ tự tăng",
+      "So sánh từ giữa: miền [0,4) → mid=2, nums[2]=5 ≥ 5 → thu về [0,2)",
+      "mid=1, nums[1]=3 < 5 → thu về [2,2) — lo == hi dừng",
+      "Trả lo=2 — chèn 5 vào vị trí 2, đúng đáp án",
+      "bisect_left tương đương BS tự viết với điều kiện nums[mid] < target"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi lần gọi lo < hi, miền tìm [lo,hi) bị thu hẹp; bất biến là mọi vị trí chèn hợp lệ đều nằm trong miền, nên khi lo == hi thì lo là đáp án.",
+    "reverse": "Quy nạp ngược: muốn trả lo đúng, ta cần đảm bảo hi luôn là vị trí 'đủ lớn' (nums[hi] ≥ target) và lo luôn 'thiếu' — quy nạp ngược kiểm tra điều kiện dừng lo == hi vẫn giữ bất biến."
+   },
+   "note": "Vị trí chèn = vị trí phần tử đầu tiên ≥ target. Điều kiện lo < hi thay vì lo <= hi tránh lặp vô hạn khi hi = mid."
+  },
+  {
+   "no": "74",
+   "title": "Search a 2D Matrix",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "statement": "Ma trận mỗi hàng tăng và phần tử cuối hàng < phần tử đầu hàng sau → coi như mảng 1D tăng.",
+   "examples": "matrix=[[1,3,5,7],[10,11,16,20],[23,30,34,60]], target=3 → true",
+   "keyIdea": "Ánh xạ chỉ số 1D ↔ (r,c): r = i//n, c = i%n; binary search trên [0, m*n).",
+   "approaches": [
+    {
+     "name": "BS 1D hoá",
+     "time": "O(log(m·n))",
+     "space": "O(1)",
+     "idea": "lo=0, hi=m*n; mid → r,c; nums[r][c] vs target.",
+     "code": "def search_matrix(matrix, target):\n    m, n = len(matrix), len(matrix[0])\n    lo, hi = 0, m*n\n    while lo < hi:\n        mid = (lo + hi) // 2\n        v = matrix[mid//n][mid%n]\n        if v == target: return True\n        elif v < target: lo = mid + 1\n        else: hi = mid\n    return False",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         3,
+         5,
+         7
+        ],
+        [
+         10,
+         11,
+         16,
+         20
+        ],
+        [
+         23,
+         30,
+         34,
+         60
+        ]
+       ],
+       "target": 3
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Đi tìm dòng rồi tìm cột",
+     "time": "O(log m + log n)",
+     "space": "O(1)",
+     "idea": "BS hàng tìm dòng chứa (dòng cuối có đầu ≤ target), rồi BS cột trong dòng đó.",
+     "code": "from bisect import bisect_right, bisect_left\ndef search_matrix(matrix, target):\n    rows = [r[0] for r in matrix]\n    r = bisect_right(rows, target) - 1\n    if r < 0: return False\n    c = bisect_left(matrix[r], target)\n    return c < len(matrix[r]) and matrix[r][c] == target",
+     "static": [
+      "Ví dụ matrix 3×4, target=3. Bước 1: BS hàng — dãy đầu cột [1,10,23], tìm dòng có đầu ≤ 3 lớn nhất",
+      "bisect_right(rows, 3)−1 = 0 → dòng 0, vì các dòng sau có đầu cột > 3",
+      "Bước 2: BS cột trong dòng 0 = [1,3,5,7] tìm target 3",
+      "bisect_left([1,3,5,7], 3) = 1 → matrix[0][1] == 3 → True",
+      "Hai nhị phân O(log m + log n) — nhanh hơn BS 1D hoá đôi chút"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: ánh xạ ma trận m×n thành mảng 1D dài m·n; mỗi bước BS rút gọn miền [lo,hi) còn một nửa, bất biến giữ nguyên tính tăng.",
+    "reverse": "Quy nạp ngược: trước khi kết thúc, ta chỉ cần kiểm tra ô giữa; nếu bằng target trả True, nếu không tiếp tục thu hẹp nửa còn lại — đảm bảo không bỏ sót ô nào."
+   },
+   "note": "r = mid//n, c = mid%n là phép đảo của i = r*n + c — chìa khoá biến ma trận thành mảng."
+  },
+  {
+   "no": "153",
+   "title": "Find Minimum in Rotated Sorted Array",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "statement": "Tìm min của mảng sắp bị xoay (giá trị phân biệt).",
+   "examples": "[3,4,5,1,2] → 1 · [4,5,6,7,0,1,2] → 0 · [11,13,15,17] → 11",
+   "keyIdea": "min là điểm chuyển dốc: BS so nums[mid] với nums[hi] — nhỏ hơn thì min ở trái, lớn hơn ở phải. Nếu tăng cả mảng, lo vẫn về 0.",
+   "approaches": [
+    {
+     "name": "BS so với nums[hi]",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "while lo < hi: mid; if nums[mid] > nums[hi]: lo = mid+1 else hi = mid; trả nums[lo].",
+     "code": "def find_min(nums):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] > nums[hi]: lo = mid + 1\n        else: hi = mid\n    return nums[lo]",
+     "tcex": {
+      "input": {
+       "nums": [
+        3,
+        4,
+        5,
+        1,
+        2
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": 1,
+      "anim": true
+     }
+    },
+    {
+     "name": "min() thẳng",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Tham chiếu khi không cần log n.",
+     "code": "def find_min(nums):\n    return min(nums)",
+     "static": [
+      "Ví dụ [3,4,5,1,2]: min(nums) = 1 — tham chiếu tuyến tính cho trường hợp không yêu cầu log n",
+      "Duyệt qua từng phần tử, giữ giá trị nhỏ nhất thấy được",
+      "O(n) thời gian, O(1) bộ nhớ — đơn giản nhưng không dùng tính sắp/xoay của mảng",
+      "Dùng khi n nhỏ hoặc cần code ngắn gọn dễ hiểu"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: so nums[mid] với nums[hi]; nếu mid lớn hơn hi thì điểm rơi (min) nằm bên phải, ngược lại bên trái — thu hẹp tới khi lo == hi.",
+    "reverse": "Quy nạp ngược: nếu mảng tăng đều (không xoay), điều kiện nums[mid] > nums[hi] không bao giờ đúng → lo trượt về 0, min đúng là nums[0]."
+   },
+   "note": "Không cần so với nums[lo] vì điểm chuyển dốc duy nhất nằm cạnh giá trị nhỏ nhất toàn cục."
+  },
+  {
+   "no": "162",
+   "title": "Find Peak Element",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "statement": "Peak = phần tử lớn hơn hai hàng xóm (biên coi là −∞). Mảng không nhất thiết sắp. Trả index bất kỳ.",
+   "examples": "[1,2,3,1] → 2 · [1,2,1,3,5,6,4] → 5 (hoặc 1)",
+   "keyIdea": "BS dựa trên chiều dốc: nếu nums[mid] < nums[mid+1] thì peak nằm bên phải; ngược lại bên trái — luôn có peak nhờ biên −∞.",
+   "approaches": [
+    {
+     "name": "BS theo dốc",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "idea": "lo, hi; mid; so với mid+1; dốc lên → lo=mid+1; dốc xuống → hi=mid; lo cuối là peak.",
+     "code": "def find_peak_element(nums):\n    lo, hi = 0, len(nums)-1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if nums[mid] < nums[mid+1]: lo = mid + 1\n        else: hi = mid\n    return lo",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        2,
+        3,
+        1
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "expected": 2,
+      "anim": true
+     }
+    },
+    {
+     "name": "Quét tuyến tính",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Đi lên tới khi dừng tăng — chậm nhưng hiển nhiên.",
+     "code": "def find_peak_element(nums):\n    for i in range(len(nums)-1):\n        if nums[i] > nums[i+1]: return i\n    return len(nums)-1",
+     "static": [
+      "Ví dụ [1,2,3,1]: duyệt i từ 0; tìm vị trí đầu tiên dừng tăng — nums[i] > nums[i+1]",
+      "i=0: nums[0]=1 > nums[1]=2? không → đi tiếp",
+      "i=1: nums[1]=2 > nums[2]=3? không → đi tiếp",
+      "i=2: nums[2]=3 > nums[3]=1? đúng → trả 2",
+      "Nếu mảng tăng tới hết thì trả len−1 (đỉnh ở biên phải, biên phải coi là −∞)"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: nếu nums[mid] < nums[mid+1] thì peak nằm bên phải (dốc lên có đích), ngược lại bên trái — mỗi bước cắt nửa miền nhưng vẫn giữ 'có peak trong [lo,hi]'.",
+    "reverse": "Quy nạp ngược: biên coi là −∞ nên bất kỳ đoạn nào cũng có cực đại; thu hẹp về một phần tử là đỉnh thoả nums[i] > nums[i+1]."
+   },
+   "note": "Không cần mảng sắp — chỉ cần tính 'dốc' cục bộ là đủ để quyết định rẽ hướng."
+  },
+  {
+   "no": "287",
+   "title": "Find the Duplicate Number",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Mảng nums n+1 phần tử, mỗi giá trị trong 1..n; có đúng MỘT số lặp (có thể lặp nhiều lần). Tìm số đó — cấm sửa mảng và chỉ dùng O(1) bộ nhớ phụ.",
+   "examples": "nums=[1,3,4,2,2] → 2 · nums=[3,1,3,4,2] → 3",
+   "keyIdea": "Nhị phân theo GIÁ TRỊ: với mid, đếm số phần tử ≤ mid; nếu count > mid thì số lặp nằm trong [1..mid], ngược lại trong (mid..n].",
+   "thinking": {
+    "forward": "Quy nạp tiến: nếu không trùng, dãy 1..n có đúng mid số ≤ mid; số trùng làm tăng count — bất đẳng thức count > mid chỉ ra nửa chứa số lặp.",
+    "reverse": "Quy nạp ngược: muốn thu hẹp miền giá trị, hãy hỏi 'có bao nhiêu số trong mảng nằm dưới mid' — câu trả lời lệch với mid là tín hiệu nằm bên nào."
+   },
+   "note": "Chú giải: Khác BS thường lệ — biến lo/hi là khoảng GIÁ TRỊ (1..n) chứ không phải chỉ số. Vòng lặp đếm mỗi lần O(n) nên tổng O(n·log n).",
+   "approaches": [
+    {
+     "name": "Nhị phân giá trị (đếm ≤ mid)",
+     "time": "O(n·log n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "lo=1, hi=n; với mid: cnt = số phần tử ≤ mid; cnt > mid → hi=mid; ngược lại lo=mid+1.",
+     "code": "def find_duplicate_bin(nums):\n    lo, hi = 1, len(nums) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        cnt = sum(1 for x in nums if x <= mid)\n        if cnt > mid: hi = mid\n        else: lo = mid + 1\n    return lo",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        3,
+        4,
+        2,
+        2
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "aux": [],
+      "expected": 2,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Phát hiện chu trình Floyd",
+     "time": "O(n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Coi nums như mảng next-pointer: nums[i] trỏ tới nums[nums[i]]. Số lặp là điểm vào vòng — dùng rùa/thỏ.",
+     "code": "def find_duplicate_floyd(nums):\n    slow = fast = nums[0]\n    while True:\n        slow = nums[slow]\n        fast = nums[nums[fast]]\n        if slow == fast: break\n    slow = nums[0]\n    while slow != fast:\n        slow = nums[slow]\n        fast = nums[fast]\n    return slow",
+     "static": [
+      "Với nums=[1,3,4,2,2], coi nums[i] là vị trí tiếp theo: 0→1→3→2→4→2... (vòng 2→4→2).",
+      "Giai đoạn 1 (tìm giao): slow=[1,3,2,4,2], fast=[3,2,2,2,2] → gặp nhau tại 2.",
+      "Giai đoạn 2: đặt slow=nums[0]=1, fast giữ 2; slow=[1,3,2], fast=[2,2] → gặp tại 2.",
+      "Điểm vào vòng trùng với giá trị lặp: 2 là đáp án.",
+      "O(n) thời gian, O(1) bộ nhớ — nhanh nhất nhưng trừu tượng hơn nhị phân giá trị."
+     ]
+    },
+    {
+     "name": "Set đánh dấu (tham khảo)",
+     "time": "O(n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "Vét cạn đơn giản nhất: thêm từng số vào set, số nào đã có là số lặp. Vi phạm ràng buộc O(1) bộ nhớ nhưng dễ nhớ.",
+     "code": "def find_duplicate_set(nums):\n    seen = set()\n    for x in nums:\n        if x in seen: return x\n        seen.add(x)\n    return -1",
+     "static": [
+      "Với nums=[1,3,4,2,2]: thêm 1, 3, 4, 2 vào set.",
+      "Gặp 2 lần nữa: 2 đã có trong set → trả 2 ngay.",
+      "Với [3,1,3,4,2]: 3 lặp → trả 3.",
+      "Đơn giản nhưng tốn O(n) bộ nhớ — dùng để đối chiếu kết quả khi học."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "367",
+   "title": "Valid Perfect Square",
+   "cat": "Binary Search",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Kiểm tra num có phải số chính phương (không dùng hàm sqrt thư viện).",
+   "examples": "num=16 → true · num=14 → false",
+   "keyIdea": "Nhị phân tìm x sao cho x² == num trong [1..num]; nếu x² > num → hi=mid−1, còn lại lo=mid+1.",
+   "thinking": {
+    "forward": "Quy nạp tiến: x² tăng đơn điệu theo x — mọi x lớn hơn căn đều vượt num, mọi x nhỏ hơn đều thiếu; nhị phân đúng miền.",
+    "reverse": "Quy nạp ngược: muốn chứng minh num là chính phương, chỉ cần một x thoả x²==num — BS thu hẹp về đúng x đó hoặc kết thúc rỗng."
+   },
+   "note": "Chú giải: mid·mid có thể tràn kiểu 32-bit ở ngôn ngữ khác nhưng Python an toàn; case biên: num=1 → lo=hi=1, mid·mid==1 → true.",
+   "approaches": [
+    {
+     "name": "Nhị phân 1..num",
+     "time": "O(log num)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "lo=1, hi=num; mid=(lo+hi)//2; so mid² với num để dịch lo/hi.",
+     "code": "def is_perfect_square(num):\n    lo, hi = 1, num\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        sq = mid * mid\n        if sq == num: return True\n        elif sq < num: lo = mid + 1\n        else: hi = mid - 1\n    return False",
+     "tcex": {
+      "input": {
+       "num": 16
+      },
+      "kind": "none",
+      "display": null,
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "aux": [],
+      "expected": true,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Newton (xấp xỉ căn)",
+     "time": "O(lognum) hội tụ nhanh",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Lặp x = (x + num//x)//2 tới khi x² ≤ num; kiểm tra x² == num.",
+     "code": "def is_perfect_square_newton(num):\n    x = num\n    while x * x > num:\n        x = (x + num // x) // 2\n    return x * x == num",
+     "static": [
+      "Với num=16: x=16; x²=256 > 16 → x=(16+16//16)//2=(16+1)//2=8.",
+      "x=8: 64 > 16 → x=(8+16//8)//2=(8+2)//2=5.",
+      "x=5: 25 > 16 → x=(5+16//5)//2=(5+3)//2=4.",
+      "x=4: 16 ≤ 16 dừng; 4²==16 → true.",
+      "Với num=14 hội tụ về x=3 (9≤14) mà 3²≠14 → false."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "704",
+   "title": "Binary Search",
+   "cat": "Binary Search",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Mảng nums tăng dần, tìm target; không có → −1.",
+   "examples": "nums=[-1,0,3,5,9,12], target=9 → 4 · target=2 → -1",
+   "keyIdea": "BS chuẩn lo<=hi: so nums[mid] với target rồi bỏ nửa không chứa; dừng khi không còn miền.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi bước loại đúng một nửa — số phép so sánh = chiều cao cây tìm kiếm = log2(n).",
+    "reverse": "Quy nạp ngược: khi lo > hi nghĩa là mọi vị trí có thể chứa target đã bị loại — chắc chắn không tồn tại, trả −1."
+   },
+   "note": "Chú giải: Vòng lo<=hi khác lo<hi ở chỗ phải kiểm tra chính ô mid; viết lo<hi thì kết thúc cần kiểm tra thêm nums[lo]==target.",
+   "approaches": [
+    {
+     "name": "BS lo <= hi",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "mid; trúng → trả mid; nums[mid]<target → lo=mid+1; ngược lại hi=mid−1.",
+     "code": "def search(nums, target):\n    lo, hi = 0, len(nums) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if nums[mid] == target: return mid\n        elif nums[mid] < target: lo = mid + 1\n        else: hi = mid - 1\n    return -1",
+     "tcex": {
+      "input": {
+       "nums": [
+        -1,
+        0,
+        3,
+        5,
+        9,
+        12
+       ],
+       "target": 9
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "aux": [],
+      "expected": 4,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "bisect_left",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Thư viện chuẩn; sau đó kiểm tra vị trí trả về có trùng target không.",
+     "code": "from bisect import bisect_left\ndef search(nums, target):\n    i = bisect_left(nums, target)\n    return i if i < len(nums) and nums[i] == target else -1",
+     "static": [
+      "Với nums=[-1,0,3,5,9,12], target=9: bisect_left trả vị trí đầu tiên ≥ 9 → 4.",
+      "Kiểm tra nums[4]==9 → trả 4.",
+      "Với target=2: bisect_left trả 3 (nums[3]=5 ≥ 2) nhưng nums[3]=5 ≠ 2 → trả −1.",
+      "Khớp với BS tự viết — bisect_left dùng điều kiện nums[mid] < target."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "744",
+   "title": "Find Smallest Letter Greater Than Target",
+   "cat": "Binary Search",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Chuỗi letters sắp tăng, tìm ký tự NHỎ NHẤT lớn hơn target; nếu không có, quay vòng lấy letters[0].",
+   "examples": "letters=['c','f','j'], target='a' → 'c' · target='c' → 'f' · target='z' → 'c'",
+   "keyIdea": "BS tìm vị trí đầu tiên có letters[i] > target (lo<hi trả lo); nếu lo ngoài mảng (mọi ký tự ≤ target) thì lấy phần tử đầu nhờ mod.",
+   "thinking": {
+    "forward": "Quy nạp tiến: miền [lo,hi) chứa các vị trí 'lớn hơn target'; điều kiện letters[mid] <= target đẩy lo lên, ngược lại kéo hi về — kết thúc lo là đáp án.",
+    "reverse": "Quy nạp ngược: khi lo == hi, lo là vị trí đầu tiên thoả letters[lo] > target; nếu lo == len(letters) thì không có ký tự nào lớn hơn → vòng lại letters[0]."
+   },
+   "note": "Chú giải: Dùng lo<hi với hi=len(letters) (miền nửa mở) — điểm dừng lo có thể bằng len khi tất cả ≤ target, phép lo % len quy về 0.",
+   "approaches": [
+    {
+     "name": "BS nửa mở",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "lo=0, hi=len(letters); nếu letters[mid] <= target → lo=mid+1, else hi=mid; trả letters[lo % len].",
+     "code": "def next_greatest_letter(letters, target):\n    lo, hi = 0, len(letters)\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if letters[mid] <= target: lo = mid + 1\n        else: hi = mid\n    return letters[lo % len(letters)]",
+     "tcex": {
+      "input": {
+       "letters": [
+        "c",
+        "f",
+        "j"
+       ],
+       "target": "a"
+      },
+      "kind": "array",
+      "display": "letters",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "aux": [],
+      "expected": "c",
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Quét tuyến tính",
+     "time": "O(n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Duyệt từ đầu tới cuối tìm ký tự đầu tiên > target; không có thì lấy letters[0].",
+     "code": "def next_greatest_letter_scan(letters, target):\n    for c in letters:\n        if c > target:\n            return c\n    return letters[0]",
+     "static": [
+      "Với letters=['c','f','j'], target='a': ký tự c > 'a' đầu tiên là 'c' → trả 'c'.",
+      "Với target='c': 'c' không lớn hơn 'c', 'f' > 'c' → trả 'f'.",
+      "Với target='z': không ký tự nào > 'z' → trả letters[0]='c' (quay vòng).",
+      "O(n) — chậm hơn BS nhưng hiển nhiên, hữu ích với mảng nhỏ."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "852",
+   "title": "Peak Index in a Mountain Array",
+   "cat": "Binary Search",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Mảng núi: tăng chặt tới đỉnh rồi giảm chặt. Trả chỉ số đỉnh (peak).",
+   "examples": "[0,1,0] → 1 · [0,2,1,0] → 1 · [0,1,2,3,4,5,3,1] → 5",
+   "keyIdea": "BS theo độ dốc: nếu arr[mid] < arr[mid+1] (đang lên) thì peak ở phải; ngược lại ở trái (gồm cả mid).",
+   "thinking": {
+    "forward": "Quy nạp tiến: tại mid, so arr[mid] với arr[mid+1]: dốc lên nghĩa là đỉnh chưa tới (lo=mid+1), dốc xuống nghĩa là đỉnh nằm trong [lo..mid] (hi=mid).",
+    "reverse": "Quy nạp ngược: miền [lo,hi] luôn chứa đỉnh; khi lo == hi, ô đó vừa lớn hơn cả hai bên do cấu trúc núi → chính là đỉnh."
+   },
+   "note": "Chú giải: Mảng núi đảm bảo đỉnh luôn tồn tại và chỉ số so sánh mid+1 an toàn vì lo<hi nên mid < hi ≤ len−1.",
+   "approaches": [
+    {
+     "name": "BS theo dốc",
+     "time": "O(log n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "while lo < hi: mid; arr[mid] < arr[mid+1] → lo=mid+1; else hi=mid; trả lo.",
+     "code": "def peak_index_in_mountain_array(arr):\n    lo, hi = 0, len(arr) - 1\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if arr[mid] < arr[mid+1]: lo = mid + 1\n        else: hi = mid\n    return lo",
+     "tcex": {
+      "input": {
+       "arr": [
+        0,
+        1,
+        0
+       ]
+      },
+      "kind": "array",
+      "display": "arr",
+      "ptrs": [
+       "lo",
+       "hi",
+       "mid"
+      ],
+      "aux": [],
+      "expected": 1,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Quét tuyến tính",
+     "time": "O(n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Đi lên tới khi giá trị dừng tăng — vị trí đó là đỉnh.",
+     "code": "def peak_index_linear(arr):\n    i = 0\n    while arr[i] < arr[i+1]:\n        i += 1\n    return i",
+     "static": [
+      "Với [0,2,1,0]: i=0, arr[0]=0 < arr[1]=2 → i=1.",
+      "arr[1]=2 < arr[2]=1? không → dừng, trả 1 — đỉnh giá trị 2.",
+      "Với [0,1,2,3,4,5,3,1]: đi từ 0 tới 5 (i=5) rồi 5 < 3? không → trả 5.",
+      "O(n) tham chiếu cho miền nhỏ."
+     ]
+    }
+   ]
+  }
+ ]
 }

@@ -2,31 +2,56 @@
  "desc": "BST: inorder luôn tăng. Tận dụng để kiểm tra hợp lệ, tìm phần tử thứ k, và khoảng cách tối thiểu.",
  "problems": [
   {
-   "no": "530",
-   "title": "Minimum Absolute Difference in BST",
+   "no": "98",
+   "title": "Validate Binary Search Tree",
    "cat": "Binary Search Tree",
-   "diff": "Easy",
-   "statement": "Tìm hiệu tuyệt đối nhỏ nhất giữa hai nút bất kỳ trong BST (giá trị không trùng).",
-   "examples": "[4,2,6,1,3] → 1 · [1,0,48,null,null,12,49] → 1",
-   "keyIdea": "Trong BST, hiệu nhỏ nhất luôn giữa hai nút kề nhau trong inorder.",
+   "diff": "Medium",
+   "statement": "Xem cây nhị phân có phải BST hợp lệ (trái < gốc < phải, mọi nút) không.",
+   "examples": "[2,1,3] → true · [5,1,4,null,null,3,6] → false",
+   "keyIdea": "Truyền khoảng (lo,hi) xuống; mỗi nút phải nằm trong khoảng; bản đơn giản hay mắc lỗi vì chỉ so cha-con.",
    "thinking": {
-    "forward": "Quy nạp tiến: duyệt inorder cho dãy tăng dần; hiệu nhỏ nhất giữa mọi cặp nút bất kỳ chính là hiệu nhỏ nhất giữa hai phần tử liên tiếp của dãy đó.",
-    "reverse": "Quy nạp ngược: muốn kết luận hiệu nhỏ nhất thì phải so các cặp kề trong inorder — nếu bỏ sót một cặp kề, có thể bỏ lỡ đáp án."
+    "forward": "Quy nạp tiến: mỗi nút được ràng buộc bởi khoảng (lo, hi); đi sang trái thu hẹp hi xuống giá trị nút, sang phải thu hẹp lo — càng xuống càng chặt.",
+    "reverse": "Quy nạp ngược: muốn xác nhận toàn cây là BST thì mọi nút phải thoả khoảng được thừa hưởng từ tổ tiên — một nút vi phạm là đủ phủ định."
    },
-   "note": "Chú giải: nhờ tính chất BST (inorder tăng nghiêm ngặt), bài toán 'min chênh lệch mọi cặp' rút về 'min chênh lệch hai phần tử liên tiếp' — dãy có thứ tự nên không cần so O(n²).",
+   "note": "Chú giải: lỗi kinh điển là chỉ so nút con với nút cha — vd cây [5,1,4,null,null,3,6] có 3 nằm bên phải 1 nhưng nhỏ hơn 5 (gốc) nên không hợp lệ; phải truyền cả khoảng.",
    "approaches": [
     {
-     "name": "Inorder theo dõi prev",
+     "name": "Truyền khoảng [lo,hi]",
      "time": "O(n)",
      "space": "O(h)",
-     "idea": "Duyệt inorder; giữ prev; cập nhật diff = min(diff, val−prev).",
-     "code": "def get_minimum_difference(root):\n    prev = None; best = 10**9\n    def dfs(n):\n        nonlocal prev, best\n        if not n: return\n        dfs(n.left)\n        if prev is not None: best = min(best, n.val - prev)\n        prev = n.val\n        dfs(n.right)\n    dfs(root)\n    return best",
+     "idea": "dfs(n, lo, hi): nếu n.val ≤ lo hoặc ≥ hi → False; kiểm tra con trái với (lo, n.val), con phải (n.val, hi).",
+     "code": "def is_valid_bst(root):\n    def dfs(n, lo, hi):\n        if not n: return True\n        if not (lo < n.val < hi): return False\n        return dfs(n.left, lo, n.val) and dfs(n.right, n.val, hi)\n    return dfs(root, -float('inf'), float('inf'))",
      "tcex": {
       "input": {
        "root": [
+        5,
+        1,
         4,
+        null,
+        null,
+        3,
+        6
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": false,
+      "anim": true
+     }
+    },
+    {
+     "name": "Inorder tăng dần",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "BST ⇔ inorder là dãy tăng nghiêm ngặt.",
+     "code": "def is_valid_bst(root):\n    prev = -float('inf')\n    def dfs(n):\n        nonlocal prev\n        if not n: return True\n        if not dfs(n.left): return False\n        if n.val <= prev: return False\n        prev = n.val\n        return dfs(n.right)\n    return dfs(root)",
+     "tcex": {
+      "input": {
+       "root": [
         2,
-        6,
         1,
         3
        ]
@@ -36,20 +61,68 @@
       "param_kinds": {
        "root": "tree"
       },
-      "expected": 1,
+      "expected": true,
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "99",
+   "title": "Recover Binary Search Tree",
+   "cat": "Binary Search Tree",
+   "diff": "Medium",
+   "statement": "Đúng HAI nút bị đảo giá trị khiến cây không còn là BST; sửa lại bằng cách hoán giá trị hai nút đó (không đổi cấu trúc).",
+   "examples": "root=[1,3,null,null,2] → [3,1,null,null,2] · root=[3,1,4,null,null,2] → [2,1,4,null,null,3]",
+   "keyIdea": "Inorder của BST phải tăng — hai chỗ 'ngược' (prev > cur) cho ta hai nút đảo; hoán giá trị chúng.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt inorder; mỗi lần thấy prev.val > cur.val là một 'điểm gãy' — nút đầu bị đảo là prev ở điểm gãy đầu tiên, nút bị đảo thứ hai là cur ở điểm gãy cuối; hoán giá trị hai nút đó.",
+    "reverse": "Quy nạp ngược: muốn biết hai nút nào bị đảo thì phải so sánh từng cặp kề nhau trong inorder — chính các điểm 'prev > cur' lộ ra đúng hai giá trị sai vị trí."
+   },
+   "note": "Chú giải: trường hợp hai nút đảo KHÔNG kề nhau cho hai điểm gãy (3→1 rồi 4→2 trong [3,1,4,None,None,2]); trường hợp kề nhau chỉ một điểm gãy — vẫn đúng vì second luôn được ghi lại.",
+   "approaches": [
+    {
+     "name": "Inorder bắt điểm gãy",
+     "time": "O(n)",
+     "space": "O(h)",
+     "idea": "first, second, prev; khi prev.val > n.val: nếu first None → first = prev; second = n; cuối hoán first.val ↔ second.val.",
+     "code": "def recover_tree(root):\n    first = second = prev = None\n    def dfs(n):\n        nonlocal first, second, prev\n        if not n: return\n        dfs(n.left)\n        if prev and prev.val > n.val:\n            if first is None: first = prev\n            second = n\n        prev = n\n        dfs(n.right)\n    dfs(root)\n    first.val, second.val = second.val, first.val\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        3,
+        1,
+        4,
+        null,
+        null,
+        2
+       ]
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       2,
+       1,
+       4,
+       3
+      ],
       "anim": true
      }
     },
     {
-     "name": "Inorder rồi quét",
+     "name": "Inorder bằng stack",
      "time": "O(n)",
-     "space": "O(n)",
-     "idea": "Gom toàn bộ inorder vào list rồi lấy min chênh lệch hai phần tử liên tiếp — tách rõ hai bước.",
-     "code": "def get_minimum_difference(root):\n    vals = []\n    def dfs(n):\n        if not n: return\n        dfs(n.left); vals.append(n.val); dfs(n.right)\n    dfs(root)\n    return min(vals[i+1] - vals[i] for i in range(len(vals) - 1))",
+     "space": "O(h)",
+     "idea": "Cùng logic nhưng duyệt inorder bằng stack — không đệ quy, dễ nhìn thấy thứ tự tăng.",
+     "code": "def recover_tree(root):\n    st = []; cur = root\n    first = second = prev = None\n    while cur or st:\n        while cur:\n            st.append(cur); cur = cur.left\n        cur = st.pop()\n        if prev and prev.val > cur.val:\n            if first is None: first = prev\n            second = cur\n        prev = cur\n        cur = cur.right\n    first.val, second.val = second.val, first.val\n    return root",
      "static": [
-      "Duyệt inorder cây [4,2,6,1,3]: gom dãy [1, 2, 3, 4, 6].",
-      "So các cặp liên tiếp: |2-1| = 1, |3-2| = 1, |4-3| = 1, |6-4| = 2.",
-      "min = 1 — hiệu nhỏ nhất giữa hai nút bất kỳ trong BST."
+      "Cây [1,3,null,null,2]: inorder = [3,1,2] — tại cặp (3,1) prev=3 > 1 → first = 3, second = 1.",
+      "Cặp (1,2) đúng; cặp (2, ...) hết. first = 3, second = 1.",
+      "Hoán giá trị 3 và 1 → cây [3,1,null,null,2] hợp lệ.",
+      "Cây [3,1,4,None,None,2]: inorder = [1,3,2,4] — điểm gãy duy nhất (3,2) → đổi 3↔2."
      ]
     }
    ]
@@ -126,56 +199,94 @@
    ]
   },
   {
-   "no": "98",
-   "title": "Validate Binary Search Tree",
+   "no": "450",
+   "title": "Delete Node in a BST",
    "cat": "Binary Search Tree",
    "diff": "Medium",
-   "statement": "Xem cây nhị phân có phải BST hợp lệ (trái < gốc < phải, mọi nút) không.",
-   "examples": "[2,1,3] → true · [5,1,4,null,null,3,6] → false",
-   "keyIdea": "Truyền khoảng (lo,hi) xuống; mỗi nút phải nằm trong khoảng; bản đơn giản hay mắc lỗi vì chỉ so cha-con.",
+   "statement": "Xoá nút mang key khỏi BST, giữ nguyên tính BST; nút không tồn tại thì trả nguyên cây.",
+   "examples": "root=[5,3,6,2,4,null,7], key=3 → [5,4,6,2,null,null,7] · key=5 → [6,3,7,2,4]",
+   "keyIdea": "Tìm kiếm nhị phân tới nút: không con → trả None; một con → trả con đó; hai con → thay bằng successor (trái nhất của nhánh phải) rồi xoá nó xuống dưới.",
    "thinking": {
-    "forward": "Quy nạp tiến: mỗi nút được ràng buộc bởi khoảng (lo, hi); đi sang trái thu hẹp hi xuống giá trị nút, sang phải thu hẹp lo — càng xuống càng chặt.",
-    "reverse": "Quy nạp ngược: muốn xác nhận toàn cây là BST thì mọi nút phải thoả khoảng được thừa hưởng từ tổ tiên — một nút vi phạm là đủ phủ định."
+    "forward": "Quy nạp tiến: với key < gốc, xoá trong cây trái rồi gán lại root.left = delete(root.left, key) — cây con trả về luôn hợp lệ; trường hợp hai con: copy giá trị successor rồi xoá successor ở cây con phải.",
+    "reverse": "Quy nạp ngược: muốn thay nút hai con mà giữ BST thì phải chọn nút kế tiếp nhỏ nhất lớn hơn (successor) — nó nằm sâu nhất bên trái của nhánh phải, chắc chắn không có con trái nên việc xoá nó quay về trường hợp đơn giản."
    },
-   "note": "Chú giải: lỗi kinh điển là chỉ so nút con với nút cha — vd cây [5,1,4,null,null,3,6] có 3 nằm bên phải 1 nhưng nhỏ hơn 5 (gốc) nên không hợp lệ; phải truyền cả khoảng.",
+   "note": "Chú giải: với key=5 (xóa gốc 2 con): successor = 6 (trái nhất của nhánh phải 6-7); gán root.val = 6 rồi xoá 6 khỏi nhánh phải → [6,3,7,2,4] ✓; successor không có con trái nên xoá dễ.",
    "approaches": [
     {
-     "name": "Truyền khoảng [lo,hi]",
-     "time": "O(n)",
-     "space": "O(h)",
-     "idea": "dfs(n, lo, hi): nếu n.val ≤ lo hoặc ≥ hi → False; kiểm tra con trái với (lo, n.val), con phải (n.val, hi).",
-     "code": "def is_valid_bst(root):\n    def dfs(n, lo, hi):\n        if not n: return True\n        if not (lo < n.val < hi): return False\n        return dfs(n.left, lo, n.val) and dfs(n.right, n.val, hi)\n    return dfs(root, -float('inf'), float('inf'))",
+     "name": "Successor + đệ quy",
+     "time": "O(h)",
+     "space": "O(h) stack",
+     "idea": "So key với root.val; gặp nút: 0 con → None; 1 con → con đó; 2 con → succ = min của right, thay giá trị, delete(succ) ở right.",
+     "code": "def delete_node(root, key):\n    if not root: return None\n    if key < root.val:\n        root.left = delete_node(root.left, key)\n    elif key > root.val:\n        root.right = delete_node(root.right, key)\n    else:\n        if not root.left: return root.right\n        if not root.right: return root.left\n        succ = root.right\n        while succ.left: succ = succ.left\n        root.val = succ.val\n        root.right = delete_node(root.right, succ.val)\n    return root",
      "tcex": {
       "input": {
        "root": [
         5,
-        1,
+        3,
+        6,
+        2,
         4,
         null,
-        null,
-        3,
-        6
-       ]
+        7
+       ],
+       "key": 5
       },
       "kind": "tree",
       "display": "root",
       "param_kinds": {
        "root": "tree"
       },
-      "expected": false,
+      "expected": [
+       6,
+       3,
+       7,
+       2,
+       4
+      ],
       "anim": true
      }
     },
     {
-     "name": "Inorder tăng dần",
+     "name": "Predecessor (đối xứng)",
+     "time": "O(h)",
+     "space": "O(h) stack",
+     "idea": "Thay bằng predecessor — nút lớn nhất NHỎ HƠN key (phải nhất của nhánh trái) — kết quả BST không đổi về hình dạng tổng thể.",
+     "code": "def delete_node(root, key):\n    if not root: return None\n    if key < root.val:\n        root.left = delete_node(root.left, key)\n    elif key > root.val:\n        root.right = delete_node(root.right, key)\n    else:\n        if not root.left or not root.right:\n            return root.left or root.right\n        pred = root.left\n        while pred.right: pred = pred.right\n        root.val = pred.val\n        root.left = delete_node(root.left, pred.val)\n    return root",
+     "static": [
+      "key=3 trong [5,3,6,2,4,None,7]: nút 3 có hai con (2 và 4).",
+      "predecessor = 2 (phải nhất của nhánh trái).",
+      "Gán root.val = 2; xoá 2 khỏi nhánh trái → cây [5,2,6,None,4,None,7].",
+      "Kiểm tra: inorder [2,4,5,6,7] tăng — BST hợp lệ (khác cây successor chút hình dạng)."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "530",
+   "title": "Minimum Absolute Difference in BST",
+   "cat": "Binary Search Tree",
+   "diff": "Easy",
+   "statement": "Tìm hiệu tuyệt đối nhỏ nhất giữa hai nút bất kỳ trong BST (giá trị không trùng).",
+   "examples": "[4,2,6,1,3] → 1 · [1,0,48,null,null,12,49] → 1",
+   "keyIdea": "Trong BST, hiệu nhỏ nhất luôn giữa hai nút kề nhau trong inorder.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt inorder cho dãy tăng dần; hiệu nhỏ nhất giữa mọi cặp nút bất kỳ chính là hiệu nhỏ nhất giữa hai phần tử liên tiếp của dãy đó.",
+    "reverse": "Quy nạp ngược: muốn kết luận hiệu nhỏ nhất thì phải so các cặp kề trong inorder — nếu bỏ sót một cặp kề, có thể bỏ lỡ đáp án."
+   },
+   "note": "Chú giải: nhờ tính chất BST (inorder tăng nghiêm ngặt), bài toán 'min chênh lệch mọi cặp' rút về 'min chênh lệch hai phần tử liên tiếp' — dãy có thứ tự nên không cần so O(n²).",
+   "approaches": [
+    {
+     "name": "Inorder theo dõi prev",
      "time": "O(n)",
      "space": "O(h)",
-     "idea": "BST ⇔ inorder là dãy tăng nghiêm ngặt.",
-     "code": "def is_valid_bst(root):\n    prev = -float('inf')\n    def dfs(n):\n        nonlocal prev\n        if not n: return True\n        if not dfs(n.left): return False\n        if n.val <= prev: return False\n        prev = n.val\n        return dfs(n.right)\n    return dfs(root)",
+     "idea": "Duyệt inorder; giữ prev; cập nhật diff = min(diff, val−prev).",
+     "code": "def get_minimum_difference(root):\n    prev = None; best = 10**9\n    def dfs(n):\n        nonlocal prev, best\n        if not n: return\n        dfs(n.left)\n        if prev is not None: best = min(best, n.val - prev)\n        prev = n.val\n        dfs(n.right)\n    dfs(root)\n    return best",
      "tcex": {
       "input": {
        "root": [
+        4,
         2,
+        6,
         1,
         3
        ]
@@ -185,7 +296,217 @@
       "param_kinds": {
        "root": "tree"
       },
+      "expected": 1,
+      "anim": true
+     }
+    },
+    {
+     "name": "Inorder rồi quét",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Gom toàn bộ inorder vào list rồi lấy min chênh lệch hai phần tử liên tiếp — tách rõ hai bước.",
+     "code": "def get_minimum_difference(root):\n    vals = []\n    def dfs(n):\n        if not n: return\n        dfs(n.left); vals.append(n.val); dfs(n.right)\n    dfs(root)\n    return min(vals[i+1] - vals[i] for i in range(len(vals) - 1))",
+     "static": [
+      "Duyệt inorder cây [4,2,6,1,3]: gom dãy [1, 2, 3, 4, 6].",
+      "So các cặp liên tiếp: |2-1| = 1, |3-2| = 1, |4-3| = 1, |6-4| = 2.",
+      "min = 1 — hiệu nhỏ nhất giữa hai nút bất kỳ trong BST."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "653",
+   "title": "Two Sum IV - Input is a BST",
+   "cat": "Binary Search Tree",
+   "diff": "Easy",
+   "statement": "Có hai nút trong BST có tổng đúng k không?",
+   "examples": "root=[5,3,6,2,4,null,7], k=9 → true (5+4) · k=28 → false",
+   "keyIdea": "Duyệt cây, kiểm tra bù k − val trong set; hoặc inorder → hai con trỏ như mảng sắp.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt từng nút (BFS/DFS); với mỗi val kiểm tra k − val đã gặp — nếu có là cặp thoả mãn; thêm val vào set rồi đi tiếp.",
+    "reverse": "Quy nạp ngược: muốn biết cặp nào thoả mãn mà không cần so O(n²) thì phải tra nhanh 'bù' — set cho tra O(1); hoặc tận dụng inorder (dãy tăng) cho hai con trỏ."
+   },
+   "note": "Chú giải: vì set chỉ chứa nút ĐÃ ĐI QUA, mỗi cặp được xét đúng một lần — với k=9: 5 cần 4, 3 cần 6, 2 cần 7 — khi tới nút 4 thì 5 có trong set → true.",
+   "approaches": [
+    {
+     "name": "Duyệt cây + set bù",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "BFS/DFS; với nút n: nếu k − n.val trong seen → True; thêm n.val vào seen.",
+     "code": "def find_target(root, k):\n    seen = set()\n    st = [root]\n    while st:\n        n = st.pop()\n        if k - n.val in seen: return True\n        seen.add(n.val)\n        if n.left: st.append(n.left)\n        if n.right: st.append(n.right)\n    return False",
+     "tcex": {
+      "input": {
+       "root": [
+        5,
+        3,
+        6,
+        2,
+        4,
+        null,
+        7
+       ],
+       "k": 9
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
       "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Inorder + hai con trỏ",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Gom inorder (dãy tăng) rồi lo, hi thu hẹp như bài Two Sum trên mảng sắp.",
+     "code": "def find_target(root, k):\n    vals = []\n    def dfs(n):\n        if not n: return\n        dfs(n.left)\n        vals.append(n.val)\n        dfs(n.right)\n    dfs(root)\n    lo, hi = 0, len(vals) - 1\n    while lo < hi:\n        s = vals[lo] + vals[hi]\n        if s == k: return True\n        if s < k: lo += 1\n        else: hi -= 1\n    return False",
+     "static": [
+      "Inorder của [5,3,6,2,4,None,7] → vals = [2,3,4,5,6,7].",
+      "lo = 2, hi = 7: s = 9 == k → True.",
+      "Với k = 28: s luôn < 28 nên lo chạy hết → False.",
+      "Nhờ dãy tăng, hai con trỏ không bỏ sót cặp nào."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "700",
+   "title": "Search in a Binary Search Tree",
+   "cat": "Binary Search Tree",
+   "diff": "Easy",
+   "statement": "Tìm nút có giá trị val trong BST; không có thì trả None.",
+   "examples": "root=[4,2,7,1,3], val=2 → [2,1,3] · val=5 → None",
+   "keyIdea": "Nhảy nhánh theo so sánh: val < root.val → trái, ngược lại phải — mỗi bước loại nửa cây.",
+   "thinking": {
+    "forward": "Quy nạp tiến: tại mỗi nút, val nhỏ hơn thì chỉ có thể nằm ở cây trái — bỏ cả cây phải; mỗi bước giảm nửa không gian tìm kiếm.",
+    "reverse": "Quy nạp ngược: muốn chắc chắn val không có thì phải duyệt tới None — con đường rẽ chính là bằng chứng: nút bỏ qua đều sai hướng theo tính chất BST."
+   },
+   "note": "Chú giải: với val=2: 2 < 4 → nhánh trái; 2 == 2 → trả cây [2,1,3]; val=5: 5 > 4 → nhánh phải; 5 > 7 → None ✓.",
+   "approaches": [
+    {
+     "name": "Vòng lặp rẽ nhánh",
+     "time": "O(h)",
+     "space": "O(1)",
+     "idea": "cur = root; while cur và val khác: cur = cur.left nếu val nhỏ hơn, ngược lại cur.right.",
+     "code": "def search_bst(root, val):\n    cur = root\n    while cur and cur.val != val:\n        cur = cur.left if val < cur.val else cur.right\n    return cur",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        7,
+        1,
+        3
+       ],
+       "val": 2
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       2,
+       1,
+       3
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Đệ quy",
+     "time": "O(h)",
+     "space": "O(h) stack",
+     "idea": "root None → None; val == root.val → root; val < → search left, else right.",
+     "code": "def search_bst(root, val):\n    if not root: return None\n    if root.val == val: return root\n    if val < root.val: return search_bst(root.left, val)\n    return search_bst(root.right, val)",
+     "static": [
+      "Tìm val = 5 trong [4,2,7,1,3]: 4 → 5 > 4 sang phải.",
+      "Nút 7: 5 < 7 sang trái; 7.left = None → trả None.",
+      "Tìm val = 2: 2 < 4 sang trái; 2 == 2 → trả nút 2 (cây [2,1,3]).",
+      "Mỗi bước loại nửa cây → O(h)."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "701",
+   "title": "Insert into a Binary Search Tree",
+   "cat": "Binary Search Tree",
+   "diff": "Medium",
+   "statement": "Chèn val vào BST sao cho vẫn là BST (chỉ cần 1 vị trí hợp lệ duy nhất khi cây không có trùng).",
+   "examples": "root=[4,2,7,1,3], val=5 → [4,2,7,1,3,5] · root=[], val=5 → [5]",
+   "keyIdea": "Đi xuống theo so sánh; tới chỗ None — nút mới ở đó; nút mới luôn là LÁ.",
+   "thinking": {
+    "forward": "Quy nạp tiến: val so với gốc để chọn nhánh; khi gặp None là vị trí duy nhất dành cho val (cây không trùng); nút mới không con — bất biến BST giữ nguyên.",
+    "reverse": "Quy nạp ngược: muốn chèn không phá BST thì mọi cha con trên đường đi vẫn thoả — đường rẽ theo so sánh chính là nơi duy nhất có thể đặt val."
+   },
+   "note": "Chú giải: val=5: 5 > 4 → phải; 5 < 7 → trái; 7.left None → treo 5 vào — kết quả [4,2,7,1,3,5]; cây rỗng trả nút đơn [5].",
+   "approaches": [
+    {
+     "name": "Vòng lặp tìm chỗ trống",
+     "time": "O(h)",
+     "space": "O(1)",
+     "idea": "cur rẽ nhánh; khi gặp con None của hướng đúng → gán nút mới vào chỗ đó, break.",
+     "code": "def insert_into_bst(root, val):\n    if not root: return TreeNode(val)\n    cur = root\n    while True:\n        if val < cur.val:\n            if cur.left: cur = cur.left\n            else: cur.left = TreeNode(val); break\n        else:\n            if cur.right: cur = cur.right\n            else: cur.right = TreeNode(val); break\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        7,
+        1,
+        3
+       ],
+       "val": 5
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       4,
+       2,
+       7,
+       1,
+       3,
+       5
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Đệ quy",
+     "time": "O(h)",
+     "space": "O(h) stack",
+     "idea": "if not root: return TreeNode(val); val < root.val → root.left = insert(...); else root.right = insert(...); return root.",
+     "code": "def insert_into_bst(root, val):\n    if not root: return TreeNode(val)\n    if val < root.val:\n        root.left = insert_into_bst(root.left, val)\n    else:\n        root.right = insert_into_bst(root.right, val)\n    return root",
+     "tcex": {
+      "input": {
+       "root": [
+        4,
+        2,
+        7,
+        1,
+        3
+       ],
+       "val": 5
+      },
+      "kind": "tree",
+      "display": "root",
+      "param_kinds": {
+       "root": "tree"
+      },
+      "expected": [
+       4,
+       2,
+       7,
+       1,
+       3,
+       5
+      ],
       "anim": true
      }
     }

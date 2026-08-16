@@ -1,286 +1,1176 @@
 {
-  "desc": "Đồ thị: DFS/BFS tô màu, phát hiện chu trình, topo sort. Chuyển dữ liệu thành danh sách kề rồi áp mẫu duyệt.",
-  "problems": [
+ "desc": "Đồ thị: DFS/BFS tô màu, phát hiện chu trình, topo sort. Chuyển dữ liệu thành danh sách kề rồi áp mẫu duyệt.",
+ "problems": [
+  {
+   "no": "127",
+   "title": "Word Ladder",
+   "cat": "Graph BFS",
+   "diff": "Hard",
+   "done": true,
+   "statement": "Biến đổi beginWord thành endWord, mỗi bước đổi 1 ký tự thành từ hợp lệ trong wordList. Số từ trung gian tối thiểu.",
+   "examples": "begin='hit', end='cog', wordList=['hot','dot','dog','lot','log','cog'] → 5",
+   "keyIdea": "BFS tìm đường ngắn: đổi 1 ký tự, kiểm tra trong từ điển. Cải tiến nhóm các từ theo wildcard để tạo cạnh nhanh.",
+   "thinking": {
+    "forward": "Quy nạp tiến: từ một từ, mọi biến thể 1 ký tự là hàng xóm — lan toả theo lớp BFS tới khi chạm endWord.",
+    "reverse": "Quy nạp ngược: để biết cạnh giữa hai từ, nhóm chúng qua pattern chứa * — hai từ chung pattern thì kề nhau; BFS hai chiều rút ngắn vùng tìm."
+   },
+   "note": "Chú giải: Số bước trả về là số từ trên chuỗi (beginWord tính 1), khác với 433; wildcard giúp liệt kê hàng xóm mà không phải so n² cặp từ.",
+   "approaches": [
     {
-      "no": "200", "title": "Number of Islands", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Đếm số đảo: 1 = đất, 0 = nước; đất liền kề dọc/ngang hợp thành một đảo.",
-      "examples": "[['1','1','1','1','0'],['1','1','0','1','0'],['1','1','0','0','0'],['0','0','0','0','0']] → 1",
-      "keyIdea": "Mỗi lần gặp ô '1' chưa thăm, cộng đảo và 'chìm' cả vùng bằng DFS/BFS.",
-      "thinking": {
-        "forward": "Quy nạp tiến: quét từng ô; gặp '1' thì chìm cả vùng liên thông — mỗi lần chìm đúng một đảo.",
-        "reverse": "Quy nạp ngược: đếm đảo = số lần phát hiện một '1' mới mà vùng quanh nó chưa từng bị xoá."
-      },
-      "note": "Chú giải: 'Chìm' (đổi 1→0) vừa đếm vừa đánh dấu thăm, nên không cần mảng visited riêng; phức tạp O(m·n).",
-      "approaches": [
-        {"name": "DFS chìm", "time": "O(m·n)", "space": "O(m·n)", "done": true,
-         "idea": "Với mỗi ô 1: đếm+1, rồi DFS đổi toàn vùng về 0 (hoặc visited).",
-         "code": "def num_islands(grid):\n    m, n = len(grid), len(grid[0])\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or grid[i][j] == '0': return\n        grid[i][j] = '0'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)): dfs(i+di, j+dj)\n    cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '1':\n                cnt += 1; dfs(i, j)\n    return cnt",
-         "tcex": {
-           "input": {"grid": [["1","1","0"],["1","0","1"],["0","1","1"]]},
-           "kind": "mat",
-           "display": "grid",
-           "ptrs": ["i","j","cnt"],
-           "aux": [],
-           "expected": 2,
-           "param_kinds": {"grid":"mat"},
-           "anim": true
-         }},
-        {"name": "BFS chìm", "time": "O(m·n)", "space": "O(m·n)", "done": true,
-         "idea": "Tương tự nhưng dùng hàng đợi (không đệ quy).",
-         "code": "from collections import deque\ndef num_islands(grid):\n    m, n = len(grid), len(grid[0]); cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '1':\n                cnt += 1; grid[i][j] = '0'\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):\n                        nr, nc = r+dr, c+dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == '1':\n                            grid[nr][nc] = '0'; q.append((nr, nc))\n    return cnt",
-         "tcex": {
-           "input": {"grid": [["1","1"],["0","1"]]},
-           "kind": "mat",
-           "display": "grid",
-           "ptrs": ["i","j","cnt"],
-           "aux": [],
-           "expected": 1,
-           "param_kinds": {"grid":"mat"},
-           "anim": true
-         }}
-      ]
+     "name": "BFS + wildcard adjacency",
+     "time": "O(n·L²)",
+     "space": "O(n·L)",
+     "done": true,
+     "idea": "Tạo map wildcard: 'h_t' → [hot,...]; từ mỗi từ, các pattern của nó dẫn tới từ kế.",
+     "code": "from collections import deque, defaultdict\ndef ladder_length(begin, end, words):\n    words = set(words)\n    if end not in words: return 0\n    adj = defaultdict(set)\n    for w in words:\n        for i in range(len(w)):\n            adj[w[:i]+'*'+w[i+1:]].add(w)\n    q = deque([(begin, 1)]); seen = {begin}\n    while q:\n        w, d = q.popleft()\n        for i in range(len(w)):\n            pat = w[:i]+'*'+w[i+1:]\n            for nb in adj[pat]:\n                if nb == end: return d+1\n                if nb not in seen:\n                    seen.add(nb); q.append((nb, d+1))\n    return 0",
+     "static": [
+      "Chuyển `wordList` thành tập hợp; nếu end không có trong đó → 0.",
+      "Xây map wildcard `adj`: mỗi từ đóng góp vào các pattern như 'h_t', 'ho*'.",
+      "BFS từ beginWord với độ sâu 1; `seen` tránh duyệt lại từ đã thăm.",
+      "Pop một từ, sinh mọi pattern của nó và xét từng neighbor cùng pattern.",
+      "Gặp endWord → trả độ sâu hiện tại +1; từ chưa thăm → đưa vào hàng đợi.",
+      "Hết hàng đợi không tìm thấy → trả 0 (không có đường)."
+     ]
     },
     {
-      "no": "130", "title": "Surrounded Regions", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Đổi các vùng 'O' bị bao quanh bởi 'X' thành 'X'; vùng 'O' chạm biên thì giữ.",
-      "examples": "[['X','X','X','X'],['X','O','O','X'],['X','X','O','X'],['X','O','X','X']] → vùng O giữa đổi thành X",
-      "keyIdea": "Cách ngược: tìm 'O' ở biên và tô thành 'T' (tạm giữ); rồi đổi mọi 'O' còn lại thành 'X' và 'T' về 'O'.",
-      "thinking": {
-        "forward": "Quy nạp tiến: loại bỏ dần các 'O' chạm biên trước (tô T), phần 'O' còn sót chính là vùng kín.",
-        "reverse": "Quy nạp ngược: muốn biết 'O' nào bị bao, hãy tìm 'O' nào KHÔNG bị bao (nối được tới biên) rồi lấy phần bù."
-      },
-      "note": "Chú giải: Tô 3 màu (T tạm, X kết quả, O giữ nguyên) giúp tránh ghi đè trước khi biết vùng có thoát biên hay không.",
-      "approaches": [
-        {"name": "Tô từ biên", "time": "O(m·n)", "space": "O(m·n)", "done": true,
-         "idea": "DFS từ mọi 'O' ở biên → 'T'. Quét toàn bộ: 'T'→'O', 'O'→'X'.",
-         "code": "def solve(board):\n    if not board: return\n    m, n = len(board), len(board[0])\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != 'O': return\n        board[i][j] = 'T'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)): dfs(i+di, j+dj)\n    for i in range(m):\n        for j in (0, n-1): dfs(i, j)\n    for j in range(n):\n        for i in (0, m-1): dfs(i, j)\n    for i in range(m):\n        for j in range(n):\n            if board[i][j] == 'O': board[i][j] = 'X'\n            elif board[i][j] == 'T': board[i][j] = 'O'",
-         "tcex": {
-           "input": {"board": [["X","X","X","X"],["X","O","O","X"],["X","X","O","X"],["X","O","X","X"]]},
-           "kind": "mat",
-           "display": "board",
-           "ptrs": ["i","j"],
-           "aux": [],
-           "expected": [["X","X","X","X"],["X","X","X","X"],["X","X","X","X"],["X","O","X","X"]],
-           "param_kinds": {"board":"mat"},
-           "anim": true,
-           "note": "Hàm đột biến board tại chỗ nên đáp án là board sau khi biến đổi (đỉnh ∅ nghĩa là void)."
-         }}
-      ]
-    },
-    {
-      "no": "133", "title": "Clone Graph", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Deep-copy đồ thị vô hướng (mỗi nút có val và list neighbors).",
-      "examples": "adjList=[[2,4],[1,3],[2,4],[1,3]] → deep copy tương đương",
-      "keyIdea": "DFS/BFS; ánh xạ node→clone; gắn neighbors qua ánh xạ.",
-      "thinking": {
-        "forward": "Quy nạp tiến: clone từng nút khi gặp lần đầu, ghi vào dict seen để các nút kề dùng lại đúng clone.",
-        "reverse": "Quy nạp ngược: muốn nối clone của nút hiện tại, cần có sẵn clone của từng neighbor — nên gọi đệ quy clone neighbor trước."
-      },
-      "note": "Chú giải: Bắt buộc có memo (seen) nếu không đồ thị vô hướng sẽ lặp vô hạn trên cạnh hai chiều; val lưu cả giá trị của node gốc.",
-      "approaches": [
-        {"name": "DFS có memo", "time": "O(V+E)", "space": "O(V)", "done": true,
-         "idea": "clone = {node: Node(node.val)}; đệ quy clone từng neighbor gắn vào clone.",
-         "code": "def clone_graph(node):\n    if not node: return None\n    seen = {}\n    def dfs(n):\n        if n in seen: return seen[n]\n        c = Node(n.val); seen[n] = c\n        for nb in n.neighbors: c.neighbors.append(dfs(nb))\n        return c\n    return dfs(node)",
-         "static": [
-           "Khởi tạo dict `seen` rỗng và bắt đầu DFS từ nút gốc.",
-           "Gặp nút chưa trong `seen`: tạo `Node(n.val)` mới, lưu ánh xạ nút cũ → clone.",
-           "Duyệt từng `neighbor` của nút cũ, gọi đệ quy để clone chính nhánh đó.",
-           "Gắn clone của mỗi neighbor vào danh sách `neighbors` của clone hiện tại.",
-           "Nếu nút đã nằm trong `seen`, trả ngay clone có sẵn (tránh lặp vô hạn với cạnh ngược).",
-           "Kết quả: đồ thị mới tách biệt hoàn toàn, đúng cấu trúc và giá trị val."
-         ]},
-        {"name": "BFS", "time": "O(V+E)", "space": "O(V)", "done": true,
-         "idea": "Hàng đợi clone, gắn neighbors khi pop.",
-         "code": "from collections import deque\ndef clone_graph(node):\n    if not node: return None\n    seen = {node: Node(node.val)}\n    q = deque([node])\n    while q:\n        n = q.popleft()\n        for nb in n.neighbors:\n            if nb not in seen:\n                seen[nb] = Node(nb.val); q.append(nb)\n            seen[n].neighbors.append(seen[nb])\n    return seen[node]",
-         "static": [
-           "Khởi tạo ánh xạ `seen = {node: clone gốc}` và hàng đợi chứa nút gốc.",
-           "Pop một nút `n`, với mỗi neighbor của nó: nếu neighbor chưa clone thì tạo clone và đưa vào hàng đợi.",
-           "Nối clone của neighbor vào danh sách `neighbors` của clone hiện tại.",
-           "Lặp tới khi hàng đợi rỗng — mọi nút và mọi cạnh đã được copy.",
-           "Trả về `seen[node]` là deep-copy của nút gốc."
-         ]}
-      ]
-    },
-    {
-      "no": "399", "title": "Evaluate Division", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Cho các tỉ số a/b = val; trả câu trả lời a/b cho các truy vấn, không được → -1.",
-      "examples": "equations=[['a','b'],['b','c']], values=[2.0,3.0], queries=[['a','c'],['b','a'],['a','e']] → [6.0,0.5,-1]",
-      "keyIdea": "Xây đồ thị có hướng có trọng số a→b (val) và b→a (1/val); với mỗi query, tích trọng số trên đường đi.",
-      "thinking": {
-        "forward": "Quy nạp tiến: từ a/b biết trước, mỗi cạnh trung gian nhân thêm tỉ số — bắc cầu a/c = a/b × b/c.",
-        "reverse": "Quy nạp ngược: muốn tính a/b, tìm một đường đi trong đồ thị tỉ số rồi nhân dồn; hết đường là -1."
-      },
-      "note": "Chú giải: Đồ thị có thể không liên thông; mỗi truy vấn DFS riêng nên phải reset seen. Bản Floyd tiền xử lý trả -1 cho cặp không cùng thành phần liên thông.",
-      "approaches": [
-        {"name": "DFS tìm đường", "time": "O(Q·(V+E))", "space": "O(V)", "done": true,
-         "idea": "Xây adj[a] = [(b, val)] và adj[b] = [(a, 1/val)]. Mỗi truy vấn DFS nhân giá trị.",
-         "code": "def calc_equation(equations, values, queries):\n    adj = {}\n    for (a, b), v in zip(equations, values):\n        adj.setdefault(a, []).append((b, v))\n        adj.setdefault(b, []).append((a, 1/v))\n    def dfs(a, b, prod, seen):\n        if a not in adj: return -1\n        if a == b: return prod\n        seen.add(a)\n        for nb, w in adj[a]:\n            if nb not in seen:\n                r = dfs(nb, b, prod*w, seen)\n                if r != -1: return r\n        return -1\n    res = []\n    for a, b in queries:\n        res.append(dfs(a, b, 1.0, set()) if a == b else dfs(a, b, 1.0, set()))\n    return res",
-         "static": [
-           "Xây `adj`: với mỗi (a,b,val) thêm cạnh a→b nặng val và b→a nặng 1/val.",
-           "Với mỗi truy vấn (a,b), chạy DFS từ a nhân dần trọng số dọc đường đi.",
-           "Nếu a == b: trả về 1.0 (tỉ số của một biến với chính nó).",
-           "Đánh dấu `seen` để tránh quay lại đỉnh đã duyệt trong cùng truy vấn.",
-           "Hết đường mà chưa tới b (hoặc a không tồn tại) → trả -1.0."
-         ]},
-        {"name": "Floyd–Warshall tiền xử lý", "time": "O(V³ + Q)", "space": "O(V²)", "done": true,
-         "idea": "Tiền xử lý dist[a][b] cho mọi cặp; mỗi query O(1).",
-         "code": "def calc_equation(equations, values, queries):\n    g = {}\n    for (a, b), v in zip(equations, values):\n        g.setdefault(a, {})[b] = v\n        g.setdefault(b, {})[a] = 1/v\n    nodes = list(g)\n    for k in nodes:\n        for i in nodes:\n            for j in nodes:\n                if i in g and k in g[i] and j in g[k]:\n                    g.setdefault(i, {})[j] = g[i][k] * g[k][j]\n    return [g.get(a, {}).get(b, -1.0) for a, b in queries]",
-         "static": [
-           "Khởi tạo ma trận trọng số `g`: cạnh trực tiếp a→b và nghịch đảo b→a.",
-           "Vòng lặp `k` đóng vai trò trung gian: gộp đường i→k và k→j thành i→j.",
-           "Nếu có đường i→k→j, cập nhật g[i][j] = g[i][k] × g[k][j] (tích tỉ số).",
-           "Sau khi xét mọi trung gian, mỗi truy vấn tra cứu `g[a][b]` trong O(1).",
-           "Cặp không có đường đi → trả -1.0."
-         ]}
-      ]
-    },
-    {
-      "no": "207", "title": "Course Schedule", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Cho numCourses và điều kiện tiên quyết [a,b] (học a trước b). Xem có thể xếp thứ tự học hết không (không có chu trình).",
-      "examples": "numCourses=2, [[1,0]] → true · numCourses=2, [[1,0],[0,1]] → false",
-      "keyIdea": "Bài toán = kiểm tra đồ thị có hướng có chu trình (DAG). Dùng topo sort (Kahn) hoặc trạng thái DFS.",
-      "thinking": {
-        "forward": "Quy nạp tiến: xử lý dần các môn không còn điều kiện tiên quyết (bậc vào 0); mỗi lần xử lý lại giải phóng môn tiếp theo.",
-        "reverse": "Quy nạp ngược: học hết được mọi môn khi và chỉ khi quá trình 'gỡ bậc vào' tiêu thụ đủ numCourses đỉnh — còn dư tức có chu trình."
-      },
-      "note": "Chú giải: Kahn và DFS trạng thái đều O(V+E); DFS dùng 3 màu 0/1/2 để phát hiện cạnh về nút đang duyệt (back edge).",
-      "approaches": [
-        {"name": "Kahn topo (bậc vào)", "time": "O(V+E)", "space": "O(V+E)", "done": true,
-         "idea": "indeg mỗi đỉnh; nút indeg 0 vào hàng đợi; giảm indeg của kế; nếu xử lý được đủ numCourses → không chu trình.",
-         "code": "from collections import deque\ndef can_finish(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    indeg = [0]*numCourses\n    for a, b in prerequisites:\n        adj[b].append(a); indeg[a] += 1\n    q = deque([i for i in range(numCourses) if indeg[i] == 0])\n    done = 0\n    while q:\n        u = q.popleft(); done += 1\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0: q.append(v)\n    return done == numCourses",
-         "tcex": {
-           "input": {"numCourses": 4, "prerequisites": [[1,0],[2,0],[3,1],[3,2]]},
-           "kind": "array",
-           "display": "indeg",
-           "ptrs": ["u","done"],
-           "aux": [],
-           "expected": true,
-           "param_kinds": {},
-           "anim": true
-         }},
-        {"name": "DFS trạng thái (chu trình)", "time": "O(V+E)", "space": "O(V+E)", "done": true,
-         "idea": "Tô màu: 0=chưa, 1=đang duyệt, 2=xong. Gặp nút đang duyệt → chu trình.",
-         "code": "def can_finish(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    for a, b in prerequisites: adj[b].append(a)\n    state = [0]*numCourses\n    def cyc(u):\n        if state[u] == 1: return True\n        if state[u] == 2: return False\n        state[u] = 1\n        for v in adj[u]:\n            if cyc(v): return True\n        state[u] = 2\n        return False\n    return not any(cyc(i) for i in range(numCourses))",
-         "tcex": {
-           "input": {"numCourses": 4, "prerequisites": [[1,0],[2,0],[3,1],[3,2]]},
-           "kind": "array",
-           "display": "state",
-           "ptrs": ["u"],
-           "aux": [],
-           "expected": true,
-           "param_kinds": {},
-           "anim": true
-         }}
-      ]
-    },
-    {
-      "no": "210", "title": "Course Schedule II", "cat": "Graph General", "diff": "Medium", "done": true,
-      "statement": "Trả thứ tự học hợp lệ của tất cả khoá; không thể → [].",
-      "examples": "numCourses=4, [[1,0],[2,0],[3,1],[3,2]] → [0,1,2,3] hoặc [0,2,1,3]",
-      "keyIdea": "Kahn topo sort ghi thứ tự xử lý; nếu không đủ → [].",
-      "thinking": {
-        "forward": "Quy nạp tiến: thêm dần môn đủ điều kiện vào kết quả; thứ tự ghi chính là một lịch học hợp lệ.",
-        "reverse": "Quy nạp ngược: bất kỳ môn nào xuất hiện sau trong danh sách đều phải có đủ môn trước nó đã được giải phóng."
-      },
-      "note": "Chú giải: Nếu còn đỉnh chưa xử lý (len(res) < numCourses) nghĩa là còn chu trình nên trả [] — thứ tự các lời giải có thể khác nhau tuỳ hàng đợi.",
-      "approaches": [
-        {"name": "Kahn ghi thứ tự", "time": "O(V+E)", "space": "O(V+E)", "done": true,
-         "idea": "Giống 207 nhưng gom các nút đã xử lý vào result.",
-         "code": "from collections import deque\ndef find_order(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    indeg = [0]*numCourses\n    for a, b in prerequisites:\n        adj[b].append(a); indeg[a] += 1\n    q = deque([i for i in range(numCourses) if indeg[i] == 0])\n    res = []\n    while q:\n        u = q.popleft(); res.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0: q.append(v)\n    return res if len(res) == numCourses else []",
-         "tcex": {
-           "input": {"numCourses": 4, "prerequisites": [[1,0],[2,0],[3,1],[3,2]]},
-           "kind": "array",
-           "display": "indeg",
-           "ptrs": ["u","res"],
-           "aux": [],
-           "expected": [0,1,2,3],
-           "param_kinds": {},
-           "anim": true
-         }}
-      ]
-    },
-    {
-      "no": "909", "title": "Snakes and Ladders", "cat": "Graph BFS", "diff": "Medium", "done": true,
-      "statement": "Bàn cờ n×n đánh số xoắn; xúc xắc 1..6; rắn/thang dịch chuyển. Tìm số lượt tối thiểu tới ô n².",
-      "examples": "board matrix → 4 (ví dụ đề)",
-      "keyIdea": "Chuyển ma trận thành mảng 1D theo luật đánh số xoắn; BFS tính số bước tới đích.",
-      "thinking": {
-        "forward": "Quy nạp tiến: từ ô hiện tại, mỗi lần gieo xúc xắc mở ra tối đa 6 ô mới; đích đến gần nhất theo lớp BFS.",
-        "reverse": "Quy nạp ngược: để tới ô n², ô ngay trước nó phải cách đích đúng một bước xúc xắc — BFS đếm ngược số lớp từ đó."
-      },
-      "note": "Chú giải: Bàn đánh số xoắn ốc — cần hàm idx chuyển số ô sang (r,c); rắn/thang buộc nhảy thẳng nên có thể vượt số bước tưởng tượng, dùng seen để tránh vô hạn.",
-      "approaches": [
-        {"name": "BFS trạng thái", "time": "O(n²)", "space": "O(n²)", "done": true,
-         "idea": "Mô phỏng đánh số 1D; với mỗi ô, thử 6 bước xúc xắc; nếu land có thang/rắn thì đi thẳng; BFS tìm shortest.",
-         "code": "from collections import deque\ndef snakes_and_ladders(board):\n    n = len(board)\n    def idx(s):\n        r, c = divmod(s-1, n)\n        if r % 2: c = n-1-c\n        return n-1-r, c\n    q = deque([(1, 0)]); seen = {1}\n    while q:\n        s, d = q.popleft()\n        if s == n*n: return d\n        for k in range(1, 7):\n            nxt = s + k\n            if nxt > n*n: continue\n            r, c = idx(nxt)\n            if board[r][c] != -1: nxt = board[r][c]\n            if nxt not in seen:\n                seen.add(nxt); q.append((nxt, d+1))\n    return -1",
-         "static": [
-           "Bàn cờ đánh số xoắn ốc: dùng hàm `idx` chuyển ô s thành (r,c) trong ma trận.",
-           "BFS bắt đầu từ ô 1 với 0 lượt; `seen` chứa các ô đã thăm.",
-           "Pop ô hiện tại; nếu chính là ô n² thì trả về số lượt đã đi.",
-           "Với mỗi k=1..6, tính ô đích `nxt`; nếu ô đó có thang/rắn thì nhảy thẳng tới ô đích theo board.",
-           "Ô chưa thăm → đưa vào hàng đợi với số lượt +1.",
-           "Hết hàng đợi mà chưa tới n² → không đến được, trả -1."
-         ]}
-      ]
-    },
-    {
-      "no": "433", "title": "Minimum Genetic Mutation", "cat": "Graph BFS", "diff": "Medium", "done": true,
-      "statement": "Biến đổi startGene thành endGene, mỗi bước đổi 1 ký tự thành (A,C,G,T) và phải nằm trong bank. Số bước tối thiểu.",
-      "examples": "start='AACCGGTT', end='AAACGGTA', bank=[...] → 2",
-      "keyIdea": "Mỗi gene là nút, nối với gene khác đúng 1 ký tự; BFS tìm khoảng cách.",
-      "thinking": {
-        "forward": "Quy nạp tiến: từ start, thử đổi từng vị trí ra 4 ký tự — mỗi đột biến hợp lệ là một lớp BFS tiếp theo.",
-        "reverse": "Quy nạp ngược: số bước tối thiểu = độ dài đường đi ngắn nhất trên đồ thị gene, BFS luôn cho lớp đầu tiên chạm end."
-      },
-      "note": "Chú giải: end phải nằm trong bank nếu không trả -1 ngay; không đếm start trong bank, chỉ dùng nó làm điểm xuất phát.",
-      "approaches": [
-        {"name": "BFS trên bank", "time": "O(bank²·L)", "space": "O(bank)", "done": true,
-         "idea": "Khởi đầu từ start; mỗi bước thử đổi từng ký tự; nếu gene mới trong bank và chưa thăm → enqueue.",
-         "code": "from collections import deque\ndef min_mutation(start, end, bank):\n    bank = set(bank)\n    if end not in bank: return -1\n    q = deque([(start, 0)]); seen = {start}\n    while q:\n        g, d = q.popleft()\n        if g == end: return d\n        for i in range(len(g)):\n            for ch in 'ACGT':\n                ng = g[:i] + ch + g[i+1:]\n                if ng in bank and ng not in seen:\n                    seen.add(ng); q.append((ng, d+1))\n    return -1",
-         "static": [
-           "Chuyển `bank` thành tập hợp để kiểm tra O(1); nếu end không trong bank → -1.",
-           "BFS từ startGene với số bước 0; `seen` chứa các gene đã thăm.",
-           "Pop một gene: nếu chính là endGene thì trả số bước hiện tại.",
-           "Với từng vị trí i và từng ký tự A/C/G/T, tạo gene mới đổi đúng 1 chỗ.",
-           "Gene mới hợp lệ (trong bank, chưa thăm) → đưa vào hàng đợi với số bước +1.",
-           "Hết hàng đợi không gặp end → không biến đổi được, trả -1."
-         ]}
-      ]
-    },
-    {
-      "no": "127", "title": "Word Ladder", "cat": "Graph BFS", "diff": "Hard", "done": true,
-      "statement": "Biến đổi beginWord thành endWord, mỗi bước đổi 1 ký tự thành từ hợp lệ trong wordList. Số từ trung gian tối thiểu.",
-      "examples": "begin='hit', end='cog', wordList=['hot','dot','dog','lot','log','cog'] → 5",
-      "keyIdea": "BFS tìm đường ngắn: đổi 1 ký tự, kiểm tra trong từ điển. Cải tiến nhóm các từ theo wildcard để tạo cạnh nhanh.",
-      "thinking": {
-        "forward": "Quy nạp tiến: từ một từ, mọi biến thể 1 ký tự là hàng xóm — lan toả theo lớp BFS tới khi chạm endWord.",
-        "reverse": "Quy nạp ngược: để biết cạnh giữa hai từ, nhóm chúng qua pattern chứa * — hai từ chung pattern thì kề nhau; BFS hai chiều rút ngắn vùng tìm."
-      },
-      "note": "Chú giải: Số bước trả về là số từ trên chuỗi (beginWord tính 1), khác với 433; wildcard giúp liệt kê hàng xóm mà không phải so n² cặp từ.",
-      "approaches": [
-        {"name": "BFS + wildcard adjacency", "time": "O(n·L²)", "space": "O(n·L)", "done": true,
-         "idea": "Tạo map wildcard: 'h_t' → [hot,...]; từ mỗi từ, các pattern của nó dẫn tới từ kế.",
-         "code": "from collections import deque, defaultdict\ndef ladder_length(begin, end, words):\n    words = set(words)\n    if end not in words: return 0\n    adj = defaultdict(set)\n    for w in words:\n        for i in range(len(w)):\n            adj[w[:i]+'*'+w[i+1:]].add(w)\n    q = deque([(begin, 1)]); seen = {begin}\n    while q:\n        w, d = q.popleft()\n        for i in range(len(w)):\n            pat = w[:i]+'*'+w[i+1:]\n            for nb in adj[pat]:\n                if nb == end: return d+1\n                if nb not in seen:\n                    seen.add(nb); q.append((nb, d+1))\n    return 0",
-         "static": [
-           "Chuyển `wordList` thành tập hợp; nếu end không có trong đó → 0.",
-           "Xây map wildcard `adj`: mỗi từ đóng góp vào các pattern như 'h_t', 'ho*'.",
-           "BFS từ beginWord với độ sâu 1; `seen` tránh duyệt lại từ đã thăm.",
-           "Pop một từ, sinh mọi pattern của nó và xét từng neighbor cùng pattern.",
-           "Gặp endWord → trả độ sâu hiện tại +1; từ chưa thăm → đưa vào hàng đợi.",
-           "Hết hàng đợi không tìm thấy → trả 0 (không có đường)."
-         ]},
-        {"name": "BFS hai chiều", "time": "O(n·L²)", "space": "O(n·L)", "done": true,
-         "idea": "Vươn từ cả hai đầu, gặp giao nhau giữa hai frontier thì dừng — nhanh hơn cho đồ thị lớn.",
-         "code": "def ladder_length(begin, end, words):\n    words = set(words)\n    if end not in words: return 0\n    def expand(front, other, words):\n        nxt = set()\n        for w in front:\n            for i in range(len(w)):\n                for c in 'abcdefghijklmnopqrstuvwxyz':\n                    t = w[:i] + c + w[i+1:]\n                    if t in words:\n                        if t in other: return None, True\n                        nxt.add(t)\n        return nxt - front, False\n    f1, f2 = {begin}, {end}\n    d = 1\n    while f1 and f2:\n        if len(f1) > len(f2): f1, f2 = f2, f1\n        nw, done = expand(f1, f2, words)\n        if done: return d+1\n        f1 = nw; d += 1\n    return 0",
-         "static": [
-           "Chuyển `wordList` thành tập hợp; nếu end không có → 0.",
-           "Hai frontier: `f1` chứa beginWord, `f2` chứa endWord; đếm bước d=1.",
-           "Mỗi vòng, mở rộng frontier nhỏ hơn để giảm không gian tìm.",
-           "Mở rộng: đổi từng ký tự ra 26 chữ cái; nếu từ mới nằm trong wordList thì thêm vào tập kế.",
-           "Nếu từ mới thuộc frontier đối diện → hai đầu gặp nhau, trả d+1.",
-           "Lặp tới khi một frontier rỗng → không có đường, trả 0."
-         ]}
-      ]
+     "name": "BFS hai chiều",
+     "time": "O(n·L²)",
+     "space": "O(n·L)",
+     "done": true,
+     "idea": "Vươn từ cả hai đầu, gặp giao nhau giữa hai frontier thì dừng — nhanh hơn cho đồ thị lớn.",
+     "code": "def ladder_length(begin, end, words):\n    words = set(words)\n    if end not in words: return 0\n    def expand(front, other, words):\n        nxt = set()\n        for w in front:\n            for i in range(len(w)):\n                for c in 'abcdefghijklmnopqrstuvwxyz':\n                    t = w[:i] + c + w[i+1:]\n                    if t in words:\n                        if t in other: return None, True\n                        nxt.add(t)\n        return nxt - front, False\n    f1, f2 = {begin}, {end}\n    d = 1\n    while f1 and f2:\n        if len(f1) > len(f2): f1, f2 = f2, f1\n        nw, done = expand(f1, f2, words)\n        if done: return d+1\n        f1 = nw; d += 1\n    return 0",
+     "static": [
+      "Chuyển `wordList` thành tập hợp; nếu end không có → 0.",
+      "Hai frontier: `f1` chứa beginWord, `f2` chứa endWord; đếm bước d=1.",
+      "Mỗi vòng, mở rộng frontier nhỏ hơn để giảm không gian tìm.",
+      "Mở rộng: đổi từng ký tự ra 26 chữ cái; nếu từ mới nằm trong wordList thì thêm vào tập kế.",
+      "Nếu từ mới thuộc frontier đối diện → hai đầu gặp nhau, trả d+1.",
+      "Lặp tới khi một frontier rỗng → không có đường, trả 0."
+     ]
     }
-  ]
+   ]
+  },
+  {
+   "no": "130",
+   "title": "Surrounded Regions",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Đổi các vùng 'O' bị bao quanh bởi 'X' thành 'X'; vùng 'O' chạm biên thì giữ.",
+   "examples": "[['X','X','X','X'],['X','O','O','X'],['X','X','O','X'],['X','O','X','X']] → vùng O giữa đổi thành X",
+   "keyIdea": "Cách ngược: tìm 'O' ở biên và tô thành 'T' (tạm giữ); rồi đổi mọi 'O' còn lại thành 'X' và 'T' về 'O'.",
+   "thinking": {
+    "forward": "Quy nạp tiến: loại bỏ dần các 'O' chạm biên trước (tô T), phần 'O' còn sót chính là vùng kín.",
+    "reverse": "Quy nạp ngược: muốn biết 'O' nào bị bao, hãy tìm 'O' nào KHÔNG bị bao (nối được tới biên) rồi lấy phần bù."
+   },
+   "note": "Chú giải: Tô 3 màu (T tạm, X kết quả, O giữ nguyên) giúp tránh ghi đè trước khi biết vùng có thoát biên hay không.",
+   "approaches": [
+    {
+     "name": "Tô từ biên",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "DFS từ mọi 'O' ở biên → 'T'. Quét toàn bộ: 'T'→'O', 'O'→'X'.",
+     "code": "def solve(board):\n    if not board: return\n    m, n = len(board), len(board[0])\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or board[i][j] != 'O': return\n        board[i][j] = 'T'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)): dfs(i+di, j+dj)\n    for i in range(m):\n        for j in (0, n-1): dfs(i, j)\n    for j in range(n):\n        for i in (0, m-1): dfs(i, j)\n    for i in range(m):\n        for j in range(n):\n            if board[i][j] == 'O': board[i][j] = 'X'\n            elif board[i][j] == 'T': board[i][j] = 'O'",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         "X",
+         "X",
+         "X",
+         "X"
+        ],
+        [
+         "X",
+         "O",
+         "O",
+         "X"
+        ],
+        [
+         "X",
+         "X",
+         "O",
+         "X"
+        ],
+        [
+         "X",
+         "O",
+         "X",
+         "X"
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "aux": [],
+      "expected": [
+       [
+        "X",
+        "X",
+        "X",
+        "X"
+       ],
+       [
+        "X",
+        "X",
+        "X",
+        "X"
+       ],
+       [
+        "X",
+        "X",
+        "X",
+        "X"
+       ],
+       [
+        "X",
+        "O",
+        "X",
+        "X"
+       ]
+      ],
+      "param_kinds": {
+       "board": "mat"
+      },
+      "anim": true,
+      "note": "Hàm đột biến board tại chỗ nên đáp án là board sau khi biến đổi (đỉnh ∅ nghĩa là void)."
+     }
+    }
+   ]
+  },
+  {
+   "no": "133",
+   "title": "Clone Graph",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Deep-copy đồ thị vô hướng (mỗi nút có val và list neighbors).",
+   "examples": "adjList=[[2,4],[1,3],[2,4],[1,3]] → deep copy tương đương",
+   "keyIdea": "DFS/BFS; ánh xạ node→clone; gắn neighbors qua ánh xạ.",
+   "thinking": {
+    "forward": "Quy nạp tiến: clone từng nút khi gặp lần đầu, ghi vào dict seen để các nút kề dùng lại đúng clone.",
+    "reverse": "Quy nạp ngược: muốn nối clone của nút hiện tại, cần có sẵn clone của từng neighbor — nên gọi đệ quy clone neighbor trước."
+   },
+   "note": "Chú giải: Bắt buộc có memo (seen) nếu không đồ thị vô hướng sẽ lặp vô hạn trên cạnh hai chiều; val lưu cả giá trị của node gốc.",
+   "approaches": [
+    {
+     "name": "DFS có memo",
+     "time": "O(V+E)",
+     "space": "O(V)",
+     "done": true,
+     "idea": "clone = {node: Node(node.val)}; đệ quy clone từng neighbor gắn vào clone.",
+     "code": "def clone_graph(node):\n    if not node: return None\n    seen = {}\n    def dfs(n):\n        if n in seen: return seen[n]\n        c = Node(n.val); seen[n] = c\n        for nb in n.neighbors: c.neighbors.append(dfs(nb))\n        return c\n    return dfs(node)",
+     "static": [
+      "Khởi tạo dict `seen` rỗng và bắt đầu DFS từ nút gốc.",
+      "Gặp nút chưa trong `seen`: tạo `Node(n.val)` mới, lưu ánh xạ nút cũ → clone.",
+      "Duyệt từng `neighbor` của nút cũ, gọi đệ quy để clone chính nhánh đó.",
+      "Gắn clone của mỗi neighbor vào danh sách `neighbors` của clone hiện tại.",
+      "Nếu nút đã nằm trong `seen`, trả ngay clone có sẵn (tránh lặp vô hạn với cạnh ngược).",
+      "Kết quả: đồ thị mới tách biệt hoàn toàn, đúng cấu trúc và giá trị val."
+     ]
+    },
+    {
+     "name": "BFS",
+     "time": "O(V+E)",
+     "space": "O(V)",
+     "done": true,
+     "idea": "Hàng đợi clone, gắn neighbors khi pop.",
+     "code": "from collections import deque\ndef clone_graph(node):\n    if not node: return None\n    seen = {node: Node(node.val)}\n    q = deque([node])\n    while q:\n        n = q.popleft()\n        for nb in n.neighbors:\n            if nb not in seen:\n                seen[nb] = Node(nb.val); q.append(nb)\n            seen[n].neighbors.append(seen[nb])\n    return seen[node]",
+     "static": [
+      "Khởi tạo ánh xạ `seen = {node: clone gốc}` và hàng đợi chứa nút gốc.",
+      "Pop một nút `n`, với mỗi neighbor của nó: nếu neighbor chưa clone thì tạo clone và đưa vào hàng đợi.",
+      "Nối clone của neighbor vào danh sách `neighbors` của clone hiện tại.",
+      "Lặp tới khi hàng đợi rỗng — mọi nút và mọi cạnh đã được copy.",
+      "Trả về `seen[node]` là deep-copy của nút gốc."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "200",
+   "title": "Number of Islands",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Đếm số đảo: 1 = đất, 0 = nước; đất liền kề dọc/ngang hợp thành một đảo.",
+   "examples": "[['1','1','1','1','0'],['1','1','0','1','0'],['1','1','0','0','0'],['0','0','0','0','0']] → 1",
+   "keyIdea": "Mỗi lần gặp ô '1' chưa thăm, cộng đảo và 'chìm' cả vùng bằng DFS/BFS.",
+   "thinking": {
+    "forward": "Quy nạp tiến: quét từng ô; gặp '1' thì chìm cả vùng liên thông — mỗi lần chìm đúng một đảo.",
+    "reverse": "Quy nạp ngược: đếm đảo = số lần phát hiện một '1' mới mà vùng quanh nó chưa từng bị xoá."
+   },
+   "note": "Chú giải: 'Chìm' (đổi 1→0) vừa đếm vừa đánh dấu thăm, nên không cần mảng visited riêng; phức tạp O(m·n).",
+   "approaches": [
+    {
+     "name": "DFS chìm",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Với mỗi ô 1: đếm+1, rồi DFS đổi toàn vùng về 0 (hoặc visited).",
+     "code": "def num_islands(grid):\n    m, n = len(grid), len(grid[0])\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or grid[i][j] == '0': return\n        grid[i][j] = '0'\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)): dfs(i+di, j+dj)\n    cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '1':\n                cnt += 1; dfs(i, j)\n    return cnt",
+     "tcex": {
+      "input": {
+       "grid": [
+        [
+         "1",
+         "1",
+         "0"
+        ],
+        [
+         "1",
+         "0",
+         "1"
+        ],
+        [
+         "0",
+         "1",
+         "1"
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "grid",
+      "ptrs": [
+       "i",
+       "j",
+       "cnt"
+      ],
+      "aux": [],
+      "expected": 2,
+      "param_kinds": {
+       "grid": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "BFS chìm",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Tương tự nhưng dùng hàng đợi (không đệ quy).",
+     "code": "from collections import deque\ndef num_islands(grid):\n    m, n = len(grid), len(grid[0]); cnt = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == '1':\n                cnt += 1; grid[i][j] = '0'\n                q = deque([(i, j)])\n                while q:\n                    r, c = q.popleft()\n                    for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):\n                        nr, nc = r+dr, c+dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == '1':\n                            grid[nr][nc] = '0'; q.append((nr, nc))\n    return cnt",
+     "tcex": {
+      "input": {
+       "grid": [
+        [
+         "1",
+         "1"
+        ],
+        [
+         "0",
+         "1"
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "grid",
+      "ptrs": [
+       "i",
+       "j",
+       "cnt"
+      ],
+      "aux": [],
+      "expected": 1,
+      "param_kinds": {
+       "grid": "mat"
+      },
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "207",
+   "title": "Course Schedule",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Cho numCourses và điều kiện tiên quyết [a,b] (học a trước b). Xem có thể xếp thứ tự học hết không (không có chu trình).",
+   "examples": "numCourses=2, [[1,0]] → true · numCourses=2, [[1,0],[0,1]] → false",
+   "keyIdea": "Bài toán = kiểm tra đồ thị có hướng có chu trình (DAG). Dùng topo sort (Kahn) hoặc trạng thái DFS.",
+   "thinking": {
+    "forward": "Quy nạp tiến: xử lý dần các môn không còn điều kiện tiên quyết (bậc vào 0); mỗi lần xử lý lại giải phóng môn tiếp theo.",
+    "reverse": "Quy nạp ngược: học hết được mọi môn khi và chỉ khi quá trình 'gỡ bậc vào' tiêu thụ đủ numCourses đỉnh — còn dư tức có chu trình."
+   },
+   "note": "Chú giải: Kahn và DFS trạng thái đều O(V+E); DFS dùng 3 màu 0/1/2 để phát hiện cạnh về nút đang duyệt (back edge).",
+   "approaches": [
+    {
+     "name": "Kahn topo (bậc vào)",
+     "time": "O(V+E)",
+     "space": "O(V+E)",
+     "done": true,
+     "idea": "indeg mỗi đỉnh; nút indeg 0 vào hàng đợi; giảm indeg của kế; nếu xử lý được đủ numCourses → không chu trình.",
+     "code": "from collections import deque\ndef can_finish(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    indeg = [0]*numCourses\n    for a, b in prerequisites:\n        adj[b].append(a); indeg[a] += 1\n    q = deque([i for i in range(numCourses) if indeg[i] == 0])\n    done = 0\n    while q:\n        u = q.popleft(); done += 1\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0: q.append(v)\n    return done == numCourses",
+     "tcex": {
+      "input": {
+       "numCourses": 4,
+       "prerequisites": [
+        [
+         1,
+         0
+        ],
+        [
+         2,
+         0
+        ],
+        [
+         3,
+         1
+        ],
+        [
+         3,
+         2
+        ]
+       ]
+      },
+      "kind": "array",
+      "display": "indeg",
+      "ptrs": [
+       "u",
+       "done"
+      ],
+      "aux": [],
+      "expected": true,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS trạng thái (chu trình)",
+     "time": "O(V+E)",
+     "space": "O(V+E)",
+     "done": true,
+     "idea": "Tô màu: 0=chưa, 1=đang duyệt, 2=xong. Gặp nút đang duyệt → chu trình.",
+     "code": "def can_finish(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    for a, b in prerequisites: adj[b].append(a)\n    state = [0]*numCourses\n    def cyc(u):\n        if state[u] == 1: return True\n        if state[u] == 2: return False\n        state[u] = 1\n        for v in adj[u]:\n            if cyc(v): return True\n        state[u] = 2\n        return False\n    return not any(cyc(i) for i in range(numCourses))",
+     "tcex": {
+      "input": {
+       "numCourses": 4,
+       "prerequisites": [
+        [
+         1,
+         0
+        ],
+        [
+         2,
+         0
+        ],
+        [
+         3,
+         1
+        ],
+        [
+         3,
+         2
+        ]
+       ]
+      },
+      "kind": "array",
+      "display": "state",
+      "ptrs": [
+       "u"
+      ],
+      "aux": [],
+      "expected": true,
+      "param_kinds": {},
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "210",
+   "title": "Course Schedule II",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Trả thứ tự học hợp lệ của tất cả khoá; không thể → [].",
+   "examples": "numCourses=4, [[1,0],[2,0],[3,1],[3,2]] → [0,1,2,3] hoặc [0,2,1,3]",
+   "keyIdea": "Kahn topo sort ghi thứ tự xử lý; nếu không đủ → [].",
+   "thinking": {
+    "forward": "Quy nạp tiến: thêm dần môn đủ điều kiện vào kết quả; thứ tự ghi chính là một lịch học hợp lệ.",
+    "reverse": "Quy nạp ngược: bất kỳ môn nào xuất hiện sau trong danh sách đều phải có đủ môn trước nó đã được giải phóng."
+   },
+   "note": "Chú giải: Nếu còn đỉnh chưa xử lý (len(res) < numCourses) nghĩa là còn chu trình nên trả [] — thứ tự các lời giải có thể khác nhau tuỳ hàng đợi.",
+   "approaches": [
+    {
+     "name": "Kahn ghi thứ tự",
+     "time": "O(V+E)",
+     "space": "O(V+E)",
+     "done": true,
+     "idea": "Giống 207 nhưng gom các nút đã xử lý vào result.",
+     "code": "from collections import deque\ndef find_order(numCourses, prerequisites):\n    adj = [[] for _ in range(numCourses)]\n    indeg = [0]*numCourses\n    for a, b in prerequisites:\n        adj[b].append(a); indeg[a] += 1\n    q = deque([i for i in range(numCourses) if indeg[i] == 0])\n    res = []\n    while q:\n        u = q.popleft(); res.append(u)\n        for v in adj[u]:\n            indeg[v] -= 1\n            if indeg[v] == 0: q.append(v)\n    return res if len(res) == numCourses else []",
+     "tcex": {
+      "input": {
+       "numCourses": 4,
+       "prerequisites": [
+        [
+         1,
+         0
+        ],
+        [
+         2,
+         0
+        ],
+        [
+         3,
+         1
+        ],
+        [
+         3,
+         2
+        ]
+       ]
+      },
+      "kind": "array",
+      "display": "indeg",
+      "ptrs": [
+       "u",
+       "res"
+      ],
+      "aux": [],
+      "expected": [
+       0,
+       1,
+       2,
+       3
+      ],
+      "param_kinds": {},
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "399",
+   "title": "Evaluate Division",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Cho các tỉ số a/b = val; trả câu trả lời a/b cho các truy vấn, không được → -1.",
+   "examples": "equations=[['a','b'],['b','c']], values=[2.0,3.0], queries=[['a','c'],['b','a'],['a','e']] → [6.0,0.5,-1]",
+   "keyIdea": "Xây đồ thị có hướng có trọng số a→b (val) và b→a (1/val); với mỗi query, tích trọng số trên đường đi.",
+   "thinking": {
+    "forward": "Quy nạp tiến: từ a/b biết trước, mỗi cạnh trung gian nhân thêm tỉ số — bắc cầu a/c = a/b × b/c.",
+    "reverse": "Quy nạp ngược: muốn tính a/b, tìm một đường đi trong đồ thị tỉ số rồi nhân dồn; hết đường là -1."
+   },
+   "note": "Chú giải: Đồ thị có thể không liên thông; mỗi truy vấn DFS riêng nên phải reset seen. Bản Floyd tiền xử lý trả -1 cho cặp không cùng thành phần liên thông.",
+   "approaches": [
+    {
+     "name": "DFS tìm đường",
+     "time": "O(Q·(V+E))",
+     "space": "O(V)",
+     "done": true,
+     "idea": "Xây adj[a] = [(b, val)] và adj[b] = [(a, 1/val)]. Mỗi truy vấn DFS nhân giá trị.",
+     "code": "def calc_equation(equations, values, queries):\n    adj = {}\n    for (a, b), v in zip(equations, values):\n        adj.setdefault(a, []).append((b, v))\n        adj.setdefault(b, []).append((a, 1/v))\n    def dfs(a, b, prod, seen):\n        if a not in adj: return -1\n        if a == b: return prod\n        seen.add(a)\n        for nb, w in adj[a]:\n            if nb not in seen:\n                r = dfs(nb, b, prod*w, seen)\n                if r != -1: return r\n        return -1\n    res = []\n    for a, b in queries:\n        res.append(dfs(a, b, 1.0, set()) if a == b else dfs(a, b, 1.0, set()))\n    return res",
+     "static": [
+      "Xây `adj`: với mỗi (a,b,val) thêm cạnh a→b nặng val và b→a nặng 1/val.",
+      "Với mỗi truy vấn (a,b), chạy DFS từ a nhân dần trọng số dọc đường đi.",
+      "Nếu a == b: trả về 1.0 (tỉ số của một biến với chính nó).",
+      "Đánh dấu `seen` để tránh quay lại đỉnh đã duyệt trong cùng truy vấn.",
+      "Hết đường mà chưa tới b (hoặc a không tồn tại) → trả -1.0."
+     ]
+    },
+    {
+     "name": "Floyd–Warshall tiền xử lý",
+     "time": "O(V³ + Q)",
+     "space": "O(V²)",
+     "done": true,
+     "idea": "Tiền xử lý dist[a][b] cho mọi cặp; mỗi query O(1).",
+     "code": "def calc_equation(equations, values, queries):\n    g = {}\n    for (a, b), v in zip(equations, values):\n        g.setdefault(a, {})[b] = v\n        g.setdefault(b, {})[a] = 1/v\n    nodes = list(g)\n    for k in nodes:\n        for i in nodes:\n            for j in nodes:\n                if i in g and k in g[i] and j in g[k]:\n                    g.setdefault(i, {})[j] = g[i][k] * g[k][j]\n    return [g.get(a, {}).get(b, -1.0) for a, b in queries]",
+     "static": [
+      "Khởi tạo ma trận trọng số `g`: cạnh trực tiếp a→b và nghịch đảo b→a.",
+      "Vòng lặp `k` đóng vai trò trung gian: gộp đường i→k và k→j thành i→j.",
+      "Nếu có đường i→k→j, cập nhật g[i][j] = g[i][k] × g[k][j] (tích tỉ số).",
+      "Sau khi xét mọi trung gian, mỗi truy vấn tra cứu `g[a][b]` trong O(1).",
+      "Cặp không có đường đi → trả -1.0."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "417",
+   "title": "Pacific Atlantic Water Flow",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Ma trận heights (độ cao ô). Nước chảy từ cao về thấp/ngang nhau (4 hướng). Trả các ô [r,c] vừa chảy tới Thái Bình Dương (biên trái/trên) vừa chảy tới Đại Tây Dương (biên phải/dưới).",
+   "examples": "heights=[[1,2,2,3,5],[3,2,3,4,4],[2,4,5,3,1],[6,7,1,4,5],[5,1,1,2,4]] → [[0,4],[1,3],[1,4],[2,2],[3,0],[3,1],[4,0]]",
+   "keyIdea": "Làm ngược: DFS từ bờ của mỗi đại dương lan vào những ô có độ cao ≥ ô hiện tại; ô nằm trong cả hai vùng lan là đáp án.",
+   "thinking": {
+    "forward": "Quy nạp tiến: từ mỗi ô, mô phỏng nước chảy xuống tới bờ — đắt O((mn)²). Làm ngược tiết kiệm hơn hẳn.",
+    "reverse": "Quy nạp ngược: muốn biết ô nào chảy được tới biển, hãy đảo chiều: đi từ biển ngược dòng (ô mới cao hơn) — ô vừa được pac vừa được atl duyệt tới sẽ có đường tới cả hai đại dương."
+   },
+   "note": "Chú giải: điều kiện ngược dòng là heights[ni][nj] >= heights[i][j] (độ cao mới phải ≥ độ cao cũ) vì nước chỉ chảy xuống/ngang. Hai mảng pac/atl đánh dấu riêng biệt; ô thoả cả hai thì thêm vào kết quả.",
+   "approaches": [
+    {
+     "name": "DFS ngược từ hai bờ",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "DFS từ bờ Thái Bình Dương đánh dấu pac, từ bờ Đại Tây Dương đánh dấu atl; lan vào ô có độ cao ≥. Giao hai tập là đáp án.",
+     "code": "def pacific_atlantic_flow(heights):\n    if not heights: return []\n    m, n = len(heights), len(heights[0])\n    pac = [[False]*n for _ in range(m)]\n    atl = [[False]*n for _ in range(m)]\n    def dfs(i, j, ocean):\n        if ocean[i][j]: return\n        ocean[i][j] = True\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i+di, j+dj\n            if 0 <= ni < m and 0 <= nj < n and heights[ni][nj] >= heights[i][j]:\n                dfs(ni, nj, ocean)\n    for i in range(m):\n        dfs(i, 0, pac); dfs(i, n-1, atl)\n    for j in range(n):\n        dfs(0, j, pac); dfs(m-1, j, atl)\n    res = []\n    for i in range(m):\n        for j in range(n):\n            if pac[i][j] and atl[i][j]:\n                res.append([i, j])\n    return res",
+     "tcex": {
+      "input": {
+       "heights": [
+        [
+         1,
+         2,
+         2,
+         3,
+         5
+        ],
+        [
+         3,
+         2,
+         3,
+         4,
+         4
+        ],
+        [
+         2,
+         4,
+         5,
+         3,
+         1
+        ],
+        [
+         6,
+         7,
+         1,
+         4,
+         5
+        ],
+        [
+         5,
+         1,
+         1,
+         2,
+         4
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "heights",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "aux": [],
+      "expected": [
+       [
+        0,
+        4
+       ],
+       [
+        1,
+        3
+       ],
+       [
+        1,
+        4
+       ],
+       [
+        2,
+        2
+       ],
+       [
+        3,
+        0
+       ],
+       [
+        3,
+        1
+       ],
+       [
+        4,
+        0
+       ]
+      ],
+      "param_kinds": {
+       "heights": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS từ mỗi ô (đảo hướng)",
+     "time": "O((m·n)²)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Với mỗi ô, DFS xuôi dòng xem chạm bờ nào. Đơn giản dễ hiểu nhưng chậm vì duyệt lại nhiều lần.",
+     "code": "def pacific_atlantic(heights):\n    if not heights: return []\n    m, n = len(heights), len(heights[0])\n    def reach(i, j):\n        seen = [[False]*n for _ in range(m)]\n        hit = [False, False]\n        def dfs(r, c):\n            if seen[r][c]: return\n            seen[r][c] = True\n            if r == 0 or c == 0: hit[0] = True\n            if r == m-1 or c == n-1: hit[1] = True\n            for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n                ni, nj = r+di, c+dj\n                if 0 <= ni < m and 0 <= nj < n and heights[ni][nj] <= heights[r][c]:\n                    dfs(ni, nj)\n        dfs(i, j)\n        return hit[0] and hit[1]\n    res = []\n    for i in range(m):\n        for j in range(n):\n            if reach(i, j): res.append([i, j])\n    return res",
+     "static": [
+      "Với heights 5×5 ví dụ, mỗi ô gọi reach(i,j) riêng.",
+      "reach duyệt DFS xuôi dòng (độ cao mới ≤ độ cao cũ) để xem có chạm bờ nào không.",
+      "hit[0]=True khi tới biên trái/trên (Thái Bình Dương), hit[1]=True khi tới biên phải/dưới (Đại Tây Dương).",
+      "Ô (0,4) có height 5: ngay sát bờ Thái Bình, chảy xuống hàng dưới (4,4)=4, (3,3)=4, (3,2)=1... chạm cả hai bờ → thoả.",
+      "Ô (0,0) height 1 nằm ngay bờ pac nhưng chỉ có atl khi chảy hết đường (0,0)→...→ biên phải/dưới; kiểm tra thực tế không thoả cả hai → không thêm.",
+      "Độ phức tạp O((mn)²) vì mỗi ô duyệt lại cả lưới — chậm nhưng dễ hình dung."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "433",
+   "title": "Minimum Genetic Mutation",
+   "cat": "Graph BFS",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Biến đổi startGene thành endGene, mỗi bước đổi 1 ký tự thành (A,C,G,T) và phải nằm trong bank. Số bước tối thiểu.",
+   "examples": "start='AACCGGTT', end='AAACGGTA', bank=[...] → 2",
+   "keyIdea": "Mỗi gene là nút, nối với gene khác đúng 1 ký tự; BFS tìm khoảng cách.",
+   "thinking": {
+    "forward": "Quy nạp tiến: từ start, thử đổi từng vị trí ra 4 ký tự — mỗi đột biến hợp lệ là một lớp BFS tiếp theo.",
+    "reverse": "Quy nạp ngược: số bước tối thiểu = độ dài đường đi ngắn nhất trên đồ thị gene, BFS luôn cho lớp đầu tiên chạm end."
+   },
+   "note": "Chú giải: end phải nằm trong bank nếu không trả -1 ngay; không đếm start trong bank, chỉ dùng nó làm điểm xuất phát.",
+   "approaches": [
+    {
+     "name": "BFS trên bank",
+     "time": "O(bank²·L)",
+     "space": "O(bank)",
+     "done": true,
+     "idea": "Khởi đầu từ start; mỗi bước thử đổi từng ký tự; nếu gene mới trong bank và chưa thăm → enqueue.",
+     "code": "from collections import deque\ndef min_mutation(start, end, bank):\n    bank = set(bank)\n    if end not in bank: return -1\n    q = deque([(start, 0)]); seen = {start}\n    while q:\n        g, d = q.popleft()\n        if g == end: return d\n        for i in range(len(g)):\n            for ch in 'ACGT':\n                ng = g[:i] + ch + g[i+1:]\n                if ng in bank and ng not in seen:\n                    seen.add(ng); q.append((ng, d+1))\n    return -1",
+     "static": [
+      "Chuyển `bank` thành tập hợp để kiểm tra O(1); nếu end không trong bank → -1.",
+      "BFS từ startGene với số bước 0; `seen` chứa các gene đã thăm.",
+      "Pop một gene: nếu chính là endGene thì trả số bước hiện tại.",
+      "Với từng vị trí i và từng ký tự A/C/G/T, tạo gene mới đổi đúng 1 chỗ.",
+      "Gene mới hợp lệ (trong bank, chưa thăm) → đưa vào hàng đợi với số bước +1.",
+      "Hết hàng đợi không gặp end → không biến đổi được, trả -1."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "542",
+   "title": "01 Matrix",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Ma trận nhị phân mat, trả ma trận cùng kích thước trong đó mỗi ô là khoảng cách Manhattan tới ô 0 gần nhất.",
+   "examples": "mat=[[0,0,0],[0,1,0],[1,1,1]] → [[0,0,0],[0,1,0],[1,2,1]]",
+   "keyIdea": "BFS đa nguồn: đưa toàn bộ ô 0 vào hàng đợi với khoảng cách 0, lan từng lớp — ô 1 đầu tiên được thăm có khoảng cách đúng bằng số lớp.",
+   "thinking": {
+    "forward": "Quy nạp tiến: khoảng cách của ô = 1 + khoảng cách của ô láng giềng gần 0 nhất đã biết — tính dần bằng BFS lớp.",
+    "reverse": "Quy nạp ngược: thay vì mỗi ô 1 tìm 0 gần nhất, hãy đảo lại để các ô 0 'toả ra' — BFS đa nguồn cho khoảng cách đúng trong O(m·n)."
+   },
+   "note": "Chú giải: BFS đa nguồn chạy được nhờ tính chất láng giềng; mảng dist khởi tạo -1 để phân biệt chưa thăm với khoảng cách 0 của ô 0.",
+   "approaches": [
+    {
+     "name": "BFS đa nguồn",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Push mọi ô 0 với dist=0; BFS lan ra, ô chưa thăm nhận dist = dist[ô nguồn] + 1.",
+     "code": "def update_matrix(mat):\n    from collections import deque\n    m, n = len(mat), len(mat[0])\n    q = deque(); dist = [[-1]*n for _ in range(m)]\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] == 0:\n                dist[i][j] = 0; q.append((i, j))\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i+di, j+dj\n            if 0 <= ni < m and 0 <= nj < n and dist[ni][nj] == -1:\n                dist[ni][nj] = dist[i][j] + 1; q.append((ni, nj))\n    return dist",
+     "tcex": {
+      "input": {
+       "mat": [
+        [
+         0,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "mat",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "aux": [],
+      "expected": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        0,
+        1,
+        0
+       ],
+       [
+        1,
+        2,
+        1
+       ]
+      ],
+      "param_kinds": {
+       "mat": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "DP hai lượt quét",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Lượt 1 từ trên trái xuống: dist ô 1 = 1 + min(trên, trái). Lượt 2 từ dưới phải lên: dist = min(dist, 1 + dưới, 1 + phải).",
+     "code": "def update_matrix_dp(mat):\n    m, n = len(mat), len(mat[0])\n    INF = m + n\n    for i in range(m):\n        for j in range(n):\n            if mat[i][j] != 0:\n                top = mat[i-1][j] + 1 if i > 0 else INF\n                left = mat[i][j-1] + 1 if j > 0 else INF\n                mat[i][j] = min(INF, top, left)\n    for i in range(m-1, -1, -1):\n        for j in range(n-1, -1, -1):\n            if mat[i][j] != 0:\n                bot = mat[i+1][j] + 1 if i < m-1 else INF\n                right = mat[i][j+1] + 1 if j < n-1 else INF\n                mat[i][j] = min(mat[i][j], bot, right)\n    return mat",
+     "static": [
+      "Với mat=[[0,0,0],[0,1,0],[1,1,1]], m=n=3 nên INF=6.",
+      "Lượt 1: ô (0,0),(0,1),(0,2) đều là 0 giữ nguyên; ô (1,1)=1 lấy min(trên=mat[0][1]+1=1, trái=mat[1][0]+1=1)=1.",
+      "Ô (2,0)=1 lấy min(trên=mat[1][0]+1=1)=1; ô (2,1)=1 lấy min(trên=mat[1][1]+1=2)=2; ô (2,2)=1 lấy min(trên=mat[1][2]+1=1)=1.",
+      "Lượt 2: ô (2,2)=1 giữ 1 (dưới/phải hết biên); ô (2,1)=2 xét dưới biên, phải=mat[2][2]+1=2 → giữ 2; ô (1,1)=1 giữ 1.",
+      "Kết quả [[0,0,0],[0,1,0],[1,2,1]] khớp đáp án — hai lượt bổ sung thông tin từ hai hướng chéo."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "547",
+   "title": "Number of Provinces",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Ma trận kề isConnected (n thành phố). Một tỉnh là nhóm thành phố liên thông trực tiếp/gián tiếp. Đếm số tỉnh.",
+   "examples": "isConnected=[[1,1,0],[1,1,0],[0,0,1]] → 2",
+   "keyIdea": "Đếm thành phần liên thông: với mỗi thành phố chưa thăm, DFS/BFS cả cụm của nó và cộng 1; hoặc dùng Union-Find gộp cạnh rồi đếm gốc.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi lần bắt đầu một DFS từ đỉnh chưa thăm nghĩa là phát hiện thêm một cụm mới — số lần khởi đầu chính là số tỉnh.",
+    "reverse": "Quy nạp ngược: nếu coi mỗi tỉnh là một gốc cây, thì số tỉnh = số đỉnh trừ đi số lần gộp hai cụm khác gốc lại làm một."
+   },
+   "note": "Chú giải: Ma trận đối xứng và đường chéo luôn bằng 1 (thành phố tự liên thông). Union-Find gộp cạnh i,j chỉ khi i<j để tránh làm hai lần.",
+   "approaches": [
+    {
+     "name": "Union-Find gộp cạnh",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "par[i]=i ban đầu; mỗi cạnh (i,j) với i<j nếu khác gốc thì gộp và giảm biến đếm comps. Kết thúc comps là số tỉnh.",
+     "code": "def find_circle_num(isConnected):\n    n = len(isConnected)\n    par = list(range(n))\n    def find(x):\n        while par[x] != x:\n            par[x] = par[par[x]]; x = par[x]\n        return x\n    comps = n\n    for i in range(n):\n        for j in range(i+1, n):\n            if isConnected[i][j]:\n                ri, rj = find(i), find(j)\n                if ri != rj:\n                    par[rj] = ri; comps -= 1\n    return comps",
+     "tcex": {
+      "input": {
+       "isConnected": [
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "isConnected",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "aux": [],
+      "expected": 2,
+      "param_kinds": {
+       "isConnected": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "DFS đếm cụm",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "Duyệt từng thành phố; chưa thăm thì tăng đếm và DFS tô cả cụm.",
+     "code": "def find_circle_num_dfs(isConnected):\n    n = len(isConnected)\n    seen = [False]*n\n    def dfs(u):\n        seen[u] = True\n        for v in range(n):\n            if isConnected[u][v] and not seen[v]:\n                dfs(v)\n    cnt = 0\n    for u in range(n):\n        if not seen[u]:\n            cnt += 1; dfs(u)\n    return cnt",
+     "static": [
+      "Với isConnected=[[1,1,0],[1,1,0],[0,0,1]], bắt đầu từ u=0: đánh dấu seen[0]=True.",
+      "Cạnh (0,1)=1 và 1 chưa thăm → dfs(1); từ 1 thấy lại (1,0)=1 nhưng 0 đã thăm, (1,2)=0 → dừng.",
+      "Cụm đầu {0,1} → cnt=1.",
+      "u=1 đã thăm bỏ qua; u=2 chưa thăm → cnt=2, dfs(2) không có cạnh tới ai.",
+      "Kết quả 2 — đúng 2 tỉnh {0,1} và {2}."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "695",
+   "title": "Max Area of Island",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Lưới grid nhị phân; đảo là vùng 1 liên thông dọc/ngang. Diện tích đảo = số ô 1. Tìm đảo lớn nhất (0 nếu không có).",
+   "examples": "grid=[[0,0,1,0,0],[0,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]] → 5",
+   "keyIdea": "Mỗi khi gặp ô 1 chưa thăm, tính diện tích cả đảo bằng DFS (cộng 1 mỗi ô) và cập nhật max.",
+   "thinking": {
+    "forward": "Quy nạp tiến: diện tích đảo tại ô (i,j) = 1 + tổng diện tích 4 hướng chưa thăm — đệ quy tính rồi chìm để tránh đếm lại.",
+    "reverse": "Quy nạp ngược: muốn đảo lớn nhất, phải biết diện tích từng đảo; mỗi đảo là một vùng liên thông nên quét toàn bộ rồi lấy max."
+   },
+   "note": "Chú giải: 'Chìm' (gán grid[i][j]=0) sau khi đếm giúp mỗi ô đúng một lần; đệ quy trả về 0 khi ra biên hoặc gặp nước.",
+   "approaches": [
+    {
+     "name": "DFS chìm tính diện tích",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "dfs(i,j) trả 0 nếu hết biên/nước; ngược lại chìm ô và trả 1 + 4 hướng. Quét toàn bộ cập nhật best.",
+     "code": "def max_area_of_island(grid):\n    m, n = len(grid), len(grid[0])\n    best = 0\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or grid[i][j] == 0:\n            return 0\n        grid[i][j] = 0\n        return 1 + dfs(i+1,j) + dfs(i-1,j) + dfs(i,j+1) + dfs(i,j-1)\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 1:\n                best = max(best, dfs(i, j))\n    return best",
+     "tcex": {
+      "input": {
+       "grid": [
+        [
+         0,
+         0,
+         1,
+         0,
+         0
+        ],
+        [
+         0,
+         1,
+         1,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1,
+         0,
+         0
+        ],
+        [
+         0,
+         0,
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "grid",
+      "ptrs": [
+       "i",
+       "j",
+       "best"
+      ],
+      "aux": [],
+      "expected": 5,
+      "param_kinds": {
+       "grid": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "BFS đếm từng đảo",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Không đệ quy: mỗi đảo dùng deque lan BFS, mỗi ô pop tăng area, chìm ô khi đưa vào hàng đợi.",
+     "code": "def max_area_of_island_bfs(grid):\n    from collections import deque\n    m, n = len(grid), len(grid[0]); best = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 1:\n                q = deque([(i, j)]); grid[i][j] = 0; area = 0\n                while q:\n                    r, c = q.popleft(); area += 1\n                    for dr, dc in ((1,0),(-1,0),(0,1),(0,-1)):\n                        nr, nc = r+dr, c+dc\n                        if 0 <= nr < m and 0 <= nc < n and grid[nr][nc] == 1:\n                            grid[nr][nc] = 0; q.append((nr, nc))\n                best = max(best, area)\n    return best",
+     "static": [
+      "Với grid ví dụ, quét tới ô (0,2)=1 đầu tiên: khởi tạo deque=[(0,2)], area=0, chìm (0,2)→0.",
+      "Pop (0,2): area=1; lan tới (0,1)=0 (nước), (1,2)=1 → chìm, đưa vào deque.",
+      "Pop (1,2): area=2; lan (1,1)=1, (1,3)=1, (2,2)=1 → chìm cả ba, area=5.",
+      "Pop lần lượt (1,1),(1,3),(2,2): mỗi pop area tăng tới 5; không còn ô 1 kề → đảo xong, best=5.",
+      "Quét tiếp: các ô còn lại đều 0; kết quả 5."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "733",
+   "title": "Flood Fill",
+   "cat": "Graph General",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Tô màu vùng liên thông chứa (sr,sc) — mọi ô cùng màu với image[sr][sc] và nối được tới nó — thành màu color.",
+   "examples": "image=[[1,1,1],[1,1,0],[1,0,1]], sr=1, sc=1, color=2 → [[2,2,2],[2,2,0],[2,0,1]]",
+   "keyIdea": "DFS/BFS từ (sr,sc): chỉ lan sang ô cùng màu cũ, tô màu mới; giữ nguyên phần còn lại.",
+   "thinking": {
+    "forward": "Quy nạp tiến: ô gốc đổi màu, rồi mỗi ô láng giềng cùng màu cũ lại là một bài toán con tô vùng của riêng nó.",
+    "reverse": "Quy nạp ngược: vùng tô đúng là thành phần liên thông của ô (sr,sc) trong đồ thị các ô cùng màu cũ — DFS đi qua toàn bộ cụm này."
+   },
+   "note": "Chú giải: Nếu màu mới trùng màu cũ phải trả về ngay image không đổi — nếu không DFS lặp vô hạn. Nhớ lưu old trước khi tô.",
+   "approaches": [
+    {
+     "name": "DFS tô màu",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Lưu old=image[sr][sc]; dfs(i,j): nếu ra biên hoặc khác old thì dừng; tô color rồi lan 4 hướng.",
+     "code": "def flood_fill(image, sr, sc, color):\n    m, n = len(image), len(image[0])\n    old = image[sr][sc]\n    if old == color: return image\n    def dfs(i, j):\n        if i < 0 or i >= m or j < 0 or j >= n or image[i][j] != old:\n            return\n        image[i][j] = color\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            dfs(i+di, j+dj)\n    dfs(sr, sc)\n    return image",
+     "tcex": {
+      "input": {
+       "image": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         0,
+         1
+        ]
+       ],
+       "sr": 1,
+       "sc": 1,
+       "color": 2
+      },
+      "kind": "mat",
+      "display": "image",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "aux": [],
+      "expected": [
+       [
+        2,
+        2,
+        2
+       ],
+       [
+        2,
+        2,
+        0
+       ],
+       [
+        2,
+        0,
+        1
+       ]
+      ],
+      "param_kinds": {
+       "image": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "BFS tô màu",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Hàng đợi thay cho ngăn xếp đệ quy: pop ô, tô, đẩy láng giềng cùng màu cũ.",
+     "code": "def flood_fill_bfs(image, sr, sc, color):\n    from collections import deque\n    m, n = len(image), len(image[0])\n    old = image[sr][sc]\n    if old == color: return image\n    q = deque([(sr, sc)]); image[sr][sc] = color\n    while q:\n        i, j = q.popleft()\n        for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n            ni, nj = i+di, j+dj\n            if 0 <= ni < m and 0 <= nj < n and image[ni][nj] == old:\n                image[ni][nj] = color; q.append((ni, nj))\n    return image",
+     "static": [
+      "Với image 3×3, old=image[1][1]=1, color=2, khác nhau nên tiếp tục.",
+      "Khởi tạo deque=[(1,1)], tô (1,1)→2.",
+      "Pop (1,1): lan (0,1)=1→2, (2,1)=0 bỏ qua, (1,0)=1→2, (1,2)=0 bỏ qua; deque=[(0,1),(1,0)].",
+      "Pop (0,1): lan (0,0)=1→2, (0,2)=1→2; pop (1,0): lan (0,0) đã 2, (2,0)=1→2.",
+      "Pop (0,0),(0,2),(2,0): các láng giềng đều đã là 2 hoặc 0 → dừng.",
+      "Kết quả [[2,2,2],[2,2,0],[2,0,1]] — ô (2,2)=1 tách biệt nên giữ nguyên."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "743",
+   "title": "Network Delay Time",
+   "cat": "Graph General",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Mạng n nút (1..n), tín hiệu khởi hành từ nút k. Cạnh [u,v,w] gửi u→v mất w đơn vị. Thời gian để MỌI nút nhận tín hiệu (không tới được → -1).",
+   "examples": "times=[[2,1,1],[2,3,1],[3,4,1]], n=4, k=2 → 2",
+   "keyIdea": "Bài toán đường đi ngắn nhất từ một nguồn — Dijkstra. dist[v] = thời gian sớm nhất tới v; đáp án là max(dist) (nếu có nút INF → -1).",
+   "thinking": {
+    "forward": "Quy nạp tiến: khi pop nút u có dist nhỏ nhất chắc chắn, cập nhật dist[v] cho các cạnh u→v — bất biến dist[u] không còn thay đổi.",
+    "reverse": "Quy nạp ngược: thời gian mọi nút nhận tín hiệu = nút nhận muộn nhất — vậy cần đường đi ngắn nhất tới từng nút, lấy giá trị lớn nhất trong các dist."
+   },
+   "note": "Chú giải: Đồ thị có thể không liên thông → nút nào còn INF nghĩa là không nhận được tín hiệu, trả -1. Phủ định ở heap tạo max-heap cho Floyd bản tham khảo.",
+   "approaches": [
+    {
+     "name": "Dijkstra bằng heap",
+     "time": "O((V+E)·log V)",
+     "space": "O(V+E)",
+     "done": true,
+     "idea": "dist[k]=0; mỗi bước pop nút có dist nhỏ nhất, thư giãn các cạnh đi ra; cuối max(dist[1:]) là đáp án.",
+     "code": "def network_delay_time(times, n, k):\n    import heapq\n    adj = [[] for _ in range(n+1)]\n    for u, v, w in times:\n        adj[u].append((v, w))\n    INF = 10**9\n    dist = [INF]*(n+1); dist[k] = 0\n    h = [(0, k)]\n    while h:\n        d, u = heapq.heappop(h)\n        if d > dist[u]: continue\n        for v, w in adj[u]:\n            if dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n                heapq.heappush(h, (dist[v], v))\n    mx = max(dist[1:])\n    return -1 if mx == INF else mx",
+     "tcex": {
+      "input": {
+       "times": [
+        [
+         2,
+         1,
+         1
+        ],
+        [
+         2,
+         3,
+         1
+        ],
+        [
+         3,
+         4,
+         1
+        ]
+       ],
+       "n": 4,
+       "k": 2
+      },
+      "kind": "none",
+      "display": null,
+      "ptrs": [
+       "u",
+       "d"
+      ],
+      "aux": [],
+      "expected": 2,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Floyd–Warshall",
+     "time": "O(n³)",
+     "space": "O(n²)",
+     "done": true,
+     "idea": "Tiền xử lý dist mọi cặp bằng n vòng trung gian p; hàng k cho đáp án.",
+     "code": "def network_delay_time_floyd(times, n, k):\n    INF = 10**9\n    dist = [[INF]*n for _ in range(n)]\n    for i in range(n): dist[i][i] = 0\n    for u, v, w in times:\n        dist[u-1][v-1] = w\n    for p in range(n):\n        for i in range(n):\n            for j in range(n):\n                if dist[i][p] + dist[p][j] < dist[i][j]:\n                    dist[i][j] = dist[i][p] + dist[p][j]\n    mx = max(dist[k-1])\n    return -1 if mx == INF else mx",
+     "static": [
+      "Với times=[[2,1,1],[2,3,1],[3,4,1]], n=4, khởi tạo dist[i][i]=0 và dist[1][0]=1, dist[1][2]=1, dist[2][3]=1 (chỉ số 0-based).",
+      "Vòng trung gian p: xét từng đỉnh p làm điểm nối; ví dụ p=2 nối 2→3 giúp dist[1][3] = dist[1][2]+dist[2][3] = 1+1 = 2.",
+      "Sau đủ n vòng, dist[k-1]=dist[1] = [0, 1, 1, 2] — thời gian tới nút 1,3,4.",
+      "max = 2 (nút 4 nhận muộn nhất sau 2 đơn vị) → trả 2.",
+      "O(n³) chậm hơn Dijkstra nhưng phù hợp n nhỏ; nếu còn INF → -1."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "909",
+   "title": "Snakes and Ladders",
+   "cat": "Graph BFS",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Bàn cờ n×n đánh số xoắn; xúc xắc 1..6; rắn/thang dịch chuyển. Tìm số lượt tối thiểu tới ô n².",
+   "examples": "board matrix → 4 (ví dụ đề)",
+   "keyIdea": "Chuyển ma trận thành mảng 1D theo luật đánh số xoắn; BFS tính số bước tới đích.",
+   "thinking": {
+    "forward": "Quy nạp tiến: từ ô hiện tại, mỗi lần gieo xúc xắc mở ra tối đa 6 ô mới; đích đến gần nhất theo lớp BFS.",
+    "reverse": "Quy nạp ngược: để tới ô n², ô ngay trước nó phải cách đích đúng một bước xúc xắc — BFS đếm ngược số lớp từ đó."
+   },
+   "note": "Chú giải: Bàn đánh số xoắn ốc — cần hàm idx chuyển số ô sang (r,c); rắn/thang buộc nhảy thẳng nên có thể vượt số bước tưởng tượng, dùng seen để tránh vô hạn.",
+   "approaches": [
+    {
+     "name": "BFS trạng thái",
+     "time": "O(n²)",
+     "space": "O(n²)",
+     "done": true,
+     "idea": "Mô phỏng đánh số 1D; với mỗi ô, thử 6 bước xúc xắc; nếu land có thang/rắn thì đi thẳng; BFS tìm shortest.",
+     "code": "from collections import deque\ndef snakes_and_ladders(board):\n    n = len(board)\n    def idx(s):\n        r, c = divmod(s-1, n)\n        if r % 2: c = n-1-c\n        return n-1-r, c\n    q = deque([(1, 0)]); seen = {1}\n    while q:\n        s, d = q.popleft()\n        if s == n*n: return d\n        for k in range(1, 7):\n            nxt = s + k\n            if nxt > n*n: continue\n            r, c = idx(nxt)\n            if board[r][c] != -1: nxt = board[r][c]\n            if nxt not in seen:\n                seen.add(nxt); q.append((nxt, d+1))\n    return -1",
+     "static": [
+      "Bàn cờ đánh số xoắn ốc: dùng hàm `idx` chuyển ô s thành (r,c) trong ma trận.",
+      "BFS bắt đầu từ ô 1 với 0 lượt; `seen` chứa các ô đã thăm.",
+      "Pop ô hiện tại; nếu chính là ô n² thì trả về số lượt đã đi.",
+      "Với mỗi k=1..6, tính ô đích `nxt`; nếu ô đó có thang/rắn thì nhảy thẳng tới ô đích theo board.",
+      "Ô chưa thăm → đưa vào hàng đợi với số lượt +1.",
+      "Hết hàng đợi mà chưa tới n² → không đến được, trả -1."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "994",
+   "title": "Rotting Oranges",
+   "cat": "Graph BFS",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Lưới: 0 rỗng, 1 cam tươi, 2 cam hỏng. Mỗi phút cam hỏng làm hỏng cam tươi kề dọc/ngang. Số phút tối thiểu để mọi cam hỏng; không thể → -1.",
+   "examples": "grid=[[2,1,1],[1,1,0],[0,1,1]] → 4 · grid=[[2,1,1],[0,1,1],[1,0,1]] → -1",
+   "keyIdea": "BFS đa nguồn từ mọi cam hỏng; mỗi lớp BFS là một phút. Đếm cam tươi; nếu còn sót khi hết lớp → -1.",
+   "thinking": {
+    "forward": "Quy nạp tiến: phút thứ t, mọi ô ở lớp BFS thứ t bị hỏng — số phút = số lớp cần để phủ hết cam tươi.",
+    "reverse": "Quy nạp ngược: một ô cam tươi phải nằm gần cam hỏng nhất theo khoảng cách Manhattan ngắn nhất trong lưới rào cản — BFS đa nguồn chính là phép đo đó."
+   },
+   "note": "Chú giải: Đếm fresh từ đầu; vòng lặp `while q and fresh` tránh cộng phút thừa khi đã hỏng hết. Ô 0 không bao giờ bị hỏng nên không vào hàng đợi.",
+   "approaches": [
+    {
+     "name": "BFS đa nguồn",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Push mọi ô 2 với 0 phút; mỗi lớp lan sang ô 1 kề, fresh giảm; trả số lớp nếu fresh hết.",
+     "code": "def oranges_rotting(grid):\n    from collections import deque\n    m, n = len(grid), len(grid[0])\n    q = deque(); fresh = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2: q.append((i,j))\n            elif grid[i][j] == 1: fresh += 1\n    mins = 0\n    while q and fresh:\n        for _ in range(len(q)):\n            i, j = q.popleft()\n            for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n                ni, nj = i+di, j+dj\n                if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == 1:\n                    grid[ni][nj] = 2; fresh -= 1; q.append((ni,nj))\n        mins += 1\n    return mins if fresh == 0 else -1",
+     "tcex": {
+      "input": {
+       "grid": [
+        [
+         2,
+         1,
+         1
+        ],
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         0,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "grid",
+      "ptrs": [
+       "i",
+       "j",
+       "fresh"
+      ],
+      "aux": [],
+      "expected": 4,
+      "param_kinds": {
+       "grid": "mat"
+      },
+      "anim": true
+     }
+    },
+    {
+     "name": "BFS lớp 2 chiều",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "done": true,
+     "idea": "Lưu luôn số phút theo ô (i,j,mins) trong hàng đợi; mỗi lần lan dùng mins+1 — dễ theo dõi từng ô.",
+     "code": "def oranges_rotting_bfs_t2(grid):\n    from collections import deque\n    m, n = len(grid), len(grid[0])\n    q = deque(); fresh = 0\n    for i in range(m):\n        for j in range(n):\n            if grid[i][j] == 2: q.append((i,j))\n            elif grid[i][j] == 1: fresh += 1\n    mins = 0\n    while q and fresh:\n        for _ in range(len(q)):\n            i, j = q.popleft()\n            for di, dj in ((1,0),(-1,0),(0,1),(0,-1)):\n                ni, nj = i+di, j+dj\n                if 0 <= ni < m and 0 <= nj < n and grid[ni][nj] == 1:\n                    grid[ni][nj] = 2; fresh -= 1; q.append((ni,nj))\n        mins += 1\n    return mins if fresh == 0 else -1",
+     "static": [
+      "Với grid=[[2,1,1],[0,1,1],[1,0,1]]: cam hỏng ban đầu duy nhất tại (0,0), tổng 6 cam tươi.",
+      "Phút 1: (0,0) làm hỏng (0,1) → fresh=5, deque=[(0,1)].",
+      "Phút 2: (0,1) làm hỏng (0,2) và (1,1) → fresh=3, deque=[(0,2),(1,1)].",
+      "Phút 3: (0,2) làm hỏng (1,2); (1,1) không hỏng thêm ai (các kề đều 0 hoặc đã hỏng) → fresh=2.",
+      "Phút 4: (1,2) làm hỏng (2,2) → fresh=1, deque=[(2,2)].",
+      "Phút 5: (2,2) không hỏng được ai — cam (2,0) tách biệt bởi số 0. Hết hàng đợi mà fresh=1>0 → trả -1."
+     ]
+    }
+   ]
+  }
+ ]
 }

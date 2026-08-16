@@ -1,1047 +1,1425 @@
 {
-  "desc": "Duyệt theo lớp, xoay/vẽ bằng vị trí, và kỹ thuật lưu trạng thái tại chỗ để không tốn mảng phụ.",
-  "problems": [
+ "desc": "Duyệt theo lớp, xoay/vẽ bằng vị trí, và kỹ thuật lưu trạng thái tại chỗ để không tốn mảng phụ.",
+ "problems": [
+  {
+   "no": "36",
+   "title": "Valid Sudoku",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Kiểm tra bảng Sudoku 9×9 hợp lệ: mỗi hàng, mỗi cột, mỗi ô 3×3 đều không chứa số trùng. Ô '.' là rỗng.",
+   "examples": "Bảng hợp lệ (như đề) → true · bảng có hàng trùng → false",
+   "keyIdea": "Theo dõi số đã thấy theo 3 chiều: hàng, cột, box 3×3 — box index = (r//3)*3 + (c//3).",
+   "approaches": [
     {
-      "no": "36",
-      "title": "Valid Sudoku",
-      "cat": "Matrix",
-      "diff": "Medium",
-      "statement": "Kiểm tra bảng Sudoku 9×9 hợp lệ: mỗi hàng, mỗi cột, mỗi ô 3×3 đều không chứa số trùng. Ô '.' là rỗng.",
-      "examples": "Bảng hợp lệ (như đề) → true · bảng có hàng trùng → false",
-      "keyIdea": "Theo dõi số đã thấy theo 3 chiều: hàng, cột, box 3×3 — box index = (r//3)*3 + (c//3).",
-      "approaches": [
-        {
-          "name": "Ba bộ set",
-          "time": "O(81)",
-          "space": "O(81)",
-          "idea": "row[i], col[j], box[k]. Mỗi ô số: nếu đã trong set tương ứng → false; ngược lại thêm vào cả ba.",
-          "code": "def is_valid_sudoku(board):\n    rows = [set() for _ in range(9)]\n    cols = [set() for _ in range(9)]\n    boxs = [set() for _ in range(9)]\n    for r in range(9):\n        for c in range(9):\n            v = board[r][c]\n            if v == '.': continue\n            b = (r // 3) * 3 + c // 3\n            if v in rows[r] or v in cols[c] or v in boxs[b]:\n                return False\n            rows[r].add(v); cols[c].add(v); boxs[b].add(v)\n    return True",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  "5",
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "6",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": false,
-            "anim": true
-          }
-        },
-        {
-          "name": "Mã hoá một chuỗi trạng thái",
-          "time": "O(81)",
-          "space": "O(81)",
-          "idea": "Mỗi số sinh 3 chuỗi mã: 'h<r><v>', 'c<c><v>', 'b<box><v>'; nếu trùng trong một set toàn cục → false. Gọn nhưng kém rõ ràng.",
-          "code": "def is_valid_sudoku(board):\n    seen = set()\n    for r in range(9):\n        for c in range(9):\n            v = board[r][c]\n            if v == '.': continue\n            for key in (f'{v} in row {r}', f'{v} in col {c}', f'{v} in box {r//3}-{c//3}'):\n                if key in seen: return False\n                seen.add(key)\n    return True",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  "5",
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "6",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": false,
-            "anim": true
-          }
-        },
-        {
-          "name": "Đếm tần suất bằng dict",
-          "time": "O(81)",
-          "space": "O(81)",
-          "idea": "Dùng Counter cho mỗi chiều, kiểm tra mọi giá trị đếm ≤ 1 — dễ hiểu hơn set.",
-          "code": "from collections import Counter\ndef is_valid_sudoku(board):\n    for r in range(9):\n        cnt = Counter(c for c in board[r] if c != '.')\n        if any(v > 1 for v in cnt.values()): return False\n    for c in range(9):\n        cnt = Counter(board[r][c] for r in range(9) if board[r][c] != '.')\n        if any(v > 1 for v in cnt.values()): return False\n    for br in range(3):\n        for bc in range(3):\n            vals = [board[br*3+i][bc*3+j] for i in range(3) for j in range(3) if board[br*3+i][bc*3+j] != '.']\n            cnt = Counter(vals)\n            if any(v > 1 for v in cnt.values()): return False\n    return True",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  "5",
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "6",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  "3",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ],
-                [
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  ".",
-                  "."
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": false,
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Kiểm tra từng hàng/cột/khối 3×3 bằng set, bỏ qua dấu chấm.",
-        "reverse": "Cần xác nhận bảng hợp lệ → mọi ô phải không trùng trong hàng, cột và khối của nó."
+     "name": "Ba bộ set",
+     "time": "O(81)",
+     "space": "O(81)",
+     "idea": "row[i], col[j], box[k]. Mỗi ô số: nếu đã trong set tương ứng → false; ngược lại thêm vào cả ba.",
+     "code": "def is_valid_sudoku(board):\n    rows = [set() for _ in range(9)]\n    cols = [set() for _ in range(9)]\n    boxs = [set() for _ in range(9)]\n    for r in range(9):\n        for c in range(9):\n            v = board[r][c]\n            if v == '.': continue\n            b = (r // 3) * 3 + c // 3\n            if v in rows[r] or v in cols[c] or v in boxs[b]:\n                return False\n            rows[r].add(v); cols[c].add(v); boxs[b].add(v)\n    return True",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         "5",
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "6",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ]
+       ]
       },
-      "note": "Theo dõi số đã thấy theo 3 chiều: hàng, cột, box 3×3 — box index = (r//3)*3 + (c//3)."
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": false,
+      "anim": true
+     }
     },
     {
-      "no": "54",
-      "title": "Spiral Matrix",
-      "cat": "Matrix",
-      "diff": "Medium",
-      "statement": "Duyệt ma trận theo đường xoắn ốc (ngoài vào trong, theo chiều kim đồng hồ) trả danh sách.",
-      "examples": "[[1,2,3],[4,5,6],[7,8,9]] → [1,2,3,6,9,8,7,4,5]",
-      "keyIdea": "Giữ 4 biên top/bottom/left/right; duyệt từng lớp, co biên lại sau mỗi cạnh.",
-      "approaches": [
-        {
-          "name": "Bốn biên + co dần",
-          "time": "O(m·n)",
-          "space": "O(1) ngoài kết quả",
-          "idea": "Trong mỗi vòng: đi ngang top, dọc phải, ngang bottom, dọc trái; co biên; dừng khi biên vượt nhau.",
-          "code": "def spiral_order(matrix):\n    if not matrix: return []\n    top, bottom, left, right = 0, len(matrix)-1, 0, len(matrix[0])-1\n    res = []\n    while top <= bottom and left <= right:\n        for c in range(left, right+1): res.append(matrix[top][c])\n        top += 1\n        for r in range(top, bottom+1): res.append(matrix[r][right])\n        right -= 1\n        if top <= bottom:\n            for c in range(right, left-1, -1): res.append(matrix[bottom][c])\n            bottom -= 1\n        if left <= right:\n            for r in range(bottom, top-1, -1): res.append(matrix[r][left])\n            left += 1\n    return res",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "top",
-              "bottom",
-              "left",
-              "right"
-            ],
-            "expected": [
-              1,
-              2,
-              3,
-              6,
-              9,
-              8,
-              7,
-              4,
-              5
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Mô phỏng hướng đi + visited",
-          "time": "O(m·n)",
-          "space": "O(m·n)",
-          "idea": "Đi theo 4 hướng (phải, xuống, trái, lên); đổi hướng khi chạm biên hoặc ô đã đi; cần mảng visited.",
-          "code": "def spiral_order(matrix):\n    if not matrix: return []\n    m, n = len(matrix), len(matrix[0])\n    seen = [[False]*n for _ in range(m)]\n    dirs = [(0,1),(1,0),(0,-1),(-1,0)]\n    res = []; r = c = 0; d = 0\n    for _ in range(m*n):\n        res.append(matrix[r][c]); seen[r][c] = True\n        nr, nc = r + dirs[d][0], c + dirs[d][1]\n        if nr < 0 or nr >= m or nc < 0 or nc >= n or seen[nr][nc]:\n            d = (d + 1) % 4\n            nr, nc = r + dirs[d][0], c + dirs[d][1]\n        r, c = nr, nc\n    return res",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": [
-              1,
-              2,
-              3,
-              6,
-              9,
-              8,
-              7,
-              4,
-              5
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Xoắn bằng cách xoay ma trận",
-          "time": "O(m·n)",
-          "space": "O(m·n)",
-          "idea": "Lấy hàng đầu, rồi đệ quy trên phần còn lại đã xoay ngược chiều kim đồng hồ (zip(*matrix[::-1]).",
-          "code": "def spiral_order(matrix):\n    if not matrix: return []\n    if len(matrix) == 1:\n        return list(matrix[0])\n    top = list(matrix[0])\n    rest = [list(row[:-1]) for row in matrix[1:]]\n    rest = list(zip(*rest))[::-1]\n    return top + spiral_order([list(r) for r in rest])",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [],
-            "expected": [
-              1,
-              2,
-              3,
-              6,
-              9,
-              8,
-              7,
-              4,
-              5
-            ],
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Duyệt theo lớp ngoài: trái→phải, trên→xuống, phải→trái, dưới→lên rồi thu hẹp biên.",
-        "reverse": "Cần mọi phần tử theo xoắn ốc → bóc từng lớp ngoài, mỗi lớp gồm 4 cạnh có thứ tự."
+     "name": "Mã hoá một chuỗi trạng thái",
+     "time": "O(81)",
+     "space": "O(81)",
+     "idea": "Mỗi số sinh 3 chuỗi mã: 'h<r><v>', 'c<c><v>', 'b<box><v>'; nếu trùng trong một set toàn cục → false. Gọn nhưng kém rõ ràng.",
+     "code": "def is_valid_sudoku(board):\n    seen = set()\n    for r in range(9):\n        for c in range(9):\n            v = board[r][c]\n            if v == '.': continue\n            for key in (f'{v} in row {r}', f'{v} in col {c}', f'{v} in box {r//3}-{c//3}'):\n                if key in seen: return False\n                seen.add(key)\n    return True",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         "5",
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "6",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ]
+       ]
       },
-      "note": "Giữ 4 biên top/bottom/left/right; duyệt từng lớp, co biên lại sau mỗi cạnh."
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": false,
+      "anim": true
+     }
     },
     {
-      "no": "48",
-      "title": "Rotate Image",
-      "cat": "Matrix",
-      "diff": "Medium",
-      "statement": "Xoay ma trận vuông n×n 90° theo chiều kim đồng hồ, IN-PLACE.",
-      "examples": "[[1,2,3],[4,5,6],[7,8,9]] → [[7,4,1],[8,5,2],[9,6,3]]",
-      "keyIdea": "Xoay 90° = đảo chéo (transpose) rồi đảo ngang từng hàng. Hoặc xoay từng vòng tứ giác.",
-      "approaches": [
-        {
-          "name": "Transpose + reverse ngang",
-          "time": "O(n²)",
-          "space": "O(1)",
-          "idea": "Đảo chéo (matrix[i][j] ↔ matrix[j][i]), rồi reverse mỗi hàng. Cả hai đều tại chỗ.",
-          "code": "def rotate(matrix):\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    for row in matrix:\n        row.reverse()\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": [
-              [
-                7,
-                4,
-                1
-              ],
-              [
-                8,
-                5,
-                2
-              ],
-              [
-                9,
-                6,
-                3
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Xoay từng vòng 4 góc",
-          "time": "O(n²)",
-          "space": "O(1)",
-          "idea": "Với mỗi vòng từ ngoài vào, xoay bốn ô tương ứng (i,j),(j,n-1-i),(n-1-i,n-1-j),(n-1-j,i) cùng lúc.",
-          "code": "def rotate(matrix):\n    n = len(matrix)\n    for i in range(n//2):\n        for j in range(i, n-1-i):\n            tmp = matrix[i][j]\n            matrix[i][j] = matrix[n-1-j][i]\n            matrix[n-1-j][i] = matrix[n-1-i][n-1-j]\n            matrix[n-1-i][n-1-j] = matrix[j][n-1-i]\n            matrix[j][n-1-i] = tmp\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": [
-              [
-                7,
-                4,
-                1
-              ],
-              [
-                8,
-                5,
-                2
-              ],
-              [
-                9,
-                6,
-                3
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Đảo dọc rồi transpose",
-          "time": "O(n²)",
-          "space": "O(1)",
-          "idea": "Reverse từng hàng rồi transpose cũng ra kết quả (thứ tự hai bước đổi).",
-          "code": "def rotate(matrix):\n    for row in matrix: row.reverse()\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  2,
-                  3
-                ],
-                [
-                  4,
-                  5,
-                  6
-                ],
-                [
-                  7,
-                  8,
-                  9
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": [
-              [
-                7,
-                4,
-                1
-              ],
-              [
-                8,
-                5,
-                2
-              ],
-              [
-                9,
-                6,
-                3
-              ]
-            ],
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Xoay 90° = transpose rồi reverse từng hàng (hoặc đảo cột rồi transpose).",
-        "reverse": "Cần ma trận xoay → phân rã phép quay thành hai thao tác tuyến tính dễ làm tại chỗ."
+     "name": "Đếm tần suất bằng dict",
+     "time": "O(81)",
+     "space": "O(81)",
+     "idea": "Dùng Counter cho mỗi chiều, kiểm tra mọi giá trị đếm ≤ 1 — dễ hiểu hơn set.",
+     "code": "from collections import Counter\ndef is_valid_sudoku(board):\n    for r in range(9):\n        cnt = Counter(c for c in board[r] if c != '.')\n        if any(v > 1 for v in cnt.values()): return False\n    for c in range(9):\n        cnt = Counter(board[r][c] for r in range(9) if board[r][c] != '.')\n        if any(v > 1 for v in cnt.values()): return False\n    for br in range(3):\n        for bc in range(3):\n            vals = [board[br*3+i][bc*3+j] for i in range(3) for j in range(3) if board[br*3+i][bc*3+j] != '.']\n            cnt = Counter(vals)\n            if any(v > 1 for v in cnt.values()): return False\n    return True",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         "5",
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "6",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         "3",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ],
+        [
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         ".",
+         "."
+        ]
+       ]
       },
-      "note": "Xoay 90° = đảo chéo (transpose) rồi đảo ngang từng hàng. Hoặc xoay từng vòng tứ giác."
-    },
-    {
-      "no": "73",
-      "title": "Set Matrix Zeroes",
-      "cat": "Matrix",
-      "diff": "Medium",
-      "statement": "Nếu một ô bằng 0, đặt toàn bộ hàng và cột của nó về 0, in-place.",
-      "examples": "[[1,1,1],[1,0,1],[1,1,1]] → [[1,0,1],[0,0,0],[1,0,1]]",
-      "keyIdea": "Dùng hàng 0 và cột 0 của chính ma trận làm 'bộ nhớ' đánh dấu hàng/cột nào cần zero.",
-      "approaches": [
-        {
-          "name": "Đánh dấu bằng hàng/cột đầu",
-          "time": "O(m·n)",
-          "space": "O(1) (thêm biến cho góc)",
-          "idea": "Quét: nếu matrix[i][j]==0 thì ghi vào matrix[i][0] và matrix[0][j]. Xử lý riêng hàng đầu (biến flag) vì nó vừa là dữ liệu vừa là bộ nhớ. Sau đó đưa về 0 theo dấu.",
-          "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    first_row_zero = any(matrix[0][j] == 0 for j in range(n))\n    first_col_zero = any(matrix[i][0] == 0 for i in range(m))\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][j] == 0:\n                matrix[i][0] = matrix[0][j] = 0\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][0] == 0 or matrix[0][j] == 0:\n                matrix[i][j] = 0\n    if first_row_zero:\n        for j in range(n): matrix[0][j] = 0\n    if first_col_zero:\n        for i in range(m): matrix[i][0] = 0\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  1,
-                  1
-                ],
-                [
-                  1,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": [
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Hai set lưu hàng/cột",
-          "time": "O(m·n)",
-          "space": "O(m+n)",
-          "idea": "rows = set các hàng có 0; cols = set các cột có 0; rồi zero theo hai set. Dễ đọc, tốn bộ nhớ.",
-          "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    rows, cols = set(), set()\n    for i in range(m):\n        for j in range(n):\n            if matrix[i][j] == 0:\n                rows.add(i); cols.add(j)\n    for i in rows:\n        for j in range(n): matrix[i][j] = 0\n    for j in cols:\n        for i in range(m): matrix[i][j] = 0\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  1,
-                  1
-                ],
-                [
-                  1,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": [
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Quét hai lượt (bản rõ ràng)",
-          "time": "O(m·n)",
-          "space": "O(m+n)",
-          "idea": "Lưu riêng danh sách (r,c) các ô 0 rồi zero — minh hoạ trực tiếp bài toán. Tốt cho phỏng vấn giải thích trước khi tối ưu bộ nhớ.",
-          "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    zero = [(i, j) for i in range(m) for j in range(n) if matrix[i][j] == 0]\n    for i, j in zero:\n        for c in range(n): matrix[i][c] = 0\n        for r in range(m): matrix[r][j] = 0\n    return matrix",
-          "tcex": {
-            "input": {
-              "matrix": [
-                [
-                  1,
-                  1,
-                  1
-                ],
-                [
-                  1,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "matrix",
-            "ptrs": [],
-            "expected": [
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        }
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
       ],
-      "thinking": {
-        "forward": "Dùng hàng/cột đầu làm cờ: đánh dấu ô 0, sau đó zero hoá dựa trên cờ.",
-        "reverse": "Cần zero hoá mà không dùng thêm bộ nhớ → tận dụng chính ma trận làm nơi lưu cờ."
-      },
-      "note": "Dùng hàng 0 và cột 0 của chính ma trận làm 'bộ nhớ' đánh dấu hàng/cột nào cần zero."
-    },
-    {
-      "no": "289",
-      "title": "Game of Life",
-      "cat": "Matrix",
-      "diff": "Medium",
-      "statement": "Quy tắc Conway: tế bào sống với <2 hoặc >3 hàng xóm chết; với 2-3 sống tiếp; chết với đúng 3 hàng xóm sống. Cập nhật đồng bộ một bước, in-place.",
-      "examples": "[[0,1,0],[0,0,1],[1,1,1],[0,0,0]] → [[0,0,0],[1,0,1],[0,1,1],[0,1,0]]",
-      "keyIdea": "Cần cập nhật toàn bộ một lúc → phải nhớ trạng thái CŨ, lưu bằng mã hoá 2-bit trong cùng ô (0,1,2,3).",
-      "approaches": [
-        {
-          "name": "Mã hoá 2-bit trong ô",
-          "time": "O(m·n)",
-          "space": "O(1)",
-          "idea": "Đếm hàng xóm bằng bit thấp (trạng thái cũ); ghi trạng thái mới vào bit cao (trạng thái mới = 2 hoặc 3). Cuối cùng dịch sang phải.",
-          "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    def live(r, c):\n        cnt = 0\n        for dr in (-1, 0, 1):\n            for dc in (-1, 0, 1):\n                if dr == dc == 0: continue\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and board[nr][nc] & 1:\n                    cnt += 1\n        return cnt\n    for r in range(m):\n        for c in range(n):\n            cnt = live(r, c)\n            if board[r][c] == 1 and cnt in (2, 3): board[r][c] |= 2\n            if board[r][c] == 0 and cnt == 3: board[r][c] |= 2\n    for r in range(m):\n        for c in range(n):\n            board[r][c] >>= 1\n    return board",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  0,
-                  1,
-                  0
-                ],
-                [
-                  0,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": [
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                1,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Bản sao ma trận",
-          "time": "O(m·n)",
-          "space": "O(m·n)",
-          "idea": "Copy ma trận làm 'trước đó', tính toán trên bản gốc — dễ hiểu, tốn bộ nhớ.",
-          "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    prev = [row[:] for row in board]\n    def live(r, c):\n        return sum(prev[nr][nc] for dr in (-1,0,1) for dc in (-1,0,1)\n                   if (dr or dc) and 0 <= (nr := r+dr) < m and 0 <= (nc := c+dc) < n)\n    for r in range(m):\n        for c in range(n):\n            cnt = live(r, c)\n            board[r][c] = 1 if (board[r][c] == 1 and cnt in (2,3)) or (board[r][c] == 0 and cnt == 3) else 0\n    return board",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  0,
-                  1,
-                  0
-                ],
-                [
-                  0,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": [
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                1,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Hai mảng đếm (bản học)",
-          "time": "O(m·n)",
-          "space": "O(m·n)",
-          "idea": "Dựng mảng đếm hàng xóm sống trước, rồi áp quy tắc cho cả mảng — tách rõ hai bước.",
-          "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    cnt = [[0]*n for _ in range(m)]\n    for r in range(m):\n        for c in range(n):\n            cnt[r][c] = sum(board[nr][nc] for dr in (-1,0,1) for dc in (-1,0,1)\n                            if (dr or dc) and 0 <= (nr := r+dr) < m and 0 <= (nc := c+dc) < n)\n    for r in range(m):\n        for c in range(n):\n            board[r][c] = 1 if (board[r][c] == 1 and cnt[r][c] in (2,3)) or (board[r][c] == 0 and cnt[r][c] == 3) else 0\n    return board",
-          "tcex": {
-            "input": {
-              "board": [
-                [
-                  0,
-                  1,
-                  0
-                ],
-                [
-                  0,
-                  0,
-                  1
-                ],
-                [
-                  1,
-                  1,
-                  1
-                ]
-              ]
-            },
-            "kind": "mat",
-            "display": "board",
-            "ptrs": [
-              "r",
-              "c"
-            ],
-            "expected": [
-              [
-                0,
-                0,
-                0
-              ],
-              [
-                1,
-                0,
-                1
-              ],
-              [
-                0,
-                1,
-                1
-              ]
-            ],
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Mô phỏng 2 trạng thái: đếm hàng xóm sống rồi áp luật chuyển.",
-        "reverse": "Cần trạng thái tiếp → mỗi ô chỉ phụ thuộc 8 hàng xóm, dùng mã hoá 2 bit để ghi tại chỗ."
-      },
-      "note": "Cần cập nhật toàn bộ một lúc → phải nhớ trạng thái CŨ, lưu bằng mã hoá 2-bit trong cùng ô (0,1,2,3)."
+      "expected": false,
+      "anim": true
+     }
     }
-  ]
+   ],
+   "thinking": {
+    "forward": "Kiểm tra từng hàng/cột/khối 3×3 bằng set, bỏ qua dấu chấm.",
+    "reverse": "Cần xác nhận bảng hợp lệ → mọi ô phải không trùng trong hàng, cột và khối của nó."
+   },
+   "note": "Theo dõi số đã thấy theo 3 chiều: hàng, cột, box 3×3 — box index = (r//3)*3 + (c//3)."
+  },
+  {
+   "no": "48",
+   "title": "Rotate Image",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Xoay ma trận vuông n×n 90° theo chiều kim đồng hồ, IN-PLACE.",
+   "examples": "[[1,2,3],[4,5,6],[7,8,9]] → [[7,4,1],[8,5,2],[9,6,3]]",
+   "keyIdea": "Xoay 90° = đảo chéo (transpose) rồi đảo ngang từng hàng. Hoặc xoay từng vòng tứ giác.",
+   "approaches": [
+    {
+     "name": "Transpose + reverse ngang",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Đảo chéo (matrix[i][j] ↔ matrix[j][i]), rồi reverse mỗi hàng. Cả hai đều tại chỗ.",
+     "code": "def rotate(matrix):\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    for row in matrix:\n        row.reverse()\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        7,
+        4,
+        1
+       ],
+       [
+        8,
+        5,
+        2
+       ],
+       [
+        9,
+        6,
+        3
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Xoay từng vòng 4 góc",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Với mỗi vòng từ ngoài vào, xoay bốn ô tương ứng (i,j),(j,n-1-i),(n-1-i,n-1-j),(n-1-j,i) cùng lúc.",
+     "code": "def rotate(matrix):\n    n = len(matrix)\n    for i in range(n//2):\n        for j in range(i, n-1-i):\n            tmp = matrix[i][j]\n            matrix[i][j] = matrix[n-1-j][i]\n            matrix[n-1-j][i] = matrix[n-1-i][n-1-j]\n            matrix[n-1-i][n-1-j] = matrix[j][n-1-i]\n            matrix[j][n-1-i] = tmp\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        7,
+        4,
+        1
+       ],
+       [
+        8,
+        5,
+        2
+       ],
+       [
+        9,
+        6,
+        3
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Đảo dọc rồi transpose",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Reverse từng hàng rồi transpose cũng ra kết quả (thứ tự hai bước đổi).",
+     "code": "def rotate(matrix):\n    for row in matrix: row.reverse()\n    n = len(matrix)\n    for i in range(n):\n        for j in range(i+1, n):\n            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        7,
+        4,
+        1
+       ],
+       [
+        8,
+        5,
+        2
+       ],
+       [
+        9,
+        6,
+        3
+       ]
+      ],
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Xoay 90° = transpose rồi reverse từng hàng (hoặc đảo cột rồi transpose).",
+    "reverse": "Cần ma trận xoay → phân rã phép quay thành hai thao tác tuyến tính dễ làm tại chỗ."
+   },
+   "note": "Xoay 90° = đảo chéo (transpose) rồi đảo ngang từng hàng. Hoặc xoay từng vòng tứ giác."
+  },
+  {
+   "no": "54",
+   "title": "Spiral Matrix",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Duyệt ma trận theo đường xoắn ốc (ngoài vào trong, theo chiều kim đồng hồ) trả danh sách.",
+   "examples": "[[1,2,3],[4,5,6],[7,8,9]] → [1,2,3,6,9,8,7,4,5]",
+   "keyIdea": "Giữ 4 biên top/bottom/left/right; duyệt từng lớp, co biên lại sau mỗi cạnh.",
+   "approaches": [
+    {
+     "name": "Bốn biên + co dần",
+     "time": "O(m·n)",
+     "space": "O(1) ngoài kết quả",
+     "idea": "Trong mỗi vòng: đi ngang top, dọc phải, ngang bottom, dọc trái; co biên; dừng khi biên vượt nhau.",
+     "code": "def spiral_order(matrix):\n    if not matrix: return []\n    top, bottom, left, right = 0, len(matrix)-1, 0, len(matrix[0])-1\n    res = []\n    while top <= bottom and left <= right:\n        for c in range(left, right+1): res.append(matrix[top][c])\n        top += 1\n        for r in range(top, bottom+1): res.append(matrix[r][right])\n        right -= 1\n        if top <= bottom:\n            for c in range(right, left-1, -1): res.append(matrix[bottom][c])\n            bottom -= 1\n        if left <= right:\n            for r in range(bottom, top-1, -1): res.append(matrix[r][left])\n            left += 1\n    return res",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "top",
+       "bottom",
+       "left",
+       "right"
+      ],
+      "expected": [
+       1,
+       2,
+       3,
+       6,
+       9,
+       8,
+       7,
+       4,
+       5
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Mô phỏng hướng đi + visited",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "Đi theo 4 hướng (phải, xuống, trái, lên); đổi hướng khi chạm biên hoặc ô đã đi; cần mảng visited.",
+     "code": "def spiral_order(matrix):\n    if not matrix: return []\n    m, n = len(matrix), len(matrix[0])\n    seen = [[False]*n for _ in range(m)]\n    dirs = [(0,1),(1,0),(0,-1),(-1,0)]\n    res = []; r = c = 0; d = 0\n    for _ in range(m*n):\n        res.append(matrix[r][c]); seen[r][c] = True\n        nr, nc = r + dirs[d][0], c + dirs[d][1]\n        if nr < 0 or nr >= m or nc < 0 or nc >= n or seen[nr][nc]:\n            d = (d + 1) % 4\n            nr, nc = r + dirs[d][0], c + dirs[d][1]\n        r, c = nr, nc\n    return res",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": [
+       1,
+       2,
+       3,
+       6,
+       9,
+       8,
+       7,
+       4,
+       5
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Xoắn bằng cách xoay ma trận",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "Lấy hàng đầu, rồi đệ quy trên phần còn lại đã xoay ngược chiều kim đồng hồ (zip(*matrix[::-1]).",
+     "code": "def spiral_order(matrix):\n    if not matrix: return []\n    if len(matrix) == 1:\n        return list(matrix[0])\n    top = list(matrix[0])\n    rest = [list(row[:-1]) for row in matrix[1:]]\n    rest = list(zip(*rest))[::-1]\n    return top + spiral_order([list(r) for r in rest])",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         4,
+         5,
+         6
+        ],
+        [
+         7,
+         8,
+         9
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [],
+      "expected": [
+       1,
+       2,
+       3,
+       6,
+       9,
+       8,
+       7,
+       4,
+       5
+      ],
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Duyệt theo lớp ngoài: trái→phải, trên→xuống, phải→trái, dưới→lên rồi thu hẹp biên.",
+    "reverse": "Cần mọi phần tử theo xoắn ốc → bóc từng lớp ngoài, mỗi lớp gồm 4 cạnh có thứ tự."
+   },
+   "note": "Giữ 4 biên top/bottom/left/right; duyệt từng lớp, co biên lại sau mỗi cạnh."
+  },
+  {
+   "no": "73",
+   "title": "Set Matrix Zeroes",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Nếu một ô bằng 0, đặt toàn bộ hàng và cột của nó về 0, in-place.",
+   "examples": "[[1,1,1],[1,0,1],[1,1,1]] → [[1,0,1],[0,0,0],[1,0,1]]",
+   "keyIdea": "Dùng hàng 0 và cột 0 của chính ma trận làm 'bộ nhớ' đánh dấu hàng/cột nào cần zero.",
+   "approaches": [
+    {
+     "name": "Đánh dấu bằng hàng/cột đầu",
+     "time": "O(m·n)",
+     "space": "O(1) (thêm biến cho góc)",
+     "idea": "Quét: nếu matrix[i][j]==0 thì ghi vào matrix[i][0] và matrix[0][j]. Xử lý riêng hàng đầu (biến flag) vì nó vừa là dữ liệu vừa là bộ nhớ. Sau đó đưa về 0 theo dấu.",
+     "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    first_row_zero = any(matrix[0][j] == 0 for j in range(n))\n    first_col_zero = any(matrix[i][0] == 0 for i in range(m))\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][j] == 0:\n                matrix[i][0] = matrix[0][j] = 0\n    for i in range(1, m):\n        for j in range(1, n):\n            if matrix[i][0] == 0 or matrix[0][j] == 0:\n                matrix[i][j] = 0\n    if first_row_zero:\n        for j in range(n): matrix[0][j] = 0\n    if first_col_zero:\n        for i in range(m): matrix[i][0] = 0\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Hai set lưu hàng/cột",
+     "time": "O(m·n)",
+     "space": "O(m+n)",
+     "idea": "rows = set các hàng có 0; cols = set các cột có 0; rồi zero theo hai set. Dễ đọc, tốn bộ nhớ.",
+     "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    rows, cols = set(), set()\n    for i in range(m):\n        for j in range(n):\n            if matrix[i][j] == 0:\n                rows.add(i); cols.add(j)\n    for i in rows:\n        for j in range(n): matrix[i][j] = 0\n    for j in cols:\n        for i in range(m): matrix[i][j] = 0\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Quét hai lượt (bản rõ ràng)",
+     "time": "O(m·n)",
+     "space": "O(m+n)",
+     "idea": "Lưu riêng danh sách (r,c) các ô 0 rồi zero — minh hoạ trực tiếp bài toán. Tốt cho phỏng vấn giải thích trước khi tối ưu bộ nhớ.",
+     "code": "def set_zeroes(matrix):\n    m, n = len(matrix), len(matrix[0])\n    zero = [(i, j) for i in range(m) for j in range(n) if matrix[i][j] == 0]\n    for i, j in zero:\n        for c in range(n): matrix[i][c] = 0\n        for r in range(m): matrix[r][j] = 0\n    return matrix",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         1,
+         1
+        ],
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [],
+      "expected": [
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Dùng hàng/cột đầu làm cờ: đánh dấu ô 0, sau đó zero hoá dựa trên cờ.",
+    "reverse": "Cần zero hoá mà không dùng thêm bộ nhớ → tận dụng chính ma trận làm nơi lưu cờ."
+   },
+   "note": "Dùng hàng 0 và cột 0 của chính ma trận làm 'bộ nhớ' đánh dấu hàng/cột nào cần zero."
+  },
+  {
+   "no": "240",
+   "title": "Search a 2D Matrix II",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Tìm target trong ma trận mà mỗi HÀNG tăng dần trái→phải và mỗi CỘT tăng dần trên→dưới.",
+   "examples": "[[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target=5 → true · target=20 → false",
+   "keyIdea": "Xuất phát từ góc TRÊN-PHẢI: giá trị đó lớn hơn mọi ô bên trái và nhỏ hơn mọi ô bên dưới → một so sánh loại được cả hàng hoặc cả cột.",
+   "thinking": {
+    "forward": "Quy nạp tiến: tại (r,c), nếu matrix[r][c] < target thì cả hàng r nhỏ hơn → r++; nếu > target thì cả cột c lớn hơn → c--; mỗi bước loại đúng một hàng/cột.",
+    "reverse": "Quy nạp ngược: muốn O(m+n) → biến mỗi bước thành quyết định nhị phân loại nửa không gian còn lại; góc trên-phải là điểm phân đôi duy nhất."
+   },
+   "note": "Chú giải: góc dưới-trái cũng được; dừng khi ra khỏi biên (r ≥ m hoặc c < 0) → không tìm thấy; điều kiện matrix rỗng xử lý trước.",
+   "approaches": [
+    {
+     "name": "Truy vết từ góc trên-phải",
+     "time": "O(m+n)",
+     "space": "O(1)",
+     "idea": "r=0, c=n−1; loop: nếu bằng → true; nhỏ hơn target → r++; lớn hơn → c--; hết biên → false.",
+     "code": "def search_matrix(matrix, target):\n    if not matrix: return False\n    r, c = 0, len(matrix[0]) - 1\n    while r < len(matrix) and c >= 0:\n        if matrix[r][c] == target: return True\n        if matrix[r][c] < target: r += 1\n        else: c -= 1\n    return False",
+     "tcex": {
+      "input": {
+       "matrix": [
+        [
+         1,
+         4,
+         7,
+         11,
+         15
+        ],
+        [
+         2,
+         5,
+         8,
+         12,
+         19
+        ],
+        [
+         3,
+         6,
+         9,
+         16,
+         22
+        ],
+        [
+         10,
+         13,
+         14,
+         17,
+         24
+        ],
+        [
+         18,
+         21,
+         23,
+         26,
+         30
+        ]
+       ],
+       "target": 5
+      },
+      "kind": "mat",
+      "display": "matrix",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": true,
+      "anim": true
+     }
+    },
+    {
+     "name": "Tìm nhị phân từng hàng",
+     "time": "O(m·log n)",
+     "space": "O(1)",
+     "idea": "Mỗi hàng đã sắp → binary search từng hàng; dừng sớm khi phần tử đầu hàng > target.",
+     "code": "def search_matrix(matrix, target):\n    for row in matrix:\n        lo, hi = 0, len(row) - 1\n        while lo <= hi:\n            mid = (lo + hi) // 2\n            if row[mid] == target: return True\n            if row[mid] < target: lo = mid + 1\n            else: hi = mid - 1\n    return False",
+     "static": [
+      "Hàng 0 [1,4,7,11,15] với target=5: mid=2 → 7 > 5, hi=1; mid=0 → 1<5, lo=1; mid=1 → 4<5, lo=2 → hết → false",
+      "Hàng 1 [2,5,8,12,19]: mid=2 → 8 > 5, hi=1; mid=0 → 2 < 5, lo=1; mid=1 → 5 == 5 → true",
+      "Nếu row[0] > target có thể break sớm",
+      "O(m·log n) — chậm hơn góc trên-phải O(m+n)"
+     ]
+    },
+    {
+     "name": "Quét toàn bộ",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "idea": "any(target in row for row in matrix) — kiểm tra trực tiếp, dùng để đối chiếu.",
+     "code": "def search_matrix(matrix, target):\n    return any(target in row for row in matrix)",
+     "static": [
+      "Với ma trận 5×5: kiểm tra lần lượt từng hàng xem 5 có trong hàng không",
+      "Hàng 2 [3,6,9,16,22] không chứa 5; hàng 3 [10,...] không; cuối cùng false nếu không thấy",
+      "trả về true khi tìm thấy tại [1,1] (giá trị 5)",
+      "Đúng nhưng O(m·n) — không tận dụng tính sắp xếp của đề"
+     ]
+    }
+   ]
+  },
+  {
+   "no": "289",
+   "title": "Game of Life",
+   "cat": "Matrix",
+   "diff": "Medium",
+   "statement": "Quy tắc Conway: tế bào sống với <2 hoặc >3 hàng xóm chết; với 2-3 sống tiếp; chết với đúng 3 hàng xóm sống. Cập nhật đồng bộ một bước, in-place.",
+   "examples": "[[0,1,0],[0,0,1],[1,1,1],[0,0,0]] → [[0,0,0],[1,0,1],[0,1,1],[0,1,0]]",
+   "keyIdea": "Cần cập nhật toàn bộ một lúc → phải nhớ trạng thái CŨ, lưu bằng mã hoá 2-bit trong cùng ô (0,1,2,3).",
+   "approaches": [
+    {
+     "name": "Mã hoá 2-bit trong ô",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "idea": "Đếm hàng xóm bằng bit thấp (trạng thái cũ); ghi trạng thái mới vào bit cao (trạng thái mới = 2 hoặc 3). Cuối cùng dịch sang phải.",
+     "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    def live(r, c):\n        cnt = 0\n        for dr in (-1, 0, 1):\n            for dc in (-1, 0, 1):\n                if dr == dc == 0: continue\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and board[nr][nc] & 1:\n                    cnt += 1\n        return cnt\n    for r in range(m):\n        for c in range(n):\n            cnt = live(r, c)\n            if board[r][c] == 1 and cnt in (2, 3): board[r][c] |= 2\n            if board[r][c] == 0 and cnt == 3: board[r][c] |= 2\n    for r in range(m):\n        for c in range(n):\n            board[r][c] >>= 1\n    return board",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        1,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Bản sao ma trận",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "Copy ma trận làm 'trước đó', tính toán trên bản gốc — dễ hiểu, tốn bộ nhớ.",
+     "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    prev = [row[:] for row in board]\n    def live(r, c):\n        return sum(prev[nr][nc] for dr in (-1,0,1) for dc in (-1,0,1)\n                   if (dr or dc) and 0 <= (nr := r+dr) < m and 0 <= (nc := c+dc) < n)\n    for r in range(m):\n        for c in range(n):\n            cnt = live(r, c)\n            board[r][c] = 1 if (board[r][c] == 1 and cnt in (2,3)) or (board[r][c] == 0 and cnt == 3) else 0\n    return board",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        1,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Hai mảng đếm (bản học)",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "Dựng mảng đếm hàng xóm sống trước, rồi áp quy tắc cho cả mảng — tách rõ hai bước.",
+     "code": "def game_of_life(board):\n    m, n = len(board), len(board[0])\n    cnt = [[0]*n for _ in range(m)]\n    for r in range(m):\n        for c in range(n):\n            cnt[r][c] = sum(board[nr][nc] for dr in (-1,0,1) for dc in (-1,0,1)\n                            if (dr or dc) and 0 <= (nr := r+dr) < m and 0 <= (nc := c+dc) < n)\n    for r in range(m):\n        for c in range(n):\n            board[r][c] = 1 if (board[r][c] == 1 and cnt[r][c] in (2,3)) or (board[r][c] == 0 and cnt[r][c] == 3) else 0\n    return board",
+     "tcex": {
+      "input": {
+       "board": [
+        [
+         0,
+         1,
+         0
+        ],
+        [
+         0,
+         0,
+         1
+        ],
+        [
+         1,
+         1,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "board",
+      "ptrs": [
+       "r",
+       "c"
+      ],
+      "expected": [
+       [
+        0,
+        0,
+        0
+       ],
+       [
+        1,
+        0,
+        1
+       ],
+       [
+        0,
+        1,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Mô phỏng 2 trạng thái: đếm hàng xóm sống rồi áp luật chuyển.",
+    "reverse": "Cần trạng thái tiếp → mỗi ô chỉ phụ thuộc 8 hàng xóm, dùng mã hoá 2 bit để ghi tại chỗ."
+   },
+   "note": "Cần cập nhật toàn bộ một lúc → phải nhớ trạng thái CŨ, lưu bằng mã hoá 2-bit trong cùng ô (0,1,2,3)."
+  },
+  {
+   "no": "566",
+   "title": "Reshape the Matrix",
+   "cat": "Matrix",
+   "diff": "Easy",
+   "statement": "Chuyển ma trận m×n thành r×c theo thứ tự hàng-ưu-tiên; nếu tổng phần tử không khớp (m·n ≠ r·c) trả ma trận gốc.",
+   "examples": "mat=[[1,2],[3,4]], r=1, c=4 → [[1,2,3,4]] · r=2, c=4 → [[1,2],[3,4]]",
+   "keyIdea": "Duyệt ma trận gốc theo thứ tự hàng-ưu-tiên và điền vào ma trận mới cũng theo thứ tự đó — chỉ cần đếm tuyến tính k.",
+   "thinking": {
+    "forward": "Quy nạp tiến: phần tử thứ k (0-based) trong thứ tự hàng-ưu-tiên của ma trận gốc nằm tại (k//n, k%n) và của ma trận mới tại (k//c, k%c) — ánh xạ trực tiếp.",
+    "reverse": "Quy nạp ngược: muốn điền đúng → quy hai ma trận về cùng một dãy tuyến tính; kiểm tra m·n == r·c trước khi biến đổi."
+   },
+   "note": "Chú giải: điều kiện reshape hợp lệ là m·n == r·c; khi không hợp lệ trả về chính ma trận gốc (không tạo bản sao mới trong lời giải này vì Python trả tham chiếu — vẫn đúng ngữ nghĩa đề).",
+   "approaches": [
+    {
+     "name": "Đếm tuyến tính k",
+     "time": "O(m·n)",
+     "space": "O(r·c) cho kết quả",
+     "idea": "Với mỗi ô (i,j) gốc, k = i*n+j; đặt out[k//c][k%c] = mat[i][j].",
+     "code": "def matrix_reshape(mat, r, c):\n    m, n = len(mat), len(mat[0])\n    if m * n != r * c: return mat\n    out = [[0] * c for _ in range(r)]\n    for i in range(m):\n        for j in range(n):\n            k = i * n + j\n            out[k // c][k % c] = mat[i][j]\n    return out",
+     "tcex": {
+      "input": {
+       "mat": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "r": 1,
+       "c": 4
+      },
+      "kind": "mat",
+      "display": "mat",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": [
+       [
+        1,
+        2,
+        3,
+        4
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Làm phẳng rồi cắt",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "flat = [x for row in mat for x in row]; out = [flat[i*c:(i+1)*c] for i in range(r)].",
+     "code": "def matrix_reshape(mat, r, c):\n    m, n = len(mat), len(mat[0])\n    if m * n != r * c: return mat\n    flat = [x for row in mat for x in row]\n    return [flat[i*c:(i+1)*c] for i in range(r)]",
+     "static": [
+      "Với [[1,2],[3,4]], r=1, c=4: flat = [1,2,3,4]",
+      "out = [flat[0:4]] = [[1,2,3,4]] — khớp đáp án",
+      "Với r=2, c=4: m·n=4 ≠ 8 → trả về mat gốc [[1,2],[3,4]]",
+      "Dễ đọc nhưng tốn O(m·n) bộ nhớ cho flat"
+     ]
+    },
+    {
+     "name": "Hàng đợi popleft",
+     "time": "O(m·n)",
+     "space": "O(m·n)",
+     "idea": "Đẩy mọi phần tử vào deque; bốc từng nhóm c phần tử để dựng từng hàng mới.",
+     "code": "from collections import deque\ndef matrix_reshape(mat, r, c):\n    m, n = len(mat), len(mat[0])\n    if m * n != r * c: return mat\n    q = deque(x for row in mat for x in row)\n    return [[q.popleft() for _ in range(c)] for _ in range(r)]",
+     "tcex": {
+      "input": {
+       "mat": [
+        [
+         1,
+         2
+        ],
+        [
+         3,
+         4
+        ]
+       ],
+       "r": 1,
+       "c": 4
+      },
+      "kind": "mat",
+      "display": "mat",
+      "ptrs": [],
+      "expected": [
+       [
+        1,
+        2,
+        3,
+        4
+       ]
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "832",
+   "title": "Flipping an Image",
+   "cat": "Matrix",
+   "diff": "Easy",
+   "statement": "Với ảnh nhị phân (0/1), đảo ngang từng hàng rồi đảo bit từng ô (0↔1).",
+   "examples": "[[1,1,0],[1,0,1],[0,0,0]] → [[1,0,0],[0,1,0],[1,1,1]]",
+   "keyIdea": "Đảo ngang + đảo bit có thể gộp: cặp đối xứng (row[j], row[~j]) sau phép biến đổi trở thành (1−row[~j], 1−row[j]) — làm từng cặp một lần.",
+   "thinking": {
+    "forward": "Quy nạp tiến: với mỗi hàng, cặp đối xứng j và n−1−j trao đổi vị trí và đảo bit; phần tử giữa (n lẻ) chỉ đảo bit.",
+    "reverse": "Quy nạp ngược: đảo ngang rồi đảo bit là hai phép độc lập trên từng hàng → có thể gộp thành một vòng lặp cặp."
+   },
+   "note": "Chú giải: chỉ số ~j trong Python bằng n−1−j; với n lẻ, j = ~j tại vị trí giữa nên phép gán kép row[j], row[~j] vẫn đúng (đảo bit tại đó); XOR ^1 chính là phép đảo bit.",
+   "approaches": [
+    {
+     "name": "Một vòng lặp cặp đối xứng",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Với mỗi hàng và mỗi j từ 0 tới (n+1)//2: row[j], row[~j] = row[~j]^1, row[j]^1.",
+     "code": "def flip_and_invert_image(image):\n    for row in image:\n        for j in range((len(row) + 1) // 2):\n            row[j], row[~j] = row[~j] ^ 1, row[j] ^ 1\n    return image",
+     "tcex": {
+      "input": {
+       "image": [
+        [
+         1,
+         1,
+         0
+        ],
+        [
+         1,
+         0,
+         1
+        ],
+        [
+         0,
+         0,
+         0
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "image",
+      "ptrs": [
+       "j"
+      ],
+      "expected": [
+       [
+        1,
+        0,
+        0
+       ],
+       [
+        0,
+        1,
+        0
+       ],
+       [
+        1,
+        1,
+        1
+       ]
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "reverse rồi XOR từng ô",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Tách hai bước: row.reverse() rồi row[j] = 1−row[j] cho mọi j — dễ đọc, vẫn tại chỗ.",
+     "code": "def flip_and_invert_image(image):\n    for row in image:\n        row.reverse()\n        for j in range(len(row)):\n            row[j] ^= 1\n    return image",
+     "static": [
+      "Hàng [1,1,0]: reverse → [0,1,1]; XOR từng ô → [1,0,0]",
+      "Hàng [1,0,1]: reverse → [1,0,1]; XOR → [0,1,0]",
+      "Hàng [0,0,0]: reverse → [0,0,0]; XOR → [1,1,1]",
+      "Kết quả [[1,0,0],[0,1,0],[1,1,1]] — khớp đáp án"
+     ]
+    },
+    {
+     "name": "Nested comprehension (tạo mới)",
+     "time": "O(n²)",
+     "space": "O(n²)",
+     "idea": "[[1−x for x in row[::-1]] for row in image] — xây ảnh mới, không sửa gốc.",
+     "code": "def flip_and_invert_image(image):\n    return [[1 - x for x in row[::-1]] for row in image]",
+     "static": [
+      "Với [1,1,0]: row[::-1] = [0,1,1] → [1,0,0]",
+      "[1,0,1]: [1,0,1] → [0,1,0]; [0,0,0]: [0,0,0] → [1,1,1]",
+      "Kết quả khớp đáp án; tạo ma trận mới nên không tại chỗ"
+     ]
+    }
+   ]
+  },
+  {
+   "no": "1672",
+   "title": "Richest Customer Wealth",
+   "cat": "Matrix",
+   "diff": "Easy",
+   "statement": "accounts[i] là tài sản các ngân hàng của khách i; tìm tổng tài sản lớn nhất trong các khách.",
+   "examples": "[[1,2,3],[3,2,1]] → 6 · [[1,5],[7,3],[3,5]] → 10",
+   "keyIdea": "Tính tổng từng hàng, lấy max — duyệt tuyến tính toàn ma trận.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt từng khách, cộng dồn tài sản các ngân hàng; cập nhật best sau mỗi khách.",
+    "reverse": "Quy nạp ngược: cần tổng mỗi hàng → xử lý theo từng hàng (khách), không cần thông tin chéo giữa các hàng."
+   },
+   "note": "Chú giải: ma trận không vuông — mỗi hàng có thể độ dài khác nhau; m, n ≥ 1 theo đề nên không cần xử lý rỗng.",
+   "approaches": [
+    {
+     "name": "Duyệt hàng cộng dồn",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "idea": "Với mỗi hàng (khách), s = tổng các ô; best = max(best, s).",
+     "code": "def maximum_wealth(accounts):\n    best = 0\n    for row in accounts:\n        s = 0\n        for x in row:\n            s += x\n        best = max(best, s)\n    return best",
+     "tcex": {
+      "input": {
+       "accounts": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         2,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "accounts",
+      "ptrs": [],
+      "expected": 6,
+      "anim": true
+     }
+    },
+    {
+     "name": "sum + max",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "idea": "max(sum(row) for row in accounts) — dùng hàm có sẵn, một dòng.",
+     "code": "def maximum_wealth(accounts):\n    return max(sum(row) for row in accounts)",
+     "tcex": {
+      "input": {
+       "accounts": [
+        [
+         1,
+         2,
+         3
+        ],
+        [
+         3,
+         2,
+         1
+        ]
+       ]
+      },
+      "kind": "mat",
+      "display": "accounts",
+      "ptrs": [],
+      "expected": 6,
+      "anim": true
+     }
+    },
+    {
+     "name": "map + sum",
+     "time": "O(m·n)",
+     "space": "O(1)",
+     "idea": "max(map(sum, accounts)) — tương đương bản generator, phong cách hàm.",
+     "code": "def maximum_wealth(accounts):\n    return max(map(sum, accounts))",
+     "static": [
+      "Với [[1,2,3],[3,2,1]]: sum từng hàng → 6 và 6",
+      "max(6, 6) = 6 — khớp đáp án",
+      "Với [[1,5],[7,3],[3,5]]: sums = 6, 10, 8 → max = 10",
+      "Mọi cách đều O(m·n) vì phải đọc hết ma trận"
+     ]
+    }
+   ]
+  }
+ ]
 }

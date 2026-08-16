@@ -1,396 +1,967 @@
 {
-  "desc": "Quy hoạch động 1 chiều: xác định trạng thái dp[i], quan hệ truy hồi, và cách tối ưu bộ nhớ xuống O(1) khi chỉ cần vài giá trị gần nhất.",
-  "problems": [
+ "desc": "Quy hoạch động 1 chiều: xác định trạng thái dp[i], quan hệ truy hồi, và cách tối ưu bộ nhớ xuống O(1) khi chỉ cần vài giá trị gần nhất.",
+ "problems": [
+  {
+   "no": "70",
+   "title": "Climbing Stairs",
+   "cat": "1D DP",
+   "diff": "Easy",
+   "statement": "Leo n bậc; mỗi lần 1 hoặc 2 bậc. Số cách?",
+   "examples": "n=2 → 2 · n=3 → 3",
+   "keyIdea": "dp[i] = dp[i-1] + dp[i-2]; chính là Fibonacci.",
+   "approaches": [
     {
-      "no": "70",
-      "title": "Climbing Stairs",
-      "cat": "1D DP",
-      "diff": "Easy",
-      "statement": "Leo n bậc; mỗi lần 1 hoặc 2 bậc. Số cách?",
-      "examples": "n=2 → 2 · n=3 → 3",
-      "keyIdea": "dp[i] = dp[i-1] + dp[i-2]; chính là Fibonacci.",
-      "approaches": [
-        {
-          "name": "DP O(1) bộ nhớ",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "a, b = 1, 1; for i in range(2, n+1): a, b = b, a+b.",
-          "code": "def climb_stairs(n):\n    a, b = 1, 1\n    for _ in range(2, n+1):\n        a, b = b, a + b\n    return b",
-          "static": [
-            "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-            "n=4: 1,1,2,3,5 → 5 cách",
-            "Giữ 2 biến trượt thay vì cả mảng",
-            "Trả về biến cuối"
-          ],
-          "tcex": {
-            "input": {
-              "n": 5
-            },
-            "kind": "none",
-            "expected": 8
-          }
-        },
-        {
-          "name": "Bảng dp",
-          "time": "O(n)",
-          "space": "O(n)",
-          "idea": "dp[0]=dp[1]=1; dp[i] = dp[i-1]+dp[i-2].",
-          "code": "def climb_stairs(n):\n    dp = [0]*(n+1)\n    dp[0] = dp[1] = 1\n    for i in range(2, n+1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]",
-          "static": [
-            "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-            "n=4: 1,1,2,3,5 → 5 cách",
-            "Giữ 2 biến trượt thay vì cả mảng",
-            "Trả về biến cuối"
-          ],
-          "tcex": {
-            "input": {
-              "n": 5
-            },
-            "kind": "none",
-            "expected": 8
-          }
-        },
-        {
-          "name": "Công thức/tuple",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "reduce tuple (a,b) → (b, a+b) — style hàm thuần.",
-          "code": "from functools import reduce\ndef climb_stairs(n):\n    return reduce(lambda ab, _: (ab[1], ab[0] + ab[1]), range(n), (1, 1))[0]",
-          "static": [
-            "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
-            "n=4: 1,1,2,3,5 → 5 cách",
-            "Giữ 2 biến trượt thay vì cả mảng",
-            "Trả về biến cuối"
-          ],
-          "tcex": {
-            "input": {
-              "n": 5
-            },
-            "kind": "none",
-            "expected": 8
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
-        "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+     "name": "DP O(1) bộ nhớ",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "a, b = 1, 1; for i in range(2, n+1): a, b = b, a+b.",
+     "code": "def climb_stairs(n):\n    a, b = 1, 1\n    for _ in range(2, n+1):\n        a, b = b, a + b\n    return b",
+     "static": [
+      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
+      "n=4: 1,1,2,3,5 → 5 cách",
+      "Giữ 2 biến trượt thay vì cả mảng",
+      "Trả về biến cuối"
+     ],
+     "tcex": {
+      "input": {
+       "n": 5
       },
-      "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+      "kind": "none",
+      "expected": 8
+     }
     },
     {
-      "no": "198",
-      "title": "House Robber",
-      "cat": "1D DP",
-      "diff": "Medium",
-      "statement": "Trộm các nhà (không trộm hai nhà kề nhau) tối đa hoá tổng lấy được.",
-      "examples": "[1,2,3,1] → 4 · [2,7,9,3,1] → 12",
-      "keyIdea": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]) — nhảy cách 1 hoặc 2.",
-      "approaches": [
-        {
-          "name": "Hai biến trượt",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "a = dp[i-2], b = dp[i-1]; cur = max(b, a+nums[i]).",
-          "code": "def rob(nums):\n    a = b = 0\n    for x in nums:\n        a, b = b, max(b, a + x)\n    return b",
-          "tcex": {
-            "input": {
-              "nums": [
-                2,
-                7,
-                9,
-                3,
-                1
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "expected": 12
-          }
-        },
-        {
-          "name": "Bảng dp",
-          "time": "O(n)",
-          "space": "O(n)",
-          "idea": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
-          "code": "def rob(nums):\n    n = len(nums)\n    if n == 1: return nums[0]\n    dp = [0]*n\n    dp[0] = nums[0]; dp[1] = max(nums[0], nums[1])\n    for i in range(2, n):\n        dp[i] = max(dp[i-1], dp[i-2] + nums[i])\n    return dp[-1]",
-          "tcex": {
-            "input": {
-              "nums": [
-                2,
-                7,
-                9,
-                3,
-                1
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "expected": 12
-          },
-          "static": [
-            "dp[i]=max(dp[i-1], dp[i-2]+nums[i])",
-            "[2,7,9,3,1]: dp=[0,2,7,11,11,12]",
-            "Không lấy 2 nhà liền nhau",
-            "Trả dp[n]"
-          ]
-        },
-        {
-          "name": "Chẵn/lẻ tích luỹ",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "Giữ tổng lấy từ hai dãy lệch pha; mỗi bước cập nhật max — bản gọn.",
-          "code": "def rob(nums):\n    even = odd = 0\n    for i, x in enumerate(nums):\n        if i % 2: odd = max(even, odd + x)\n        else: even = max(odd, even + x)\n    return max(even, odd)",
-          "tcex": {
-            "input": {
-              "nums": [
-                2,
-                7,
-                9,
-                3,
-                1
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "expected": 12
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
-        "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+     "name": "Bảng dp",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "dp[0]=dp[1]=1; dp[i] = dp[i-1]+dp[i-2].",
+     "code": "def climb_stairs(n):\n    dp = [0]*(n+1)\n    dp[0] = dp[1] = 1\n    for i in range(2, n+1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]",
+     "static": [
+      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
+      "n=4: 1,1,2,3,5 → 5 cách",
+      "Giữ 2 biến trượt thay vì cả mảng",
+      "Trả về biến cuối"
+     ],
+     "tcex": {
+      "input": {
+       "n": 5
       },
-      "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+      "kind": "none",
+      "expected": 8
+     }
     },
     {
-      "no": "139",
-      "title": "Word Break",
-      "cat": "1D DP",
-      "diff": "Medium",
-      "statement": "Xem s có thể tách thành các từ trong wordDict (dùng lại thoải mái) không.",
-      "examples": "s='leetcode', wordDict=['leet','code'] → true · 'catsandog' với ['cats','dog','sand','and','cat'] → false",
-      "keyIdea": "dp[i] = s[:i] tách được?; dp[i] đúng nếu tồn tại j<i: dp[j] và s[j:i] trong dict.",
-      "approaches": [
-        {
-          "name": "DP boolean theo tiền tố",
-          "time": "O(n²)",
-          "space": "O(n)",
-          "idea": "dp[0]=True; với i: nếu dp[j] và s[j:i] ∈ dict thì dp[i]=True.",
-          "code": "def word_break(s, wordDict):\n    words = set(wordDict)\n    n = len(s)\n    dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]",
-          "static": [
-            "dp[i]=true nếu tiền tố [0..i) tách được",
-            "s='leetcode': dp[0]=true",
-            "dp[4] khi 'leet' trong dict → true",
-            "dp[len]=true → có word break"
-          ],
-          "tcex": {
-            "input": {
-              "s": "leetcode",
-              "wordDict": [
-                "leet",
-                "code"
-              ]
-            },
-            "kind": "none",
-            "expected": true
-          }
-        },
-        {
-          "name": "DP giới hạn độ dài từ",
-          "time": "O(n·L)",
-          "space": "O(n)",
-          "idea": "Chỉ duyệt độ dài tối đa L của từ (nhanh khi từ ngắn).",
-          "code": "def word_break(s, wordDict):\n    words = set(wordDict); L = max(map(len, words), default=0)\n    n = len(s); dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(max(0, i-L), i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]",
-          "static": [
-            "dp[i]=true nếu tiền tố [0..i) tách được",
-            "s='leetcode': dp[0]=true",
-            "dp[4] khi 'leet' trong dict → true",
-            "dp[len]=true → có word break"
-          ],
-          "tcex": {
-            "input": {
-              "s": "leetcode",
-              "wordDict": [
-                "leet",
-                "code"
-              ]
-            },
-            "kind": "none",
-            "expected": true
-          }
-        },
-        {
-          "name": "BFS cắt từ",
-          "time": "O(n²)",
-          "space": "O(n)",
-          "idea": "coi các vị trí kết thúc từ hợp lệ là các nút có cạnh.",
-          "code": "from collections import deque\ndef word_break(s, wordDict):\n    words = set(wordDict); n = len(s)\n    q = deque([0]); seen = {0}\n    while q:\n        i = q.popleft()\n        if i == n: return True\n        for w in words:\n            if s.startswith(w, i) and i+len(w) not in seen:\n                seen.add(i+len(w)); q.append(i+len(w))\n    return False",
-          "static": [
-            "dp[i]=true nếu tiền tố [0..i) tách được",
-            "s='leetcode': dp[0]=true",
-            "dp[4] khi 'leet' trong dict → true",
-            "dp[len]=true → có word break"
-          ],
-          "tcex": {
-            "input": {
-              "s": "leetcode",
-              "wordDict": [
-                "leet",
-                "code"
-              ]
-            },
-            "kind": "none",
-            "expected": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
-        "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+     "name": "Công thức/tuple",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "reduce tuple (a,b) → (b, a+b) — style hàm thuần.",
+     "code": "from functools import reduce\ndef climb_stairs(n):\n    return reduce(lambda ab, _: (ab[1], ab[0] + ab[1]), range(n), (1, 1))[0]",
+     "static": [
+      "dp[i]=dp[i-1]+dp[i-2] (Fibonacci)",
+      "n=4: 1,1,2,3,5 → 5 cách",
+      "Giữ 2 biến trượt thay vì cả mảng",
+      "Trả về biến cuối"
+     ],
+     "tcex": {
+      "input": {
+       "n": 5
       },
-      "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
-    },
-    {
-      "no": "322",
-      "title": "Coin Change",
-      "cat": "1D DP",
-      "diff": "Medium",
-      "statement": "Số xu tối thiểu để đạt amount với các mệnh giá coins (dùng vô hạn); không được → -1.",
-      "examples": "coins=[1,2,5], amount=11 → 3 (5+5+1) · coins=[2], amount=3 → -1",
-      "keyIdea": "dp[a] = 1 + min(dp[a−c]) với c ∈ coins; dp[0]=0.",
-      "approaches": [
-        {
-          "name": "Bảng dp bottom-up",
-          "time": "O(amount·n)",
-          "space": "O(amount)",
-          "idea": "dp[0]=0; dp[a] = min(dp[a-c]+1) nếu có; kết quả dp[amount] hoặc −1 khi inf.",
-          "code": "def coin_change(coins, amount):\n    INF = 10**9\n    dp = [INF]*(amount+1); dp[0] = 0\n    for a in range(1, amount+1):\n        for c in coins:\n            if a >= c:\n                dp[a] = min(dp[a], dp[a-c] + 1)\n    return dp[amount] if dp[amount] != INF else -1",
-          "static": [
-            "dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins",
-            "coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)",
-            "dp[vô cực] nếu không đổi được → -1",
-            "Duyệt amount tăng dần"
-          ],
-          "tcex": {
-            "input": {
-              "coins": [
-                1,
-                2,
-                5
-              ],
-              "amount": 11
-            },
-            "kind": "none",
-            "expected": 3
-          }
-        },
-        {
-          "name": "BFS theo tổng",
-          "time": "O(amount·n)",
-          "space": "O(amount)",
-          "idea": "Từ 0, mở rộng bằng các mệnh giá; tầng chạm amount là đáp án.",
-          "code": "from collections import deque\ndef coin_change(coins, amount):\n    q = deque([(0, 0)]); seen = {0}\n    while q:\n        a, d = q.popleft()\n        if a == amount: return d\n        for c in coins:\n            na = a + c\n            if na <= amount and na not in seen:\n                seen.add(na); q.append((na, d+1))\n    return -1 if amount else 0",
-          "static": [
-            "dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins",
-            "coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)",
-            "dp[vô cực] nếu không đổi được → -1",
-            "Duyệt amount tăng dần"
-          ],
-          "tcex": {
-            "input": {
-              "coins": [
-                1,
-                2,
-                5
-              ],
-              "amount": 11
-            },
-            "kind": "none",
-            "expected": 3
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
-        "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
-      },
-      "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
-    },
-    {
-      "no": "300",
-      "title": "Longest Increasing Subsequence",
-      "cat": "1D DP",
-      "diff": "Medium",
-      "statement": "Độ dài dãy con tăng ngặt (không cần liên tiếp) dài nhất.",
-      "examples": "[10,9,2,5,3,7,101,18] → 4 ([2,3,7,101]) · [0,1,0,3,2,3] → 4",
-      "keyIdea": "dp[i] = LIS kết thúc tại i = 1 + max(dp[j]) với nums[j] < nums[i]. Cải tiến: tails + binary search O(n·log n).",
-      "approaches": [
-        {
-          "name": "DP O(n²)",
-          "time": "O(n²)",
-          "space": "O(n)",
-          "idea": "dp[i]: với mỗi j<i có nums[j]<nums[i] thì dp[i] = max(dp[j])+1.",
-          "code": "def length_of_lis(nums):\n    dp = [1]*len(nums)\n    for i in range(len(nums)):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp, default=0)",
-          "static": [
-            "dp[i]=1+max(dp[j]) với j<i và nums[j]<nums[i]",
-            "[10,9,2,5,3,7]: dp=[1,1,1,2,2,3]",
-            "Kết quả = max(dp)=3",
-            "Trả về max(dp) (không nhất thiết cuối)"
-          ],
-          "tcex": {
-            "input": {
-              "nums": [
-                10,
-                9,
-                2,
-                5,
-                3,
-                7,
-                101,
-                18
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "expected": 4
-          }
-        },
-        {
-          "name": "tails + bisect O(n·log n)",
-          "time": "O(n·log n)",
-          "space": "O(n)",
-          "idea": "tails[k] = giá trị nhỏ nhất kết thúc LIS dài k; với mỗi x: tìm chỗ chèn (bisect_left), ghi x ở đó — tails luôn tăng.",
-          "code": "from bisect import bisect_left\ndef length_of_lis(nums):\n    tails = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails): tails.append(x)\n        else: tails[i] = x\n    return len(tails)",
-          "static": [
-            "tails[k]=phần tử nhỏ nhất kết thúc dãy con dài k+1",
-            "[10,9,2,5,3,7]: tails=[2,3,7] → len 3",
-            "bisect_left tìm vị trí thay thế",
-            "Trả len(tails)"
-          ],
-          "tcex": {
-            "input": {
-              "nums": [
-                10,
-                9,
-                2,
-                5,
-                3,
-                7,
-                101,
-                18
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "expected": 4
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
-        "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
-      },
-      "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+      "kind": "none",
+      "expected": 8
+     }
     }
-  ]
+   ],
+   "thinking": {
+    "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
+    "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+   },
+   "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+  },
+  {
+   "no": "91",
+   "title": "Decode Ways",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Chuỗi số '1'..'26' đại diện A..Z; đếm số cách giải mã chuỗi s (số bắt đầu '0' → vô nghĩa).",
+   "examples": "s='12' → 2 ('AB','L') · '226' → 3 ('BZ','VF','BBF') · '06' → 0",
+   "keyIdea": "dp[i] = dp[i-1] (1 chữ số) + dp[i-2] (2 chữ số 10..26); nền dp[0]=1.",
+   "approaches": [
+    {
+     "name": "Bảng dp",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "dp[0]=1; mỗi i: cộng dp[i-1] nếu s[i-1]≠'0', cộng dp[i-2] nếu cặp '10'..'26'.",
+     "code": "def num_decodings(s):\n    n = len(s)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    dp[1] = 1 if s[0] != '0' else 0\n    for i in range(2, n + 1):\n        one = int(s[i-1])\n        two = int(s[i-2:i])\n        if one >= 1:\n            dp[i] += dp[i-1]\n        if 10 <= two <= 26:\n            dp[i] += dp[i-2]\n    return dp[n]",
+     "tcex": {
+      "input": {
+       "s": "226"
+      },
+      "kind": "none",
+      "ptrs": [
+       "i"
+      ],
+      "expected": 3,
+      "anim": true
+     },
+     "static": [
+      "s='226': dp[0]=1, dp[1]=1 (ký tự '2' hợp lệ)",
+      "i=2 ('22'): one=2 → +dp[1]=1; two=22 → +dp[0]=1 → dp[2]=2",
+      "i=3 ('226'): one=6 → +dp[2]=2; two=26 → +dp[1]=1 → dp[3]=3",
+      "Trả 3 — đúng 'BZ','VF','BBF'"
+     ]
+    },
+    {
+     "name": "Bảng dp (bắt đầu 0)",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Bản chạy với s bắt đầu '0' — toàn bộ bằng 0.",
+     "code": "def num_decodings(s):\n    n = len(s)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    dp[1] = 1 if s[0] != '0' else 0\n    for i in range(2, n + 1):\n        one = int(s[i-1])\n        two = int(s[i-2:i])\n        if one >= 1:\n            dp[i] += dp[i-1]\n        if 10 <= two <= 26:\n            dp[i] += dp[i-2]\n    return dp[n]",
+     "tcex": {
+      "input": {
+       "s": "06"
+      },
+      "kind": "none",
+      "expected": 0,
+      "anim": true
+     },
+     "static": [
+      "s='06': dp[1]=0 vì '0' không ánh xạ chữ cái nào",
+      "i=2: one=6 → +dp[1]=0; two=06=6 < 10 → không cộng → dp[2]=0",
+      "Trả 0 — '06' không giải mã được dù bỏ '0' đứng đầu cũng không (đề không cho phép)",
+      "Số 0 chỉ được 'dùng' trong cặp 10 hoặc 20 — đây là bẫy chính của bài"
+     ]
+    },
+    {
+     "name": "Hai biến (cuộn)",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Chỉ cần dp[i-1], dp[i-2] — giữ 2 biến a,b.",
+     "code": "def num_decodings(s):\n    a, b = 1, 0\n    prev = ''\n    for c in s:\n        cur = 0\n        if c != '0':\n            cur += a\n        if prev and 10 <= int(prev + c) <= 26:\n            cur += b\n        a, b, prev = cur, a, c\n    return a",
+     "static": [
+      "s='226': (a,b)=1,0; c='2': cur=1 → (1,1)",
+      "c='2' (cặp '22'): cur=1('2')+1('22')=2 → (2,1)",
+      "c='6' (cặp '26'): cur=2+1=3 → trả 3",
+      "b luôn giữ giá trị 'cách xa 1 bước' — chính là dp[i-2], a là dp[i-1]"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: tiền tố s[:i] có số cách = cách giải mã tiền tố bỏ 1 chữ số cuối + cách bỏ 2 chữ số cuối (nếu cặp 10..26) — cộng dồn prefix.",
+    "reverse": "Quy nạp ngược: ký tự '0' không bao giờ tự đứng — nó phải đi với chữ số trước tạo 10/20; vì vậy dp[1]=0 khi s[0]='0' lan toả về 0."
+   },
+   "note": "Quy nạp ngược: ký tự '0' không bao giờ tự đứng — nó phải đi với chữ số trước tạo 10/20; vì vậy dp[1]=0 khi s[0]='0' lan toả về 0."
+  },
+  {
+   "no": "96",
+   "title": "Unique Binary Search Trees",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Đếm số BST (cây tìm kiếm nhị phân) phân biệt tạo được từ n nút mang giá trị 1..n.",
+   "examples": "n=3 → 5 · n=1 → 1",
+   "keyIdea": "Chọn nút gốc i: bên trái i−1 nút, bên phải n−i nút — dp[n] = Σ dp[i−1]·dp[n−i] (số Catalan).",
+   "approaches": [
+    {
+     "name": "Bảng dp tích phân",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "dp[0]=dp[1]=1; với mỗi tổng k: cộng dồn tích dp[i−1]*dp[k−i] theo mọi gốc i.",
+     "code": "def num_trees(n):\n    dp = [0] * (n + 1)\n    dp[0] = dp[1] = 1\n    for k in range(2, n + 1):\n        for i in range(1, k + 1):\n            dp[k] += dp[i-1] * dp[k-i]\n    return dp[n]",
+     "tcex": {
+      "input": {
+       "n": 4
+      },
+      "kind": "none",
+      "ptrs": [
+       "k",
+       "i"
+      ],
+      "expected": 14,
+      "anim": true
+     },
+     "static": [
+      "dp[0]=dp[1]=1; k=2: i=1 → 1·1; i=2 → 1·1 → dp[2]=2",
+      "k=3: i=1 → 1·2; i=2 → 1·1; i=3 → 2·1 → dp[3]=5",
+      "k=4: i=1 → 1·5; i=2 → 1·2; i=3 → 2·1; i=4 → 5·1 → dp[4]=14",
+      "Trả 14 — dãy Catalan 1,1,2,5,14"
+     ]
+    },
+    {
+     "name": "Đệ quy + memo",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "f(k) = Σ f(i−1)·f(k−i) với memo — bài toán con trùng bị cắt.",
+     "code": "def num_trees(n):\n    memo = {}\n    def f(k):\n        if k <= 1:\n            return 1\n        if k in memo:\n            return memo[k]\n        total = 0\n        for i in range(1, k + 1):\n            total += f(i - 1) * f(k - i)\n        memo[k] = total\n        return total\n    return f(n)",
+     "static": [
+      "f(4) = f(0)·f(3) + f(1)·f(2) + f(2)·f(1) + f(3)·f(0) = 5+2+2+5 = 14",
+      "f(3): root 1 → 1·2, root 2 → 1·1, root 3 → 2·1 = 5",
+      "memo khoá theo k: f(3) tính 1 lần dù f(4) cần tới 2 lần",
+      "Nếu không memo, đệ quy lặp lại f(k) nhiều lần — độ phức tạp theo Catalan nổ bùng"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: cây n nút có gốc i — kích thước con trái i−1 và con phải n−i; mọi tổ hợp (trái, phải) là một cây khác nhau nên nhân với nhau.",
+    "reverse": "Quy nạp ngược: bài toán con 'n nút' tách thành hai bài con độc lập 'i−1' và 'n−i' — chia để trị theo gốc, tổng tích là đáp án."
+   },
+   "note": "Quy nạp ngược: bài toán con 'n nút' tách thành hai bài con độc lập 'i−1' và 'n−i' — chia để trị theo gốc, tổng tích là đáp án."
+  },
+  {
+   "no": "139",
+   "title": "Word Break",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Xem s có thể tách thành các từ trong wordDict (dùng lại thoải mái) không.",
+   "examples": "s='leetcode', wordDict=['leet','code'] → true · 'catsandog' với ['cats','dog','sand','and','cat'] → false",
+   "keyIdea": "dp[i] = s[:i] tách được?; dp[i] đúng nếu tồn tại j<i: dp[j] và s[j:i] trong dict.",
+   "approaches": [
+    {
+     "name": "DP boolean theo tiền tố",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "dp[0]=True; với i: nếu dp[j] và s[j:i] ∈ dict thì dp[i]=True.",
+     "code": "def word_break(s, wordDict):\n    words = set(wordDict)\n    n = len(s)\n    dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]",
+     "static": [
+      "dp[i]=true nếu tiền tố [0..i) tách được",
+      "s='leetcode': dp[0]=true",
+      "dp[4] khi 'leet' trong dict → true",
+      "dp[len]=true → có word break"
+     ],
+     "tcex": {
+      "input": {
+       "s": "leetcode",
+       "wordDict": [
+        "leet",
+        "code"
+       ]
+      },
+      "kind": "none",
+      "expected": true
+     }
+    },
+    {
+     "name": "DP giới hạn độ dài từ",
+     "time": "O(n·L)",
+     "space": "O(n)",
+     "idea": "Chỉ duyệt độ dài tối đa L của từ (nhanh khi từ ngắn).",
+     "code": "def word_break(s, wordDict):\n    words = set(wordDict); L = max(map(len, words), default=0)\n    n = len(s); dp = [False]*(n+1); dp[0] = True\n    for i in range(1, n+1):\n        for j in range(max(0, i-L), i):\n            if dp[j] and s[j:i] in words:\n                dp[i] = True; break\n    return dp[n]",
+     "static": [
+      "dp[i]=true nếu tiền tố [0..i) tách được",
+      "s='leetcode': dp[0]=true",
+      "dp[4] khi 'leet' trong dict → true",
+      "dp[len]=true → có word break"
+     ],
+     "tcex": {
+      "input": {
+       "s": "leetcode",
+       "wordDict": [
+        "leet",
+        "code"
+       ]
+      },
+      "kind": "none",
+      "expected": true
+     }
+    },
+    {
+     "name": "BFS cắt từ",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "coi các vị trí kết thúc từ hợp lệ là các nút có cạnh.",
+     "code": "from collections import deque\ndef word_break(s, wordDict):\n    words = set(wordDict); n = len(s)\n    q = deque([0]); seen = {0}\n    while q:\n        i = q.popleft()\n        if i == n: return True\n        for w in words:\n            if s.startswith(w, i) and i+len(w) not in seen:\n                seen.add(i+len(w)); q.append(i+len(w))\n    return False",
+     "static": [
+      "dp[i]=true nếu tiền tố [0..i) tách được",
+      "s='leetcode': dp[0]=true",
+      "dp[4] khi 'leet' trong dict → true",
+      "dp[len]=true → có word break"
+     ],
+     "tcex": {
+      "input": {
+       "s": "leetcode",
+       "wordDict": [
+        "leet",
+        "code"
+       ]
+      },
+      "kind": "none",
+      "expected": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
+    "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+   },
+   "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+  },
+  {
+   "no": "198",
+   "title": "House Robber",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Trộm các nhà (không trộm hai nhà kề nhau) tối đa hoá tổng lấy được.",
+   "examples": "[1,2,3,1] → 4 · [2,7,9,3,1] → 12",
+   "keyIdea": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]) — nhảy cách 1 hoặc 2.",
+   "approaches": [
+    {
+     "name": "Hai biến trượt",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "a = dp[i-2], b = dp[i-1]; cur = max(b, a+nums[i]).",
+     "code": "def rob(nums):\n    a = b = 0\n    for x in nums:\n        a, b = b, max(b, a + x)\n    return b",
+     "tcex": {
+      "input": {
+       "nums": [
+        2,
+        7,
+        9,
+        3,
+        1
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "expected": 12
+     }
+    },
+    {
+     "name": "Bảng dp",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]).",
+     "code": "def rob(nums):\n    n = len(nums)\n    if n == 1: return nums[0]\n    dp = [0]*n\n    dp[0] = nums[0]; dp[1] = max(nums[0], nums[1])\n    for i in range(2, n):\n        dp[i] = max(dp[i-1], dp[i-2] + nums[i])\n    return dp[-1]",
+     "tcex": {
+      "input": {
+       "nums": [
+        2,
+        7,
+        9,
+        3,
+        1
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "expected": 12
+     },
+     "static": [
+      "dp[i]=max(dp[i-1], dp[i-2]+nums[i])",
+      "[2,7,9,3,1]: dp=[0,2,7,11,11,12]",
+      "Không lấy 2 nhà liền nhau",
+      "Trả dp[n]"
+     ]
+    },
+    {
+     "name": "Chẵn/lẻ tích luỹ",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Giữ tổng lấy từ hai dãy lệch pha; mỗi bước cập nhật max — bản gọn.",
+     "code": "def rob(nums):\n    even = odd = 0\n    for i, x in enumerate(nums):\n        if i % 2: odd = max(even, odd + x)\n        else: even = max(odd, even + x)\n    return max(even, odd)",
+     "tcex": {
+      "input": {
+       "nums": [
+        2,
+        7,
+        9,
+        3,
+        1
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "expected": 12
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
+    "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+   },
+   "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+  },
+  {
+   "no": "279",
+   "title": "Perfect Squares",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Số chính phương ít nhất cộng thành n (mỗi ô vuông 1,4,9,... dùng thoải mái).",
+   "examples": "n=12 → 3 (4+4+4) · n=13 → 2 (4+9)",
+   "keyIdea": "dp[i] = 1 + min(dp[i−k²]) với k² ≤ i — bài toán đổi xu với mệnh giá chính phương.",
+   "approaches": [
+    {
+     "name": "Bảng dp",
+     "time": "O(n√n)",
+     "space": "O(n)",
+     "idea": "dp[0]=0; mỗi i thử mọi j² ≤ i: dp[i] = min(dp[i], dp[i−j²]+1).",
+     "code": "def num_squares(n):\n    INF = 10**9\n    dp = [INF] * (n + 1)\n    dp[0] = 0\n    for i in range(1, n + 1):\n        j = 1\n        while j * j <= i:\n            dp[i] = min(dp[i], dp[i - j*j] + 1)\n            j += 1\n    return dp[n]",
+     "tcex": {
+      "input": {
+       "n": 12
+      },
+      "kind": "none",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": 3,
+      "anim": true
+     },
+     "static": [
+      "dp[0]=0; i=1: j=1 → dp[0]+1 = 1 → dp[1]=1",
+      "i=4: j=1 → dp[3]+1 = 4; j=2 → dp[0]+1 = 1 → dp[4]=1 (4 là chính phương)",
+      "i=12: j=1 → dp[11]+1 = 3+1 = 4; j=2 → dp[8]+1 = 2+1 = 3; j=3 → dp[3]+1 = 4 → dp[12]=3",
+      "Trả 3 — đúng 12 = 4+4+4"
+     ]
+    },
+    {
+     "name": "Định lý 4 bình phương",
+     "time": "O(√n)",
+     "space": "O(1)",
+     "idea": "Lagrange: mọi n là tổng ≤ 4 chính phương; trả 4 khi dạng 4^k(8m+7); 1 nếu chính phương; 2 nếu tổng hai; còn lại 3.",
+     "code": "def num_squares(n):\n    while n % 4 == 0:\n        n //= 4\n    if n % 8 == 7:\n        return 4\n    if int(n**0.5)**2 == n:\n        return 1\n    for a in range(1, int(n**0.5) + 1):\n        if int((n - a*a)**0.5)**2 == n - a*a:\n            return 2\n    return 3",
+     "static": [
+      "n=12: loại 4^k → 12; 12%8 = 4 ≠ 7; không chính phương; a=2: 12−4=8 không chính phương; ... không có → trả 3",
+      "n=13: 13%8 = 5; không chính phương; a=2: 13−4=9 chính phương → trả 2 (4+9)",
+      "n=7: 7%8=7 → trả 4 — đúng 7 = 4+1+1+1",
+      "Chạy rất nhanh vì không dựng mảng dp — nhưng cần nhớ các trường hợp của định lý"
+     ]
+    },
+    {
+     "name": "BFS theo tổng",
+     "time": "O(n√n)",
+     "space": "O(n)",
+     "idea": "BFS trên 'đồ thị tổng': mỗi bước cộng thêm một chính phương; tầng chạm n là đáp án tối thiểu.",
+     "code": "from collections import deque\ndef num_squares(n):\n    q = deque([(0, 0)])\n    seen = {0}\n    while q:\n        s, d = q.popleft()\n        if s == n:\n            return d\n        j = 1\n        while s + j*j <= n:\n            ns = s + j*j\n            if ns not in seen:\n                seen.add(ns)\n                q.append((ns, d + 1))\n            j += 1\n    return -1",
+     "static": [
+      "n=12: tầng 0: {0}; tầng 1: 1,4,9",
+      "tầng 2: từ 1 → 2,5,10; từ 4 → 8; từ 9 → 10 (12 quá xa từ 9) — thêm 2,5,8,10",
+      "tầng 3: từ 8 → 12 ✓ → trả 3",
+      "BFS đảm bảo tối thiểu vì quét theo số lượng số hạng tăng dần — nhưng tốn bộ nhớ queue"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: số hạng cuối cùng là k² ≤ n, phần còn lại n−k² giải tiếp — dp[i] là bài đổi xu với mệnh giá chính phương.",
+    "reverse": "Quy nạp ngược: muốn dp[i] nhỏ nhất phải thử mọi k² — không thể chọn số hạng 'lớn nhất' tham lam (12: 9+1+1+1 = 4 xu, kém 4+4+4 = 3 xu)."
+   },
+   "note": "Quy nạp ngược: muốn dp[i] nhỏ nhất phải thử mọi k² — không thể chọn số hạng 'lớn nhất' tham lam (12: 9+1+1+1 = 4 xu, kém 4+4+4 = 3 xu)."
+  },
+  {
+   "no": "300",
+   "title": "Longest Increasing Subsequence",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Độ dài dãy con tăng ngặt (không cần liên tiếp) dài nhất.",
+   "examples": "[10,9,2,5,3,7,101,18] → 4 ([2,3,7,101]) · [0,1,0,3,2,3] → 4",
+   "keyIdea": "dp[i] = LIS kết thúc tại i = 1 + max(dp[j]) với nums[j] < nums[i]. Cải tiến: tails + binary search O(n·log n).",
+   "approaches": [
+    {
+     "name": "DP O(n²)",
+     "time": "O(n²)",
+     "space": "O(n)",
+     "idea": "dp[i]: với mỗi j<i có nums[j]<nums[i] thì dp[i] = max(dp[j])+1.",
+     "code": "def length_of_lis(nums):\n    dp = [1]*len(nums)\n    for i in range(len(nums)):\n        for j in range(i):\n            if nums[j] < nums[i]:\n                dp[i] = max(dp[i], dp[j] + 1)\n    return max(dp, default=0)",
+     "static": [
+      "dp[i]=1+max(dp[j]) với j<i và nums[j]<nums[i]",
+      "[10,9,2,5,3,7]: dp=[1,1,1,2,2,3]",
+      "Kết quả = max(dp)=3",
+      "Trả về max(dp) (không nhất thiết cuối)"
+     ],
+     "tcex": {
+      "input": {
+       "nums": [
+        10,
+        9,
+        2,
+        5,
+        3,
+        7,
+        101,
+        18
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "expected": 4
+     }
+    },
+    {
+     "name": "tails + bisect O(n·log n)",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "tails[k] = giá trị nhỏ nhất kết thúc LIS dài k; với mỗi x: tìm chỗ chèn (bisect_left), ghi x ở đó — tails luôn tăng.",
+     "code": "from bisect import bisect_left\ndef length_of_lis(nums):\n    tails = []\n    for x in nums:\n        i = bisect_left(tails, x)\n        if i == len(tails): tails.append(x)\n        else: tails[i] = x\n    return len(tails)",
+     "static": [
+      "tails[k]=phần tử nhỏ nhất kết thúc dãy con dài k+1",
+      "[10,9,2,5,3,7]: tails=[2,3,7] → len 3",
+      "bisect_left tìm vị trí thay thế",
+      "Trả len(tails)"
+     ],
+     "tcex": {
+      "input": {
+       "nums": [
+        10,
+        9,
+        2,
+        5,
+        3,
+        7,
+        101,
+        18
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "expected": 4
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
+    "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+   },
+   "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+  },
+  {
+   "no": "309",
+   "title": "Best Time to Buy and Sell Stock with Cooldown",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Mua/bán cổ phiếu nhiều lần nhưng sau khi bán phải nghỉ đúng 1 ngày mới được mua lại; tối đa lợi nhuận.",
+   "examples": "[1,2,3,0,2] → 3 (mua 1, bán 2, nghỉ, mua 0, bán 2) · [1] → 0",
+   "keyIdea": "Ba trạng thái: hold (đang giữ), sold (vừa bán → phải nghỉ), rest (nghỉ ngơi); mỗi ngày cập nhật cả ba.",
+   "approaches": [
+    {
+     "name": "3 biến trạng thái",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "rest = max(rest, sold) — nghỉ bình thường; sold = hold+p — bán hôm nay; hold = max(hold, rest−p) — mua sau khi nghỉ ≥ 1 ngày.",
+     "code": "def max_profit(prices):\n    rest = sold = 0\n    hold = -10**9\n    for p in prices:\n        rest2 = max(rest, sold)\n        sold2 = hold + p\n        hold2 = max(hold, rest - p)\n        rest, sold, hold = rest2, sold2, hold2\n    return max(rest, sold)",
+     "tcex": {
+      "input": {
+       "prices": [
+        1,
+        2,
+        3,
+        0,
+        2
+       ]
+      },
+      "kind": "array",
+      "display": "prices",
+      "ptrs": [
+       "p"
+      ],
+      "expected": 3,
+      "anim": true
+     },
+     "static": [
+      "p=1: hold = −1 (mua giá 1), rest=0, sold=0",
+      "p=2: sold = −1+2 = 1; hold giữ −1; rest = 0",
+      "p=3: sold = −1+3 = 2; hold = max(−1, 0−3) = −1",
+      "p=0: rest = max(0,1) = 1; hold = max(−1, 1−0) = 1 (mua giá 0 sau khi nghỉ); sold2 = −1+0 = −1",
+      "p=2: sold2 = 1+2 = 3 → trả max(rest, sold) = 3"
+     ]
+    },
+    {
+     "name": "Mảng trạng thái",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Giữ mảng hold/sold/rest cho CẢ quá trình — dễ truy vết, tốn bộ nhớ hơn.",
+     "code": "def max_profit(prices):\n    n = len(prices)\n    if n < 2:\n        return 0\n    hold = [-10**9] * n\n    sold = [0] * n\n    rest = [0] * n\n    hold[0] = -prices[0]\n    for i in range(1, n):\n        hold[i] = max(hold[i-1], rest[i-1] - prices[i])\n        sold[i] = hold[i-1] + prices[i]\n        rest[i] = max(rest[i-1], sold[i-1])\n    return max(sold[-1], rest[-1])",
+     "static": [
+      "prices=[1,2,3,0,2]: hold[0] = −1; i=1: sold[1]=1, hold[1]=−1, rest[1]=0",
+      "i=2: sold[2] = −1+3 = 2 (bán giá 3); i=3: hold[3] = max(−1, rest[2]−0) = max(−1, 0) = 0 → mua giá 0",
+      "i=4: sold[4] = 0+2 = 3 → max(sold[-1], rest[-1]) = 3",
+      "rest[i] chuẩn 'cooldown': mua tại i chỉ được phép khi rest[i-1] — tức đã nghỉ hết ngày sau lần bán"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi ngày rơi vào một trong ba trạng thái; trạng thái kế chỉ phụ thuộc 3 giá trị hôm trước — chuyển tiếp bằng max.",
+    "reverse": "Quy nạp ngược: điều kiện 'cooldown' chỉ chặn đường hold — buy hôm nay phải lấy từ rest hôm qua, không bao giờ từ sold hôm qua."
+   },
+   "note": "Quy nạp ngược: điều kiện 'cooldown' chỉ chặn đường hold — buy hôm nay phải lấy từ rest hôm qua, không bao giờ từ sold hôm qua."
+  },
+  {
+   "no": "322",
+   "title": "Coin Change",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Số xu tối thiểu để đạt amount với các mệnh giá coins (dùng vô hạn); không được → -1.",
+   "examples": "coins=[1,2,5], amount=11 → 3 (5+5+1) · coins=[2], amount=3 → -1",
+   "keyIdea": "dp[a] = 1 + min(dp[a−c]) với c ∈ coins; dp[0]=0.",
+   "approaches": [
+    {
+     "name": "Bảng dp bottom-up",
+     "time": "O(amount·n)",
+     "space": "O(amount)",
+     "idea": "dp[0]=0; dp[a] = min(dp[a-c]+1) nếu có; kết quả dp[amount] hoặc −1 khi inf.",
+     "code": "def coin_change(coins, amount):\n    INF = 10**9\n    dp = [INF]*(amount+1); dp[0] = 0\n    for a in range(1, amount+1):\n        for c in coins:\n            if a >= c:\n                dp[a] = min(dp[a], dp[a-c] + 1)\n    return dp[amount] if dp[amount] != INF else -1",
+     "static": [
+      "dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins",
+      "coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)",
+      "dp[vô cực] nếu không đổi được → -1",
+      "Duyệt amount tăng dần"
+     ],
+     "tcex": {
+      "input": {
+       "coins": [
+        1,
+        2,
+        5
+       ],
+       "amount": 11
+      },
+      "kind": "none",
+      "expected": 3
+     }
+    },
+    {
+     "name": "BFS theo tổng",
+     "time": "O(amount·n)",
+     "space": "O(amount)",
+     "idea": "Từ 0, mở rộng bằng các mệnh giá; tầng chạm amount là đáp án.",
+     "code": "from collections import deque\ndef coin_change(coins, amount):\n    q = deque([(0, 0)]); seen = {0}\n    while q:\n        a, d = q.popleft()\n        if a == amount: return d\n        for c in coins:\n            na = a + c\n            if na <= amount and na not in seen:\n                seen.add(na); q.append((na, d+1))\n    return -1 if amount else 0",
+     "static": [
+      "dp[0]=0, dp[a]=min(dp[a-c]+1) với c trong coins",
+      "coins=[1,2,5], amount=11: dp[11]=3 (5+5+1)",
+      "dp[vô cực] nếu không đổi được → -1",
+      "Duyệt amount tăng dần"
+     ],
+     "tcex": {
+      "input": {
+       "coins": [
+        1,
+        2,
+        5
+       ],
+       "amount": 11
+      },
+      "kind": "none",
+      "expected": 3
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Làm tăng dần kích thước bài toán con (prefix), dùng kết quả con đã tính để suy ra bước kế.",
+    "reverse": "Cần đáp án tại n → cần tối ưu bài toán con n-1 (và n-2), ngược về trạng thái nền."
+   },
+   "note": "Các bài DP 1D: trạng thái = prefix, chuyển tiếp = max/min của các lựa chọn, nền = 0/1 phần tử đầu."
+  },
+  {
+   "no": "416",
+   "title": "Partition Equal Subset Sum",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Chia mảng thành hai tập con bằng tổng? (tổng lẻ → false).",
+   "examples": "[1,5,11,5] → true (11 = 5+5+1) · [1,2,3,5] → false",
+   "keyIdea": "Tổng mỗi phần = total/2 — tìm tập con đạt đúng tổng này bằng DP boolean (knapsack).",
+   "approaches": [
+    {
+     "name": "DP boolean cuộn",
+     "time": "O(n·target)",
+     "space": "O(target)",
+     "idea": "dp[s] = đạt được tổng s?; quét mỗi x NGƯỢC từ target xuống x để không dùng lại x.",
+     "code": "def can_partition(nums):\n    total = sum(nums)\n    if total % 2:\n        return False\n    target = total // 2\n    dp = [False] * (target + 1)\n    dp[0] = True\n    for x in nums:\n        for s in range(target, x - 1, -1):\n            if dp[s - x]:\n                dp[s] = True\n    return dp[target]",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        5,
+        11,
+        5
+       ]
+      },
+      "kind": "none",
+      "ptrs": [
+       "x",
+       "s"
+      ],
+      "expected": true,
+      "anim": true
+     },
+     "static": [
+      "total = 22 → target = 11; dp[0] = True",
+      "x=1: dp[1]=True; x=5: dp[5], dp[6] = True",
+      "x=11: dp[11] = True (11 = 11); x=5: dp[10] = True (5+5)...",
+      "Trả dp[11] = True — có tập {11} tổng 11, phần còn lại {1,5,5} cũng 11"
+     ]
+    },
+    {
+     "name": "Bảng 2D",
+     "time": "O(n·target)",
+     "space": "O(n·target)",
+     "idea": "dp[i][s] = dùng vài phần tử đầu đạt tổng s? — không cuộn, dễ đọc hơn.",
+     "code": "def can_partition(nums):\n    total = sum(nums)\n    if total % 2:\n        return False\n    target = total // 2\n    dp = [[False] * (target + 1) for _ in range(len(nums) + 1)]\n    for i in range(len(nums) + 1):\n        dp[i][0] = True\n    for i in range(1, len(nums) + 1):\n        for s in range(1, target + 1):\n            dp[i][s] = dp[i-1][s] or (s >= nums[i-1] and dp[i-1][s - nums[i-1]])\n    return dp[-1][target]",
+     "static": [
+      "nums=[1,5,11,5], target=11: cột 0 toàn True (tổng 0 không cần phần tử nào)",
+      "i=1 (x=1): dp[1][1] = dp[0][1] or (1>=1 và dp[0][0]) = True",
+      "i=3 (x=11): dp[3][11] = dp[2][11] or (11>=11 và dp[2][0]) = True — chọn riêng 11",
+      "Bảng đầy đủ (5 hàng × 12 cột) cho thấy rõ mỗi tổng đạt được từ dòng nào — nhưng tốn O(n·target) bộ nhớ"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: thêm phần tử x — mọi tổng có thể đạt bằng cách không lấy x hoặc cộng x vào tổng cũ — knapsack boolean chuẩn.",
+    "reverse": "Quy nạp ngược: mỗi phần tử dùng tối đa một lần nên phải quét tổng NGƯỢC — quét xuôi sẽ cho phép dùng lại x nhiều lần, sai kết quả."
+   },
+   "note": "Quy nạp ngược: mỗi phần tử dùng tối đa một lần nên phải quét tổng NGƯỢC — quét xuôi sẽ cho phép dùng lại x nhiều lần, sai kết quả."
+  },
+  {
+   "no": "494",
+   "title": "Target Sum",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Gán +/− trước mỗi số sao cho tổng bằng target; đếm số cách.",
+   "examples": "nums=[1,1,1,1,1], target=3 → 5 · nums=[1], target=1 → 1",
+   "keyIdea": "Tập con dương P: sum(P) = (total+target)/2 — biến thành bài đổi xu đếm cách (bài con của 416).",
+   "approaches": [
+    {
+     "name": "DP đếm cách cuộn",
+     "time": "O(n·s)",
+     "space": "O(s)",
+     "idea": "s = (total+target)//2; dp[0]=1; mỗi x quét ngược: dp[i] += dp[i−x]; s lẻ hoặc ngoài tầm → 0.",
+     "code": "def find_target_sum_ways(nums, target):\n    total = sum(nums)\n    if (total + target) % 2 or abs(target) > total:\n        return 0\n    s = (total + target) // 2\n    dp = [0] * (s + 1)\n    dp[0] = 1\n    for x in nums:\n        for i in range(s, x - 1, -1):\n            dp[i] += dp[i - x]\n    return dp[s]",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        1,
+        1,
+        1,
+        1
+       ],
+       "target": 3
+      },
+      "kind": "none",
+      "ptrs": [
+       "x",
+       "i"
+      ],
+      "expected": 5,
+      "anim": true
+     },
+     "static": [
+      "total=5, target=3 → s = (5+3)//2 = 4",
+      "dp sau 2 số 1: [1,2,1,0,0]; sau 3 số: [1,3,3,1,0]",
+      "Sau 4 số: [1,4,6,4,1]; sau 5 số: [1,5,10,10,5]",
+      "dp[4] = 5 — đúng 5 cách gán dấu đạt tổng 3"
+     ]
+    },
+    {
+     "name": "DP offset (trục dịch)",
+     "time": "O(n·Σ)",
+     "space": "O(Σ)",
+     "idea": "Không cần biến đổi toán học: mảng dp có chỉ số 0..2·sum, offset = sum; mỗi bước lan tỏa +x và −x.",
+     "code": "def find_target_sum_ways(nums, target):\n    offset = sum(nums)\n    total = 2 * offset + 1\n    dp = [0] * total\n    dp[offset] = 1\n    for x in nums:\n        nxt = [0] * total\n        for i, v in enumerate(dp):\n            if v:\n                nxt[i + x] += v\n                nxt[i - x] += v\n        dp = nxt\n    return dp[offset + target]",
+     "static": [
+      "nums=[1,1,1,1,1], target=3: offset=5, dp khởi đầu 1 tại ô 5",
+      "Sau bước 1: ô 4 và 6 đều = 1 — trạng thái lan sang hai phía",
+      "Sau 5 bước, dp[offset+3] = dp[8] = 5 — đáp án",
+      "Mảng có 11 ô; tránh chỉ số âm nhờ offset — trực giác 'từng bước cộng/trừ' rõ hơn cách biến đổi tổng"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: nếu tập dương có tổng P thì P − (total−P) = target → P = (total+target)/2 — chỉ cần đếm tập con tổng P như Subset Sum.",
+    "reverse": "Quy nạp ngược: (total+target) lẻ hoặc |target| > total thì vô nghiệm — công thức P = (total+target)//2 còn là tiêu chuẩn loại nhanh."
+   },
+   "note": "Quy nạp ngược: (total+target) lẻ hoặc |target| > total thì vô nghiệm — công thức P = (total+target)//2 còn là tiêu chuẩn loại nhanh."
+  },
+  {
+   "no": "509",
+   "title": "Fibonacci Number",
+   "cat": "1D DP",
+   "diff": "Easy",
+   "statement": "Tính F(n): F(0)=0, F(1)=1, F(n)=F(n−1)+F(n−2).",
+   "examples": "n=2 → 1 · n=3 → 2 · n=4 → 3 · n=10 → 55",
+   "keyIdea": "Đệ quy F(n) = F(n−1)+F(n−2) có bài con lặp — dùng vòng lặp 2 biến là DP tốt nhất.",
+   "approaches": [
+    {
+     "name": "Hai biến vòng lặp",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "a,b = 0,1; lặp n−1 lần: a,b = b, a+b.",
+     "code": "def fib(n):\n    if n < 2:\n        return n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b",
+     "tcex": {
+      "input": {
+       "n": 10
+      },
+      "kind": "none",
+      "ptrs": [
+       "a",
+       "b"
+      ],
+      "expected": 55,
+      "anim": true
+     },
+     "static": [
+      "a,b = 0,1; lặp tới n=10: (1,1) → (1,2) → (2,3) → (3,5) → (5,8) → (8,13) → (13,21) → (21,34) → (34,55)",
+      "Sau 9 vòng b = 55 → trả 55",
+      "Chỉ giữ 2 số gần nhất — mọi số trước đó không cần nhớ lại",
+      "F(2)=1, F(3)=2, F(4)=3 khớp ví dụ LeetCode"
+     ]
+    },
+    {
+     "name": "Bảng dp",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "dp[0]=0, dp[1]=1; dp[i] = dp[i-1]+dp[i-2] — minh hoạ trạng thái đầy đủ.",
+     "code": "def fib(n):\n    if n < 2:\n        return n\n    dp = [0] * (n + 1)\n    dp[1] = 1\n    for i in range(2, n + 1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]",
+     "static": [
+      "dp = [0,1,1,2,3,5,8,13,21,34,55] với n=10",
+      "dp[10] = dp[9]+dp[8] = 34+21 = 55",
+      "Mảng đầy đủ cho thấy mọi giá trị trung gian — nhưng thừa n−1 ô so với cách 2 biến",
+      "Khi cần truy vết hoặc nhiều truy vấn thì bảng có ích; bài này chỉ hỏi một giá trị"
+     ]
+    },
+    {
+     "name": "Đệ quy thuần",
+     "time": "O(2ⁿ)",
+     "space": "O(n)",
+     "idea": "fib(n) = fib(n−1)+fib(n−2) — đúng định nghĩa nhưng nổ bùng bài toán con trùng.",
+     "code": "def fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)",
+     "static": [
+      "fib(5) = fib(4)+fib(3) = (fib(3)+fib(2)) + (fib(2)+fib(1))",
+      "fib(3) được tính lại 2 lần, fib(2) tới 3 lần — với n=30 tới hơn 1,3 triệu phép gọi",
+      "Dùng được cho n ≤ ~30, demo rõ 'tại sao cần DP' — memo hoá biến nó thành O(n)",
+      "LeetCode giới hạn n ≤ 30 nên vẫn hợp lệ, nhưng đệ quy không nên dùng cho n lớn"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: F(i) phụ thuộc đúng hai giá trị liền trước — chỉ cần 2 biến trượt là đủ, mọi giá trị cũ hơn vô dụng.",
+    "reverse": "Quy nạp ngược: cần F(n) → cần F(n−1), F(n−2) → ... → F(0), F(1) là nền — đệ quy không memo lặp lại nhánh, vòng lặp tính mỗi giá trị đúng một lần."
+   },
+   "note": "Quy nạp ngược: cần F(n) → cần F(n−1), F(n−2) → ... → F(0), F(1) là nền — đệ quy không memo lặp lại nhánh, vòng lặp tính mỗi giá trị đúng một lần."
+  },
+  {
+   "no": "647",
+   "title": "Palindromic Substrings",
+   "cat": "1D DP",
+   "diff": "Medium",
+   "statement": "Đếm chuỗi con LIÊN TIẾP là palindrome.",
+   "examples": "s='abc' → 3 ('a','b','c') · s='aaa' → 6 ('a'×3, 'aa'×2, 'aaa')",
+   "keyIdea": "Mỗi palindrome sinh ra bằng cách loang từ tâm (1 hoặc 2 ký tự) — đếm mọi lần loang thành công.",
+   "approaches": [
+    {
+     "name": "Loang quanh tâm",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "2n−1 tâm: l = c//2, r = l + c%2; loang khi s[l]==s[r], mỗi lần loang là 1 palindrome mới.",
+     "code": "def count_substrings(s):\n    n = len(s)\n    ans = 0\n    for c in range(2 * n - 1):\n        l = c // 2\n        r = l + c % 2\n        while l >= 0 and r < n and s[l] == s[r]:\n            ans += 1\n            l -= 1\n            r += 1\n    return ans",
+     "tcex": {
+      "input": {
+       "s": "aaa"
+      },
+      "kind": "none",
+      "ptrs": [
+       "c",
+       "l",
+       "r"
+      ],
+      "expected": 6,
+      "anim": true
+     },
+     "static": [
+      "s='aaa': tâm c=0 (l=r=0): 'a' → 1; loang 'aa' → 2; 'aaa' → 3",
+      "c=1 (l=0,r=1): 'aa' → 4; loang 'aaa' → 5",
+      "c=2 (l=1,r=2): 'aa' → 6",
+      "Trả 6 — mọi chuỗi con của 'aaa' đều là palindrome"
+     ]
+    },
+    {
+     "name": "Bảng dp boolean",
+     "time": "O(n²)",
+     "space": "O(n²)",
+     "idea": "dp[i][j] = s[i..j] có palindrome? nếu s[i]==s[j] và (j−i<3 hoặc dp[i+1][j−1]); đếm ô đúng.",
+     "code": "def count_substrings(s):\n    n = len(s)\n    dp = [[False] * n for _ in range(n)]\n    ans = 0\n    for j in range(n):\n        for i in range(j + 1):\n            if s[i] == s[j] and (j - i < 3 or dp[i+1][j-1]):\n                dp[i][j] = True\n                ans += 1\n    return ans",
+     "static": [
+      "s='aaa': j=0: i=0 'a' → dp[0][0]=True, ans=1",
+      "j=1: i=0 'aa' (j−i=1<3) → True, ans=2; i=1 'a' → True, ans=3",
+      "j=2: i=0 'aaa' → s bằng và dp[1][1]=True → ans=4; i=1 'aa' → ans=5; i=2 'a' → ans=6",
+      "Trả 6; công thức j−i<3 thay cho 'chuỗi độ dài 1,2 là palindrome' giúp không phải khởi tạo đường chéo riêng"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: palindrome dài được 'nuôi' từ palindrome ngắn hơn bên trong — loang mỗi bước một ô hoặc dựa dp[i+1][j−1].",
+    "reverse": "Quy nạp ngược: đếm từng ô khớp — chuỗi con 1 ký tự và 2 ký tự dễ kiểm tra (j−i<3) là nền, từ đó mọi chuỗi dài hơn suy ra được."
+   },
+   "note": "Quy nạp ngược: đếm từng ô khớp — chuỗi con 1 ký tự và 2 ký tự dễ kiểm tra (j−i<3) là nền, từ đó mọi chuỗi dài hơn suy ra được."
+  },
+  {
+   "no": "746",
+   "title": "Min Cost Climbing Stairs",
+   "cat": "1D DP",
+   "diff": "Easy",
+   "statement": "Bắt đầu ở bậc 0 hoặc 1, mỗi bước đi 1 hoặc 2 bậc; leo hết cầu thang (qua bậc cuối) với chi phí tối thiểu.",
+   "examples": "cost=[10,15,20] → 15 (bắt đầu bậc 1, trả 15, bước qua 20) · [1,100,1,1,1,100,1,1,100,1] → 6",
+   "keyIdea": "dp[i] = cost[i] + min(dp[i−1], dp[i−2]); kết quả = min(dp[n−1], dp[n−2]) vì có thể kết thúc ở hai bậc cuối.",
+   "approaches": [
+    {
+     "name": "Hai biến trượt",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "a,b = cost[0], cost[1]; mỗi i: a,b = b, cost[i]+min(a,b); trả min(a,b).",
+     "code": "def min_cost_climbing_stairs(cost):\n    a, b = cost[0], cost[1]\n    for i in range(2, len(cost)):\n        a, b = b, cost[i] + min(a, b)\n    return min(a, b)",
+     "tcex": {
+      "input": {
+       "cost": [
+        10,
+        15,
+        20
+       ]
+      },
+      "kind": "array",
+      "display": "cost",
+      "ptrs": [
+       "i"
+      ],
+      "expected": 15,
+      "anim": true
+     },
+     "static": [
+      "a=10, b=15 (chi phí tối thiểu tới bậc 0, 1)",
+      "i=2: cost[2]=20 → chi phí tới bậc 2 = 20 + min(10,15) = 30 → b=30, a=15",
+      "trả min(15, 30) = 15",
+      "Đường đi: bắt đầu bậc 1 (trả 15) rồi nhảy thẳng qua bậc 2 — không trả 20"
+     ]
+    },
+    {
+     "name": "Bảng dp",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "dp[i] = cost[i] + min(dp[i-1], dp[i-2]); dp[0], dp[1] là cost gốc.",
+     "code": "def min_cost_climbing_stairs(cost):\n    n = len(cost)\n    dp = [0] * n\n    dp[0], dp[1] = cost[0], cost[1]\n    for i in range(2, n):\n        dp[i] = cost[i] + min(dp[i-1], dp[i-2])\n    return min(dp[-1], dp[-2])",
+     "tcex": {
+      "input": {
+       "cost": [
+        10,
+        15,
+        20
+       ]
+      },
+      "kind": "none",
+      "ptrs": [
+       "i"
+      ],
+      "expected": 15,
+      "anim": true
+     },
+     "static": [
+      "dp = [10,15,30] với [10,15,20]",
+      "dp[2] = 20 + min(10,15) = 30",
+      "Vì có thể dừng ở bậc n−1 hoặc n−2 (nhảy qua bậc cuối) nên trả min(30,15) = 15",
+      "Nhầm lẫn hay gặp: trả dp[-1] → 30, SAI vì đường 'không chạm bậc cuối' là hợp lệ"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: chi phí tối thiểu tới bậc i chỉ đến từ bậc i−1 hoặc i−2 — cộng cost[i] với min của hai.",
+    "reverse": "Quy nạp ngược: đỉnh cầu thang nằm SAU bậc cuối — trả lời là min(dp[n−1], dp[n−2]); điều kiện kết thúc đặc biệt là bẫy của bài."
+   },
+   "note": "Quy nạp ngược: đỉnh cầu thang nằm SAU bậc cuối — trả lời là min(dp[n−1], dp[n−2]); điều kiện kết thúc đặc biệt là bẫy của bài."
+  }
+ ]
 }

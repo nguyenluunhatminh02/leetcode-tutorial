@@ -1,182 +1,513 @@
 {
-  "desc": "Heap: hàng đợi ưu tiên cho bài toán Top-K, trung vị, và gộp giá trị đúng thứ tự.",
-  "problems": [
+ "desc": "Heap: hàng đợi ưu tiên cho bài toán Top-K, trung vị, và gộp giá trị đúng thứ tự.",
+ "problems": [
+  {
+   "no": "215",
+   "title": "Kth Largest Element in an Array",
+   "cat": "Heap",
+   "diff": "Medium",
+   "statement": "Tìm phần tử lớn thứ k (1-based) trong mảng không sắp.",
+   "examples": "nums=[3,2,1,5,6,4], k=2 → 5 · [3,2,3,1,2,4,5,5,6], k=4 → 4",
+   "keyIdea": "Giữ min-heap size k: phần tử nhỏ nhất trong heap chính là phần tử lớn thứ k.",
+   "approaches": [
     {
-      "no": "215",
-      "title": "Kth Largest Element in an Array",
-      "cat": "Heap",
-      "diff": "Medium",
-      "statement": "Tìm phần tử lớn thứ k (1-based) trong mảng không sắp.",
-      "examples": "nums=[3,2,1,5,6,4], k=2 → 5 · [3,2,3,1,2,4,5,5,6], k=4 → 4",
-      "keyIdea": "Giữ min-heap size k: phần tử nhỏ nhất trong heap chính là phần tử lớn thứ k.",
-      "approaches": [
-        {
-          "name": "Min-heap size k",
-          "time": "O(n·log k)",
-          "space": "O(k)",
-          "idea": "Duyệt; đẩy; nếu >k pop min; cuối heap[0] là đáp án.",
-          "code": "import heapq\ndef find_kth_largest(nums, k):\n    h = []\n    for x in nums:\n        heapq.heappush(h, x)\n        if len(h) > k: heapq.heappop(h)\n    return h[0]",
-          "static": [
-            "Ví dụ nums=[3,2,1,5,6,4], k=2. Duyệt từng phần tử đẩy vào min-heap h",
-            "Đẩy 3 → h=[3]; đẩy 2 → h=[2,3]; đẩy 1 → h=[1,3,2] (pop đỉnh khi len>k)",
-            "len=3 > 2 → heappop h ra 1 → h=[2,3]",
-            "Đẩy 5 → h=[2,3,5] → pop 2 → h=[3,5]; đẩy 6 → h=[3,5,6] → pop 3 → h=[5,6]; đẩy 4 → h=[4,5,6] → pop 4 → h=[5,6]",
-            "Cuối cùng h[0]=5 — phần tử lớn thứ 2. Heap size k luôn giữ k phần tử lớn nhất, đỉnh là phần tử nhỏ nhất trong đó"
-          ]
-        },
-        {
-          "name": "heapq.nlargest",
-          "time": "O(n·log k)",
-          "space": "O(k)",
-          "idea": "Thư viện chuẩn.",
-          "code": "import heapq\ndef find_kth_largest(nums, k):\n    return heapq.nlargest(k, nums)[-1]",
-          "static": [
-            "heapq.nlargest(k, nums) trả k phần tử lớn nhất theo thứ tự giảm dần",
-            "Ví dụ nums=[3,2,1,5,6,4], k=2 → nlargest = [6, 5]",
-            "Lấy phần tử cuối [-1] = 5 — chính là phần tử lớn thứ k",
-            "Thư viện chuẩn triển khai bằng heap size k — cùng độ phức tạp O(n·log k)"
-          ]
-        },
-        {
-          "name": "Quickselect",
-          "time": "O(n) trung bình, O(n²) worst",
-          "space": "O(log n)",
-          "idea": "Chia theo pivot như quicksort nhưng chỉ đệ quy một nửa chứa vị trí k.",
-          "code": "import random\ndef find_kth_largest(nums, k):\n    def qs(a, lo, hi, target):\n        pivot = a[random.randint(lo, hi)]\n        l, m, r = lo, lo, hi\n        while m <= r:\n            if a[m] > pivot: a[l], a[m] = a[m], a[l]; l += 1; m += 1\n            elif a[m] < pivot: a[m], a[r] = a[r], a[m]; r -= 1\n            else: m += 1\n        if target < l: return qs(a, lo, l-1, target)\n        if target > r: return qs(a, r+1, hi, target)\n        return a[target]\n    return qs(nums, 0, len(nums)-1, k-1)",
-          "tcex": {
-            "input": {
-              "nums": [
-                3,
-                2,
-                1,
-                5,
-                6,
-                4
-              ],
-              "k": 2
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "lo",
-              "hi"
-            ],
-            "expected": 5,
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: giữ min-heap đúng k phần tử; mỗi lần thêm phần tử lớn hơn đỉnh thì đỉnh bị đẩy ra, heap luôn chứa k phần tử lớn nhất.",
-        "reverse": "Quy nạp ngược: khi kết thúc, đỉnh heap là phần tử nhỏ nhất trong k phần tử lớn nhất — đúng bằng phần tử lớn thứ k."
-      },
-      "note": "Quickselect phân hoạch quanh pivot chỉ đệ quy một nửa chứa vị trí k — O(n) trung bình, không cần heap."
+     "name": "Min-heap size k",
+     "time": "O(n·log k)",
+     "space": "O(k)",
+     "idea": "Duyệt; đẩy; nếu >k pop min; cuối heap[0] là đáp án.",
+     "code": "import heapq\ndef find_kth_largest(nums, k):\n    h = []\n    for x in nums:\n        heapq.heappush(h, x)\n        if len(h) > k: heapq.heappop(h)\n    return h[0]",
+     "static": [
+      "Ví dụ nums=[3,2,1,5,6,4], k=2. Duyệt từng phần tử đẩy vào min-heap h",
+      "Đẩy 3 → h=[3]; đẩy 2 → h=[2,3]; đẩy 1 → h=[1,3,2] (pop đỉnh khi len>k)",
+      "len=3 > 2 → heappop h ra 1 → h=[2,3]",
+      "Đẩy 5 → h=[2,3,5] → pop 2 → h=[3,5]; đẩy 6 → h=[3,5,6] → pop 3 → h=[5,6]; đẩy 4 → h=[4,5,6] → pop 4 → h=[5,6]",
+      "Cuối cùng h[0]=5 — phần tử lớn thứ 2. Heap size k luôn giữ k phần tử lớn nhất, đỉnh là phần tử nhỏ nhất trong đó"
+     ]
     },
     {
-      "no": "502",
-      "title": "IPO",
-      "cat": "Heap",
-      "diff": "Hard",
-      "statement": "Có vốn w, tối đa k dự án; mỗi dự án cần capital[i] và cho profit[i]; chọn dự án khả thi, tối đa vốn cuối.",
-      "examples": "k=2, w=0, profits=[1,2,3], capital=[0,1,1] → 4",
-      "keyIdea": "Greedy: chọn dự án khả thi sinh lời cao nhất. Nhóm theo capital sắp, push profit vào max-heap (neg).",
-      "approaches": [
-        {
-          "name": "Heap lợi nhuận",
-          "time": "O(n·log n)",
-          "space": "O(n)",
-          "idea": "Sắp (capital, profit) theo capital; mở hé các dự án khả thi vào heap max; mỗi vòng chọn đỉnh lợi nhuận.",
-          "code": "import heapq\ndef find_maximized_capital(k, w, profits, capital):\n    proj = sorted(zip(capital, profits))\n    i = 0; avail = []\n    for _ in range(k):\n        while i < len(proj) and proj[i][0] <= w:\n            heapq.heappush(avail, -proj[i][1]); i += 1\n        if not avail: break\n        w += -heapq.heappop(avail)\n    return w",
-          "static": [
-            "Ví dụ k=2, w=0, profits=[1,2,3], capital=[0,1,1]. Sắp theo capital: (0,1),(1,2),(1,3)",
-            "Vòng 1: w=0 mở hé dự án có capital ≤ 0 → push −1 vào avail (max-heap); pop −1 → w=1",
-            "Vòng 2: w=1 mở hé (1,2),(1,3) → avail=[−3,−2]; pop −3 → w=1+3=4",
-            "Hết 2 vòng → trả 4 — chọn dự án 1 (lời 1) rồi dự án 3 (lời 3)",
-            "Greedy đúng vì vốn chỉ tăng — dự án khả thi không bao giờ hết khả thi"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: sắp dự án theo capital; mỗi vòng mở hé thêm các dự án khả thi vào max-heap rồi chọn đỉnh lợi nhuận.",
-        "reverse": "Quy nạp ngược: nếu không còn dự án khả thi (heap rỗng) thì dừng sớm — các dự án còn lại đều không mua nổi."
-      },
-      "note": "Max-heap mô phỏng bằng heapq với phủ định −profit vì heapq chỉ là min-heap."
+     "name": "heapq.nlargest",
+     "time": "O(n·log k)",
+     "space": "O(k)",
+     "idea": "Thư viện chuẩn.",
+     "code": "import heapq\ndef find_kth_largest(nums, k):\n    return heapq.nlargest(k, nums)[-1]",
+     "static": [
+      "heapq.nlargest(k, nums) trả k phần tử lớn nhất theo thứ tự giảm dần",
+      "Ví dụ nums=[3,2,1,5,6,4], k=2 → nlargest = [6, 5]",
+      "Lấy phần tử cuối [-1] = 5 — chính là phần tử lớn thứ k",
+      "Thư viện chuẩn triển khai bằng heap size k — cùng độ phức tạp O(n·log k)"
+     ]
     },
     {
-      "no": "373",
-      "title": "Find K Pairs with Smallest Sums",
-      "cat": "Heap",
-      "diff": "Medium",
-      "statement": "Từ hai mảng sắp nums1, nums2, trả k cặp (u,v) có tổng nhỏ nhất.",
-      "examples": "nums1=[1,7,11], nums2=[2,4,6], k=3 → [[1,2],[1,4],[1,6]]",
-      "keyIdea": "Đẩy (sum, i, j) với j=0 cho mỗi i; pop nhỏ nhất rồi đẩy (i, j+1). Mỗi cặp đúng một lần nhờ j tăng.",
-      "approaches": [
-        {
-          "name": "Heap + di chuyển một bước",
-          "time": "O(k·log k)",
-          "space": "O(k)",
-          "idea": "Ban đầu push (a[i]+b[0], i, 0). Pop → ghi nhận; push (a[i]+b[j+1], i, j+1) nếu có.",
-          "code": "import heapq\ndef k_smallest_pairs(nums1, nums2, k):\n    if not nums1 or not nums2: return []\n    h = [(nums1[i] + nums2[0], i, 0) for i in range(min(k, len(nums1)))]\n    heapq.heapify(h)\n    res = []\n    while h and len(res) < k:\n        _, i, j = heapq.heappop(h)\n        res.append([nums1[i], nums2[j]])\n        if j + 1 < len(nums2):\n            heapq.heappush(h, (nums1[i] + nums2[j+1], i, j+1))\n    return res",
-          "static": [
-            "Ví dụ nums1=[1,7,11], nums2=[2,4,6], k=3. Khởi tạo heap: (1+2,0,0),(7+2,1,0),(11+2,2,0) → [(3,0,0),(9,1,0),(13,2,0)]",
-            "Pop (3,0,0) → res=[[1,2]]; đẩy kế thừa (1+4,0,1)=(5,0,1)",
-            "Pop (5,0,1) → res=[[1,2],[1,4]]; đẩy (1+6,0,2)=(7,0,2)",
-            "Pop (7,0,2) → res=[[1,2],[1,4],[1,6]] — đủ k → trả kết quả",
-            "Mỗi cặp sinh đúng một 'kế thừa' sang phải nên không trùng lặp"
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Quy nạp tiến: với mỗi i, chỉ cần đẩy cặp (i,0) đầu tiên; sau khi pop (i,j) thì đẩy (i,j+1) — mỗi cặp xuất hiện đúng một lần.",
-        "reverse": "Quy nạp ngược: kết quả cần k cặp nhỏ nhất; nếu ta luôn pop cặp nhỏ nhất trong heap và sinh đúng 'kế thừa' của nó thì không bỏ sót cặp nào."
+     "name": "Quickselect",
+     "time": "O(n) trung bình, O(n²) worst",
+     "space": "O(log n)",
+     "idea": "Chia theo pivot như quicksort nhưng chỉ đệ quy một nửa chứa vị trí k.",
+     "code": "import random\ndef find_kth_largest(nums, k):\n    def qs(a, lo, hi, target):\n        pivot = a[random.randint(lo, hi)]\n        l, m, r = lo, lo, hi\n        while m <= r:\n            if a[m] > pivot: a[l], a[m] = a[m], a[l]; l += 1; m += 1\n            elif a[m] < pivot: a[m], a[r] = a[r], a[m]; r -= 1\n            else: m += 1\n        if target < l: return qs(a, lo, l-1, target)\n        if target > r: return qs(a, r+1, hi, target)\n        return a[target]\n    return qs(nums, 0, len(nums)-1, k-1)",
+     "tcex": {
+      "input": {
+       "nums": [
+        3,
+        2,
+        1,
+        5,
+        6,
+        4
+       ],
+       "k": 2
       },
-      "note": "Nhờ hai mảng sắp, ứng viên tiếp theo của (i,j) chỉ có thể là (i,j+1) — không cần quét lại toàn bộ."
-    },
-    {
-      "no": "295",
-      "title": "Find Median from Data Stream",
-      "cat": "Heap",
-      "diff": "Hard",
-      "statement": "Thiết kế cấu trúc: addNum(x), findMedian() với luồng số chảy vào.",
-      "examples": "addNum(1),addNum(2),findMedian()→1.5,addNum(3),findMedian()→2.0",
-      "keyIdea": "Hai heap: max-heap nửa nhỏ, min-heap nửa lớn; cân bằng kích thước; median từ đỉnh hai heap.",
-      "approaches": [
-        {
-          "name": "Hai heap cân bằng",
-          "time": "O(log n) add, O(1) median",
-          "space": "O(n)",
-          "idea": "Đẩy vào lo; chuyển max của lo sang hi nếu cần; giữ |lo|−|hi| ≤ 1; median: lo[0] hoặc trung bình hai đỉnh.",
-          "code": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        self.lo = []  # max-heap (neg)\n        self.hi = []  # min-heap\n    def addNum(self, x):\n        heapq.heappush(self.lo, -x)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n    def findMedian(self):\n        if len(self.lo) > len(self.hi):\n            return -self.lo[0]\n        return (-self.lo[0] + self.hi[0]) / 2",
-          "static": [
-            "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian() — lo là max-heap nửa nhỏ (lưu −x), hi là min-heap nửa lớn",
-            "addNum(1): đẩy −1 vào lo → lo=[-1]; chuyển đỉnh lo (tức 1) sang hi → hi=[1], lo=[]; |hi|=1 > |lo|=0 → chuyển 1 về lo → lo=[-1], hi=[]",
-            "findMedian(): |lo|=1 > |hi|=0 → median = -lo[0] = 1",
-            "addNum(2): đẩy −2 vào lo → lo=[-2,-1]; chuyển đỉnh lo (tức 2) sang hi → hi=[2], lo=[-1]; |hi|=|lo|=1 → giữ nguyên",
-            "findMedian(): |lo|=|hi|=1 → median = (-lo[0] + hi[0])/2 = (1+2)/2 = 1.5",
-            "addNum(3): đẩy −3 vào lo → lo=[-3,-1], hi=[2]; chuyển đỉnh lo (tức 3) sang hi → hi=[2,3], lo=[-1]; |hi|=2 > |lo|=1 → chuyển 2 về lo → lo=[-2,-1], hi=[3]",
-            "findMedian(): |lo|=2 > |hi|=1 → median = -lo[0] = 2 — đúng dãy 1, 1.5, 2"
-          ]
-        },
-        {
-          "name": "Sort từng lần (chậm)",
-          "time": "O(n·log n) add",
-          "space": "O(n)",
-          "idea": "Giữ list, sort sau mỗi add, lấy phần tử giữa — tham chiếu dễ hiểu.",
-          "code": "class MedianFinder:\n    def __init__(self): self.a = []\n    def addNum(self, x): self.a.append(x)\n    def findMedian(self):\n        self.a.sort()\n        n = len(self.a)\n        return self.a[n//2] if n % 2 else (self.a[n//2-1] + self.a[n//2]) / 2",
-          "static": [
-            "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian()",
-            "addNum(1): a=[1]; median lẻ → 1.0",
-            "addNum(2): a=[1,2]; sort; median chẵn → (1+2)/2 = 1.5",
-            "addNum(3): a=[1,2,3]; sort; median lẻ → 2.0",
-            "Trả 1.5 rồi 2.0 — đúng ví dụ; mỗi addNum O(n·log n) vì sort lại toàn bộ"
-          ]
-        }
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "lo",
+       "hi"
       ],
-      "thinking": {
-        "forward": "Quy nạp tiến: mỗi addNum đẩy vào lo (nửa nhỏ), chuyển đỉnh lo sang hi (nửa lớn) rồi cân bằng lại kích thước.",
-        "reverse": "Quy nạp ngược: median luôn nằm ở đỉnh lo (khi lẻ) hoặc trung bình hai đỉnh (khi chẵn) — nếu chênh lệch kích thước ≤ 1 thì luôn truy cập O(1)."
-      },
-      "note": "max-heap nửa nhỏ dùng −x; addNum mỗi lần 2 lần push/pop → O(log n)."
+      "expected": 5,
+      "anim": true
+     }
     }
-  ]
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: giữ min-heap đúng k phần tử; mỗi lần thêm phần tử lớn hơn đỉnh thì đỉnh bị đẩy ra, heap luôn chứa k phần tử lớn nhất.",
+    "reverse": "Quy nạp ngược: khi kết thúc, đỉnh heap là phần tử nhỏ nhất trong k phần tử lớn nhất — đúng bằng phần tử lớn thứ k."
+   },
+   "note": "Quickselect phân hoạch quanh pivot chỉ đệ quy một nửa chứa vị trí k — O(n) trung bình, không cần heap."
+  },
+  {
+   "no": "295",
+   "title": "Find Median from Data Stream",
+   "cat": "Heap",
+   "diff": "Hard",
+   "statement": "Thiết kế cấu trúc: addNum(x), findMedian() với luồng số chảy vào.",
+   "examples": "addNum(1),addNum(2),findMedian()→1.5,addNum(3),findMedian()→2.0",
+   "keyIdea": "Hai heap: max-heap nửa nhỏ, min-heap nửa lớn; cân bằng kích thước; median từ đỉnh hai heap.",
+   "approaches": [
+    {
+     "name": "Hai heap cân bằng",
+     "time": "O(log n) add, O(1) median",
+     "space": "O(n)",
+     "idea": "Đẩy vào lo; chuyển max của lo sang hi nếu cần; giữ |lo|−|hi| ≤ 1; median: lo[0] hoặc trung bình hai đỉnh.",
+     "code": "import heapq\nclass MedianFinder:\n    def __init__(self):\n        self.lo = []  # max-heap (neg)\n        self.hi = []  # min-heap\n    def addNum(self, x):\n        heapq.heappush(self.lo, -x)\n        heapq.heappush(self.hi, -heapq.heappop(self.lo))\n        if len(self.hi) > len(self.lo):\n            heapq.heappush(self.lo, -heapq.heappop(self.hi))\n    def findMedian(self):\n        if len(self.lo) > len(self.hi):\n            return -self.lo[0]\n        return (-self.lo[0] + self.hi[0]) / 2",
+     "static": [
+      "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian() — lo là max-heap nửa nhỏ (lưu −x), hi là min-heap nửa lớn",
+      "addNum(1): đẩy −1 vào lo → lo=[-1]; chuyển đỉnh lo (tức 1) sang hi → hi=[1], lo=[]; |hi|=1 > |lo|=0 → chuyển 1 về lo → lo=[-1], hi=[]",
+      "findMedian(): |lo|=1 > |hi|=0 → median = -lo[0] = 1",
+      "addNum(2): đẩy −2 vào lo → lo=[-2,-1]; chuyển đỉnh lo (tức 2) sang hi → hi=[2], lo=[-1]; |hi|=|lo|=1 → giữ nguyên",
+      "findMedian(): |lo|=|hi|=1 → median = (-lo[0] + hi[0])/2 = (1+2)/2 = 1.5",
+      "addNum(3): đẩy −3 vào lo → lo=[-3,-1], hi=[2]; chuyển đỉnh lo (tức 3) sang hi → hi=[2,3], lo=[-1]; |hi|=2 > |lo|=1 → chuyển 2 về lo → lo=[-2,-1], hi=[3]",
+      "findMedian(): |lo|=2 > |hi|=1 → median = -lo[0] = 2 — đúng dãy 1, 1.5, 2"
+     ]
+    },
+    {
+     "name": "Sort từng lần (chậm)",
+     "time": "O(n·log n) add",
+     "space": "O(n)",
+     "idea": "Giữ list, sort sau mỗi add, lấy phần tử giữa — tham chiếu dễ hiểu.",
+     "code": "class MedianFinder:\n    def __init__(self): self.a = []\n    def addNum(self, x): self.a.append(x)\n    def findMedian(self):\n        self.a.sort()\n        n = len(self.a)\n        return self.a[n//2] if n % 2 else (self.a[n//2-1] + self.a[n//2]) / 2",
+     "static": [
+      "Ví dụ addNum(1), addNum(2), findMedian(), addNum(3), findMedian()",
+      "addNum(1): a=[1]; median lẻ → 1.0",
+      "addNum(2): a=[1,2]; sort; median chẵn → (1+2)/2 = 1.5",
+      "addNum(3): a=[1,2,3]; sort; median lẻ → 2.0",
+      "Trả 1.5 rồi 2.0 — đúng ví dụ; mỗi addNum O(n·log n) vì sort lại toàn bộ"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi addNum đẩy vào lo (nửa nhỏ), chuyển đỉnh lo sang hi (nửa lớn) rồi cân bằng lại kích thước.",
+    "reverse": "Quy nạp ngược: median luôn nằm ở đỉnh lo (khi lẻ) hoặc trung bình hai đỉnh (khi chẵn) — nếu chênh lệch kích thước ≤ 1 thì luôn truy cập O(1)."
+   },
+   "note": "max-heap nửa nhỏ dùng −x; addNum mỗi lần 2 lần push/pop → O(log n)."
+  },
+  {
+   "no": "347",
+   "title": "Top K Frequent Elements",
+   "cat": "Heap",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Trả k phần tử xuất hiện nhiều nhất trong mảng (thứ tự tuỳ ý).",
+   "examples": "nums=[1,1,1,2,2,3], k=2 → [1,2] · nums=[1], k=1 → [1]",
+   "keyIdea": "Đếm tần suất rồi lấy top-k: bucket theo tần suất, heap size k, hoặc sort. Bucket thật sự là O(n) vì tần suất tối đa = n.",
+   "thinking": {
+    "forward": "Quy nạp tiến: tần suất của x được dồn dần qua từng lần gặp — sau một lượt quét có Counter đầy đủ; top-k lấy từ đó.",
+    "reverse": "Quy nạp ngược: nếu có bucket[f] = các số xuất hiện đúng f lần với f từ n giảm dần, thì k số đầu tiên gom được chính là top k."
+   },
+   "note": "Chú giải: heapq là min-heap; để lấy top-k tần suất có thể đẩy (tần suất, số) vào heap size k, hoặc dùng bucket — ví dụ [1,1,1,2,2,3] có cnt={1:3,2:2,3:1}.",
+   "approaches": [
+    {
+     "name": "Đếm + bucket",
+     "time": "O(n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "cnt[x] đếm; buckets[f] chứa các số có tần suất f; quét f từ cao xuống thấp gom đủ k.",
+     "code": "def top_k_frequent(nums, k):\n    cnt = {}\n    for x in nums:\n        cnt[x] = cnt.get(x, 0) + 1\n    buckets = [[] for _ in range(len(nums)+1)]\n    for x, f in cnt.items():\n        buckets[f].append(x)\n    res = []\n    for f in range(len(buckets)-1, 0, -1):\n        for x in buckets[f]:\n            res.append(x)\n            if len(res) == k: return res\n    return res",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        3
+       ],
+       "k": 2
+      },
+      "kind": "hash",
+      "display": "cnt",
+      "ptrs": [
+       "x",
+       "f"
+      ],
+      "aux": [],
+      "expected": [
+       1,
+       2
+      ],
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Sort theo tần suất",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "Đếm xong sort cặp (tần suất, số) giảm dần rồi lấy k cái đầu.",
+     "code": "def top_k_frequent_sort(nums, k):\n    cnt = {}\n    for x in nums:\n        cnt[x] = cnt.get(x, 0) + 1\n    pairs = sorted(cnt.items(), key=lambda kv: -kv[1])\n    return [kv[0] for kv in pairs[:k]]",
+     "static": [
+      "Với nums=[1,1,1,2,2,3]: cnt={1:3, 2:2, 3:1}.",
+      "sorted theo −tần suất: [(1,3),(2,2),(3,1)].",
+      "Lấy k=2 phần tử đầu: [1,2] — khớp đáp án.",
+      "O(n·log n) do sort — chậm hơn bucket nhưng ngắn gọn."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "373",
+   "title": "Find K Pairs with Smallest Sums",
+   "cat": "Heap",
+   "diff": "Medium",
+   "statement": "Từ hai mảng sắp nums1, nums2, trả k cặp (u,v) có tổng nhỏ nhất.",
+   "examples": "nums1=[1,7,11], nums2=[2,4,6], k=3 → [[1,2],[1,4],[1,6]]",
+   "keyIdea": "Đẩy (sum, i, j) với j=0 cho mỗi i; pop nhỏ nhất rồi đẩy (i, j+1). Mỗi cặp đúng một lần nhờ j tăng.",
+   "approaches": [
+    {
+     "name": "Heap + di chuyển một bước",
+     "time": "O(k·log k)",
+     "space": "O(k)",
+     "idea": "Ban đầu push (a[i]+b[0], i, 0). Pop → ghi nhận; push (a[i]+b[j+1], i, j+1) nếu có.",
+     "code": "import heapq\ndef k_smallest_pairs(nums1, nums2, k):\n    if not nums1 or not nums2: return []\n    h = [(nums1[i] + nums2[0], i, 0) for i in range(min(k, len(nums1)))]\n    heapq.heapify(h)\n    res = []\n    while h and len(res) < k:\n        _, i, j = heapq.heappop(h)\n        res.append([nums1[i], nums2[j]])\n        if j + 1 < len(nums2):\n            heapq.heappush(h, (nums1[i] + nums2[j+1], i, j+1))\n    return res",
+     "static": [
+      "Ví dụ nums1=[1,7,11], nums2=[2,4,6], k=3. Khởi tạo heap: (1+2,0,0),(7+2,1,0),(11+2,2,0) → [(3,0,0),(9,1,0),(13,2,0)]",
+      "Pop (3,0,0) → res=[[1,2]]; đẩy kế thừa (1+4,0,1)=(5,0,1)",
+      "Pop (5,0,1) → res=[[1,2],[1,4]]; đẩy (1+6,0,2)=(7,0,2)",
+      "Pop (7,0,2) → res=[[1,2],[1,4],[1,6]] — đủ k → trả kết quả",
+      "Mỗi cặp sinh đúng một 'kế thừa' sang phải nên không trùng lặp"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: với mỗi i, chỉ cần đẩy cặp (i,0) đầu tiên; sau khi pop (i,j) thì đẩy (i,j+1) — mỗi cặp xuất hiện đúng một lần.",
+    "reverse": "Quy nạp ngược: kết quả cần k cặp nhỏ nhất; nếu ta luôn pop cặp nhỏ nhất trong heap và sinh đúng 'kế thừa' của nó thì không bỏ sót cặp nào."
+   },
+   "note": "Nhờ hai mảng sắp, ứng viên tiếp theo của (i,j) chỉ có thể là (i,j+1) — không cần quét lại toàn bộ."
+  },
+  {
+   "no": "502",
+   "title": "IPO",
+   "cat": "Heap",
+   "diff": "Hard",
+   "statement": "Có vốn w, tối đa k dự án; mỗi dự án cần capital[i] và cho profit[i]; chọn dự án khả thi, tối đa vốn cuối.",
+   "examples": "k=2, w=0, profits=[1,2,3], capital=[0,1,1] → 4",
+   "keyIdea": "Greedy: chọn dự án khả thi sinh lời cao nhất. Nhóm theo capital sắp, push profit vào max-heap (neg).",
+   "approaches": [
+    {
+     "name": "Heap lợi nhuận",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Sắp (capital, profit) theo capital; mở hé các dự án khả thi vào heap max; mỗi vòng chọn đỉnh lợi nhuận.",
+     "code": "import heapq\ndef find_maximized_capital(k, w, profits, capital):\n    proj = sorted(zip(capital, profits))\n    i = 0; avail = []\n    for _ in range(k):\n        while i < len(proj) and proj[i][0] <= w:\n            heapq.heappush(avail, -proj[i][1]); i += 1\n        if not avail: break\n        w += -heapq.heappop(avail)\n    return w",
+     "static": [
+      "Ví dụ k=2, w=0, profits=[1,2,3], capital=[0,1,1]. Sắp theo capital: (0,1),(1,2),(1,3)",
+      "Vòng 1: w=0 mở hé dự án có capital ≤ 0 → push −1 vào avail (max-heap); pop −1 → w=1",
+      "Vòng 2: w=1 mở hé (1,2),(1,3) → avail=[−3,−2]; pop −3 → w=1+3=4",
+      "Hết 2 vòng → trả 4 — chọn dự án 1 (lời 1) rồi dự án 3 (lời 3)",
+      "Greedy đúng vì vốn chỉ tăng — dự án khả thi không bao giờ hết khả thi"
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Quy nạp tiến: sắp dự án theo capital; mỗi vòng mở hé thêm các dự án khả thi vào max-heap rồi chọn đỉnh lợi nhuận.",
+    "reverse": "Quy nạp ngược: nếu không còn dự án khả thi (heap rỗng) thì dừng sớm — các dự án còn lại đều không mua nổi."
+   },
+   "note": "Max-heap mô phỏng bằng heapq với phủ định −profit vì heapq chỉ là min-heap."
+  },
+  {
+   "no": "621",
+   "title": "Task Scheduler",
+   "cat": "Heap",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Danh sách nhiệm vụ (mỗi ký tự một loại); mỗi đơn vị thời gian làm một nhiệm vụ; hai nhiệm vụ CÙNG LOẠI phải cách nhau ít nhất n đơn vị (có thể nghỉ idle). Số đơn vị thời gian tối thiểu.",
+   "examples": "tasks=['A','A','A','B','B','B'], n=2 → 8 · tasks=['A','C','A','B','D','B'], n=1 → 6",
+   "keyIdea": "Greedy: luôn chạy loại còn nhiều nhịp nhất (max-heap); sau mỗi cycle n+1 ô thời gian, đẩy lại các loại chưa hết tần suất.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi chu kỳ n+1 ô, chọn các loại tần suất cao nhất; nếu hết nhiệm vụ giữa chu kỳ thì dừng — tổng thời gian tích luỹ là đáp án.",
+    "reverse": "Quy nạp ngược: muốn biết chu kỳ cuối, hãy tính từ loại xuất hiện nhiều nhất: nó quyết định số khoảng trống phải lấp — công thức (maxf−1)(n+1)+num_max."
+   },
+   "note": "Chú giải: Trường hợp số nhiệm vụ lớn hơn số ô cần thiết (đủ chỗ nhét hết idle) — lấy max(len(tasks), công thức); ví dụ ['A','A','A','B','B','B'] n=2 cho cả hai = 8.",
+   "approaches": [
+    {
+     "name": "Max-heap mô phỏng",
+     "time": "O(time·log 26)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "Cnt tần suất → heap âm; mỗi cycle n+1 ô pop loại nhiều nhất, giảm tần suất, cuối cycle đẩy lại các loại còn nhiệm vụ; time đếm cả idle.",
+     "code": "def least_interval(tasks, n):\n    import heapq\n    cnt = {}\n    for t in tasks:\n        cnt[t] = cnt.get(t, 0) + 1\n    h = [-c for c in cnt.values()]\n    heapq.heapify(h)\n    time = 0\n    while h:\n        cycle = n + 1\n        tmp = []\n        for _ in range(cycle):\n            if h:\n                c = heapq.heappop(h)\n                if c < -1:\n                    tmp.append(c + 1)\n            time += 1\n            if not h and not tmp:\n                break\n        for c in tmp:\n            heapq.heappush(h, c)\n    return time",
+     "tcex": {
+      "input": {
+       "tasks": [
+        "A",
+        "A",
+        "A",
+        "B",
+        "B",
+        "B"
+       ],
+       "n": 2
+      },
+      "kind": "none",
+      "display": null,
+      "ptrs": [
+       "time"
+      ],
+      "aux": [],
+      "expected": 8,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Công thức greedy",
+     "time": "O(n)",
+     "space": "O(1)",
+     "done": true,
+     "idea": "maxf = tần suất lớn nhất; num_max = số loại đạt maxf; đáp án = max(len(tasks), (maxf−1)(n+1)+num_max).",
+     "code": "def least_interval_greedy(tasks, n):\n    from collections import Counter\n    cnt = Counter(tasks)\n    maxf = max(cnt.values())\n    num_max = sum(1 for f in cnt.values() if f == maxf)\n    return max(len(tasks), (maxf - 1) * (n + 1) + num_max)",
+     "static": [
+      "Với tasks=['A','A','A','B','B','B'], n=2: cnt={A:3, B:3}, maxf=3, num_max=2.",
+      "Công thức: (3−1)·(2+1)+2 = 2·3+2 = 8; len(tasks)=6 → max=8.",
+      "Ý nghĩa: xếp 2 đợt A...A... trước, đợt cuối A kèm B; 8 ô gồm 6 nhiệm vụ + 2 idle.",
+      "Với ['A','C','A','B','D','B'], n=1: maxf=2, num_max=2 → (2−1)·2+2=4; nhưng len(tasks)=6 → trả 6 (đủ chỗ nhét, không idle).",
+      "Công thức đúng khi nhiệm vụ hiếm gặp lấp đầy các khoảng trống."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "703",
+   "title": "Kth Largest Element in a Stream",
+   "cat": "Heap",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Thiết kế lớp KthLargest(k, nums): add(val) trả phần tử LỚN THỨ k của stream sau khi thêm val.",
+   "examples": "k=3, nums=[4,5,8,2]; add(3)→4, add(5)→5, add(10)→5, add(9)→8, add(4)→8",
+   "keyIdea": "Giữ min-heap đúng k phần tử lớn nhất; đỉnh heap chính là phần tử lớn thứ k.",
+   "thinking": {
+    "forward": "Quy nạp tiến: với mỗi val mới, thêm vào heap; nếu vượt k thì đẩy phần tử nhỏ nhất ra — bất biến 'heap chứa k phần tử lớn nhất' được giữ.",
+    "reverse": "Quy nạp ngược: phần tử lớn thứ k = phần tử nhỏ nhất trong nhóm k phần tử lớn nhất; đỉnh min-heap luôn trả đúng giá trị đó."
+   },
+   "note": "Chú giải: heapify khởi tạo O(n) thay vì đẩy từng phần tử; pop thừa cho tới khi còn k phần tử. Các add sau mỗi lần 2 thao tác heap O(log k).",
+   "approaches": [
+    {
+     "name": "Min-heap size k",
+     "time": "O(log k) mỗi add",
+     "space": "O(k)",
+     "done": true,
+     "idea": "__init__ heapify + pop thừa; add: push, nếu >k thì pop, trả h[0].",
+     "code": "import heapq\ndef kth_largest_stream(k, nums, adds):\n    h = nums[:]\n    heapq.heapify(h)\n    while len(h) > k:\n        heapq.heappop(h)\n    out = []\n    for v in adds:\n        heapq.heappush(h, v)\n        if len(h) > k:\n            heapq.heappop(h)\n        out.append(h[0])\n    return out",
+     "tcex": {
+      "input": {
+       "k": 3,
+       "nums": [
+        4,
+        5,
+        8,
+        2
+       ],
+       "adds": [
+        3,
+        5,
+        10,
+        9,
+        4
+       ]
+      },
+      "kind": "none",
+      "display": null,
+      "ptrs": [
+       "v"
+      ],
+      "aux": [],
+      "expected": [
+       4,
+       5,
+       5,
+       8,
+       8
+      ],
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Sort giữ k phần tử",
+     "time": "O(k·log k) mỗi add",
+     "space": "O(k)",
+     "done": true,
+     "idea": "Duy trì mảng sắp giảm dần cắt còn k; mỗi add chèn rồi sort lại.",
+     "code": "def kth_largest_sort(k, nums, adds):\n    out = []\n    arr = sorted(nums, reverse=True)[:k]\n    for v in adds:\n        arr.append(v)\n        arr.sort(reverse=True)\n        arr = arr[:k]\n        out.append(arr[-1])\n    return out",
+     "static": [
+      "Khởi tạo nums=[4,5,8,2], k=3: arr=[8,5,4].",
+      "add(3): arr=[8,5,4,3] → sort giảm → [8,5,4,3] cắt còn [8,5,4]; arr[-1]=4 → trả 4.",
+      "add(5): [8,5,5,4] → cắt [8,5,5]; trả 5.",
+      "add(10): [10,8,5,5] → cắt [10,8,5]; trả 5.",
+      "add(9): [10,9,8,5] → cắt [10,9,8]; trả 8; add(4): [10,9,8,4] → trả 8 — chuỗi [4,5,5,8,8] đúng.",
+      "Chậm hơn heap vì sort lại toàn bộ mỗi lần."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "973",
+   "title": "K Closest Points to Origin",
+   "cat": "Heap",
+   "diff": "Medium",
+   "done": true,
+   "statement": "Cho points trên mặt phẳng, trả k điểm gần gốc toạ độ (0,0) nhất (khoảng cách Euclid; thứ tự tuỳ ý).",
+   "examples": "points=[[1,3],[-2,2]], k=1 → [[-2,2]] · points=[[3,3],[5,-1],[-2,4]], k=2 → [[3,3],[-2,4]]",
+   "keyIdea": "Khoảng cách bình phương d = x² + y² đủ để so sánh (bỏ căn). Min-heap size k với khoá âm để giữ k điểm GẦN nhất: (d, x, y) dùng dương cho max-heap.",
+   "thinking": {
+    "forward": "Quy nạp tiến: duyệt từng điểm đẩy vào heap; nếu quá k phần tử thì đẩy điểm xa nhất (đỉnh max-heap) ra — k điểm còn lại luôn gần nhất.",
+    "reverse": "Quy nạp ngược: muốn k điểm gần nhất, cần biết 'điểm xa nhất trong nhóm hiện tại' để loại — max-heap đỉnh chính là điểm đó."
+   },
+   "note": "Chú giải: Dùng −d biến min-heap của heapq thành max-heap theo khoảng cách — heap chứa (−d, x, y), pop lấy điểm xa nhất ra.",
+   "approaches": [
+    {
+     "name": "Max-heap size k",
+     "time": "O(n·log k)",
+     "space": "O(k)",
+     "done": true,
+     "idea": "Đẩy (−d, x, y); len>k thì pop đỉnh (xa nhất); cuối giải nén tuple thành [x,y].",
+     "code": "def k_closest(points, k):\n    import heapq\n    h = []\n    for x, y in points:\n        d = x*x + y*y\n        heapq.heappush(h, (-d, x, y))\n        if len(h) > k:\n            heapq.heappop(h)\n    return [[x, y] for _, x, y in h]",
+     "tcex": {
+      "input": {
+       "points": [
+        [
+         1,
+         3
+        ],
+        [
+         -2,
+         2
+        ]
+       ],
+       "k": 1
+      },
+      "kind": "array",
+      "display": "points",
+      "ptrs": [
+       "x",
+       "y"
+      ],
+      "aux": [],
+      "expected": [
+       [
+        -2,
+        2
+       ]
+      ],
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Sort theo khoảng cách",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "points.sort(key= d) rồi lấy k cái đầu — đơn giản, đủ nhanh cho n vừa.",
+     "code": "def k_closest_sort(points, k):\n    return sorted(points, key=lambda p: p[0]*p[0] + p[1]*p[1])[:k]",
+     "static": [
+      "Với points=[[1,3],[-2,2]], k=1: d(1,3)=1+9=10; d(−2,2)=4+4=8.",
+      "Sort theo d tăng: [[-2,2],[1,3]] → lấy 1 điểm: [[-2,2]].",
+      "Với points=[[3,3],[5,-1],[-2,4]], k=2: d=18, 26, 20 → sort [[3,3],[-2,4],[5,-1]] → 2 đầu [[3,3],[-2,4]].",
+      "O(n·log n) — chậm hơn heap cho n lớn nhưng code rất gọn."
+     ]
+    }
+   ]
+  },
+  {
+   "no": "1046",
+   "title": "Last Stone Weight",
+   "cat": "Heap",
+   "diff": "Easy",
+   "done": true,
+   "statement": "Mảng stones: mỗi bước chọn HAI viên nặng nhất, đập vào nhau — nặng bằng nhau thì cả hai tan biến, lệch a>b thì viên còn lại nặng a−b. Trọng lượng viên cuối cùng (0 nếu không còn).",
+   "examples": "stones=[2,7,4,1,8,1] → 1 · stones=[1] → 1",
+   "keyIdea": "Max-heap luôn cho hai viên nặng nhất trong O(log n); mô phỏng tới khi heap còn ≤ 1 viên.",
+   "thinking": {
+    "forward": "Quy nạp tiến: hai viên nặng nhất quyết định phần còn lại — sau mỗi va chạm, trạng thái mới vẫn là một bài toán cùng cấu trúc với ít viên hơn.",
+    "reverse": "Quy nạp ngược: viên cuối cùng hoặc không tồn tại (0) hoặc chính là viên còn sót sau khi mọi cặp đã va chạm — dừng khi không đủ hai viên."
+   },
+   "note": "Chú giải: Nếu hai viên bằng nhau thì chỉ pop không push lại; heap rỗng trả 0. heapq dùng giá trị âm để mô phỏng max-heap.",
+   "approaches": [
+    {
+     "name": "Max-heap mô phỏng",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "h = [−s]; while len>1: pop hai viên lớn nhất a,b; nếu a≠b push lại −(a−b); cuối trả h[0] hoặc 0.",
+     "code": "def last_stone_weight(stones):\n    import heapq\n    h = [-s for s in stones]\n    heapq.heapify(h)\n    while len(h) > 1:\n        a = -heapq.heappop(h)\n        b = -heapq.heappop(h)\n        if a != b:\n            heapq.heappush(h, -(a - b))\n    return -h[0] if h else 0",
+     "tcex": {
+      "input": {
+       "stones": [
+        2,
+        7,
+        4,
+        1,
+        8,
+        1
+       ]
+      },
+      "kind": "none",
+      "display": null,
+      "ptrs": [
+       "a",
+       "b"
+      ],
+      "aux": [],
+      "expected": 1,
+      "param_kinds": {},
+      "anim": true
+     }
+    },
+    {
+     "name": "Sort lặp mô phỏng",
+     "time": "O(n²·log n)",
+     "space": "O(n)",
+     "done": true,
+     "idea": "Mỗi bước sort lại rồi lấy hai phần tử cuối — dễ đọc, chậm nhưng minh hoạ đúng luật.",
+     "code": "def last_stone_weight_repeat(stones):\n    a = stones[:]\n    while len(a) > 1:\n        a.sort()\n        x = a.pop(); y = a.pop()\n        if x != y:\n            a.append(x - y)\n    return a[0] if a else 0",
+     "static": [
+      "Với stones=[2,7,4,1,8,1]: sort → [1,1,2,4,7,8]; x=8, y=7 → append 1 → [1,1,1,2,4].",
+      "Sort → pop 4 và 2 → append 2 → [1,1,1,2]; pop 2,1 → append 1 → [1,1,1].",
+      "Pop 1,1 bằng nhau → không append → [1]; còn 1 viên → trả 1.",
+      "Khớp đáp án: 7 đập 8 còn 1; 4 đập 2 còn 2; 2 đập 1 còn 1; 1 đập 1 mất hết — viên cuối 1."
+     ]
+    }
+   ]
+  }
+ ]
 }

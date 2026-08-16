@@ -149,7 +149,7 @@ const index = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Top Interview 150 — Học theo nhóm</title>
+<title>LeetCode 300 — Học theo nhóm</title>
 <style>
 :root{--bg:#0d1017;--panel:#141926;--ink:#eaf0f8;--mut:#8f9ab2;--line:#242c3e;--acc:#7aa2ff;--acc2:#38d3f0;--ok:#3ddc97}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(#1d2434 1px,transparent 1px);background-size:26px 26px}
@@ -167,8 +167,8 @@ const index = `<!DOCTYPE html>
 </head>
 <body><div class="wrap">
 <div class="hero">
-  <div><span class="chip">Top Interview 150</span><span class="chip">${totalDone}/${total150} bài đã có tutorial</span><span class="chip">Python · tiếng Việt</span></div>
-  <h1>Top Interview 150 — học theo nhóm</h1>
+  <div><span class="chip">LeetCode 300</span><span class="chip">${totalDone}/${total150} bài đã có tutorial</span><span class="chip">Python · tiếng Việt</span></div>
+  <h1>LeetCode 300 — học theo nhóm</h1>
   <p>${indexDef.desc}</p>
 </div>
 <div class="cards">

@@ -1,273 +1,703 @@
 {
-  "desc": "Duy trì cửa sổ con liên tiếp có tổng/tần suất được theo dõi; mở rộng biên phải, thu hẹp biên trái.",
-  "problems": [
+ "desc": "Duy trì cửa sổ con liên tiếp có tổng/tần suất được theo dõi; mở rộng biên phải, thu hẹp biên trái.",
+ "problems": [
+  {
+   "no": "3",
+   "title": "Longest Substring Without Repeating Characters",
+   "cat": "Sliding Window",
+   "diff": "Medium",
+   "statement": "Tìm dãy con liên tiếp dài nhất không chứa ký tự lặp.",
+   "examples": "\"abcabcbb\" → 3 (\"abc\") · \"bbbbb\" → 1 · \"pwwkew\" → 3",
+   "keyIdea": "Giữ cửa sổ không trùng (dùng dict vị trí ký tự); khi gặp trùng, nhảy l ngay sau vị trí trùng.",
+   "approaches": [
     {
-      "no": "209",
-      "title": "Minimum Size Subarray Sum",
-      "cat": "Sliding Window",
-      "diff": "Medium",
-      "statement": "Tìm dãy con liên tiếp ngắn nhất có tổng ≥ target; trả độ dài, không có → 0.",
-      "examples": "target=7, nums=[2,3,1,2,4,3] → 2 ([4,3])",
-      "keyIdea": "Tất cả số dương → khi sum ≥ target, mở rộng phải; rồi thu hẹp trái để tìm ngắn nhất.",
-      "approaches": [
-        {
-          "name": "Cửa sổ trượt",
-          "time": "O(n)",
-          "space": "O(1)",
-          "idea": "sum += nums[r]; while sum ≥ target: cập nhật best, sum -= nums[l]; l++;",
-          "code": "def min_sub_array_len(target, nums):\n    l = 0; s = 0; best = len(nums) + 1\n    for r in range(len(nums)):\n        s += nums[r]\n        while s >= target:\n            best = min(best, r - l + 1)\n            s -= nums[l]; l += 1\n    return best if best <= len(nums) else 0",
-          "trace": "ref:209-minimum-size-subarray-sum",
-          "tcex": {
-            "input": {
-              "target": 7,
-              "nums": [
-                2,
-                3,
-                1,
-                2,
-                4,
-                3
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "l",
-              "r"
-            ],
-            "expected": 2,
-            "anim": true
-          }
-        },
-        {
-          "name": "Tiền tố + nhị phân",
-          "time": "O(n·log n)",
-          "space": "O(n)",
-          "idea": "Xây prefix sum; với mỗi điểm cuối tìm điểm đầu bé nhất bằng bisect sao cho đoạn ≥ target.",
-          "code": "from bisect import bisect_left\ndef min_sub_array_len(target, nums):\n    pref = [0]\n    for x in nums: pref.append(pref[-1] + x)\n    best = len(nums) + 1\n    for r in range(1, len(pref)):\n        need = pref[r] - target\n        k = bisect_left(pref, need, 0, r)\n        if k < r and pref[r] - pref[k] >= target:\n            best = min(best, r - k)\n    return best if best <= len(nums) else 0",
-          "tcex": {
-            "input": {
-              "target": 7,
-              "nums": [
-                2,
-                3,
-                1,
-                2,
-                4,
-                3
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "r",
-              "k"
-            ],
-            "expected": 2,
-            "anim": true
-          }
-        },
-        {
-          "name": "Hai con trỏ vét trường hợp âm",
-          "time": "O(n²)",
-          "space": "O(1)",
-          "idea": "Khi có số âm (biến thể) cửa sổ đơn điệu không còn đúng — cần vét tham chiếu, ở đây làm rõ giới hạn của kỹ thuật.",
-          "code": "def min_sub_array_len(target, nums):\n    best = len(nums) + 1\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            if s >= target:\n                best = min(best, j - i + 1)\n                break\n    return best if best <= len(nums) else 0",
-          "tcex": {
-            "input": {
-              "target": 7,
-              "nums": [
-                2,
-                3,
-                1,
-                2,
-                4,
-                3
-              ]
-            },
-            "kind": "array",
-            "display": "nums",
-            "ptrs": [
-              "i",
-              "j"
-            ],
-            "expected": 2,
-            "anim": true
-          }
-        }
-      ],
-      "thinking": {
-        "forward": "Cửa sổ trượt: khi tổng ≥ target thì thu hẹp trái để tìm đoạn ngắn nhất.",
-        "reverse": "Cần đoạn ngắn nhất có tổng ≥ target → cửa sổ càng hẹp càng tốt, thu trái khi thoả điều kiện."
-      },
-      "note": "Tất cả số dương → khi sum ≥ target, mở rộng phải; rồi thu hẹp trái để tìm ngắn nhất."
+     "name": "Map vị trí + nhảy l",
+     "time": "O(n)",
+     "space": "O(min(n, alphabet))",
+     "idea": "seen giữ vị trí gần nhất mỗi ký tự; gặp ký tự trong cửa sổ thì l = seen[c]+1; luôn cập nhật best.",
+     "code": "def length_of_longest_substring(s):\n    seen = {}; l = 0; best = 0\n    for r, c in enumerate(s):\n        if c in seen and seen[c] >= l:\n            l = seen[c] + 1\n        seen[c] = r\n        best = max(best, r - l + 1)\n    return best",
+     "trace": "ref:3-longest-substring-without-repeating-characters",
+     "static": [
+      "Khởi tạo seen = {}, l = 0, best = 0.",
+      "Với mỗi cặp (r, c) trong s: kiểm tra c đã thấy trong cửa sổ chưa.",
+      "Nếu c đã thấy và seen[c] >= l: nhảy l = seen[c] + 1 để bỏ ký tự trùng.",
+      "Cập nhật seen[c] = r (vị trí mới nhất của c).",
+      "Cập nhật best = max(best, r - l + 1) cho độ dài cửa sổ hiện tại.",
+      "Kết thúc: trả best = 3 cho ví dụ 'abcabcbb'."
+     ]
     },
     {
-      "no": "3",
-      "title": "Longest Substring Without Repeating Characters",
-      "cat": "Sliding Window",
-      "diff": "Medium",
-      "statement": "Tìm dãy con liên tiếp dài nhất không chứa ký tự lặp.",
-      "examples": "\"abcabcbb\" → 3 (\"abc\") · \"bbbbb\" → 1 · \"pwwkew\" → 3",
-      "keyIdea": "Giữ cửa sổ không trùng (dùng dict vị trí ký tự); khi gặp trùng, nhảy l ngay sau vị trí trùng.",
-      "approaches": [
-        {
-          "name": "Map vị trí + nhảy l",
-          "time": "O(n)",
-          "space": "O(min(n, alphabet))",
-          "idea": "seen giữ vị trí gần nhất mỗi ký tự; gặp ký tự trong cửa sổ thì l = seen[c]+1; luôn cập nhật best.",
-          "code": "def length_of_longest_substring(s):\n    seen = {}; l = 0; best = 0\n    for r, c in enumerate(s):\n        if c in seen and seen[c] >= l:\n            l = seen[c] + 1\n        seen[c] = r\n        best = max(best, r - l + 1)\n    return best",
-          "trace": "ref:3-longest-substring-without-repeating-characters",
-          "static": [
-            "Khởi tạo seen = {}, l = 0, best = 0.",
-            "Với mỗi cặp (r, c) trong s: kiểm tra c đã thấy trong cửa sổ chưa.",
-            "Nếu c đã thấy và seen[c] >= l: nhảy l = seen[c] + 1 để bỏ ký tự trùng.",
-            "Cập nhật seen[c] = r (vị trí mới nhất của c).",
-            "Cập nhật best = max(best, r - l + 1) cho độ dài cửa sổ hiện tại.",
-            "Kết thúc: trả best = 3 cho ví dụ 'abcabcbb'."
-          ]
-        },
-        {
-          "name": "Set + thu hẹp từng bước",
-          "time": "O(n)",
-          "space": "O(min(n, alphabet))",
-          "idea": "win là set; khi trùng, xoá s[l] rồi l++ cho tới khi hết trùng — dễ hiểu hơn, xoá nhiều lần.",
-          "code": "def length_of_longest_substring(s):\n    win = set(); l = 0; best = 0\n    for r, c in enumerate(s):\n        while c in win:\n            win.remove(s[l]); l += 1\n        win.add(c)\n        best = max(best, r - l + 1)\n    return best",
-          "static": [
-            "Khởi tạo win thành set rỗng, l = 0, best = 0.",
-            "Với mỗi cặp (r, c) trong s: nếu c đã có trong cửa sổ.",
-            "Thu nhỏ cửa sổ: xoá s[l] khỏi set và tăng l cho tới khi c không còn trùng.",
-            "Thêm c vào set của cửa sổ.",
-            "Cập nhật best = max(best, r - l + 1).",
-            "Kết thúc: trả best = 3 cho ví dụ 'abcabcbb'."
-          ]
-        },
-        {
-          "name": "Nhị phân độ dài (ít gặp)",
-          "time": "O(n·log n)",
-          "space": "O(n)",
-          "idea": "Kiểm tra tồn tại cửa sổ độ dài k không trùng bằng set — tham chiếu học thuật.",
-          "code": "def ok(s, k):\n    return max(len(set(s[i:i+k])) for i in range(len(s)-k+1) or [0]) == k\ndef length_of_longest_substring(s):\n    lo, hi = 0, len(s)\n    while lo < hi:\n        mid = (lo + hi + 1) // 2\n        if ok(s, mid): lo = mid\n        else: hi = mid - 1\n    return lo",
-          "static": [
-            "Nhị phân tìm kiếm độ dài k trong đoạn [0, len(s)].",
-            "Hàm ok(s, k): kiểm tra mọi cửa sổ con độ dài k có đủ k ký tự phân biệt (set).",
-            "Nếu tồn tại cửa sổ độ dài mid hợp lệ: lo = mid (thử dài hơn).",
-            "Ngược lại: hi = mid - 1 (cửa sổ dài hơn sẽ trùng).",
-            "Lặp cho tới khi lo == hi — đó là độ dài lớn nhất.",
-            "Kết thúc: trả lo = 3 cho ví dụ 'abcabcbb'."
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Cửa sổ trượt với set: mở rộng phải, khi trùng thì bỏ ký tự trái tới khi hết trùng.",
-        "reverse": "Cần chuỗi con dài nhất không trùng → giữ cửa sổ duy nhất, đảm bảo mọi ký tự trong cửa sổ là phân biệt."
-      },
-      "note": "Giữ cửa sổ không trùng (dùng dict vị trí ký tự); khi gặp trùng, nhảy l ngay sau vị trí trùng."
+     "name": "Set + thu hẹp từng bước",
+     "time": "O(n)",
+     "space": "O(min(n, alphabet))",
+     "idea": "win là set; khi trùng, xoá s[l] rồi l++ cho tới khi hết trùng — dễ hiểu hơn, xoá nhiều lần.",
+     "code": "def length_of_longest_substring(s):\n    win = set(); l = 0; best = 0\n    for r, c in enumerate(s):\n        while c in win:\n            win.remove(s[l]); l += 1\n        win.add(c)\n        best = max(best, r - l + 1)\n    return best",
+     "static": [
+      "Khởi tạo win thành set rỗng, l = 0, best = 0.",
+      "Với mỗi cặp (r, c) trong s: nếu c đã có trong cửa sổ.",
+      "Thu nhỏ cửa sổ: xoá s[l] khỏi set và tăng l cho tới khi c không còn trùng.",
+      "Thêm c vào set của cửa sổ.",
+      "Cập nhật best = max(best, r - l + 1).",
+      "Kết thúc: trả best = 3 cho ví dụ 'abcabcbb'."
+     ]
     },
     {
-      "no": "30",
-      "title": "Substring with Concatenation of All Words",
-      "cat": "Sliding Window",
-      "diff": "Hard",
-      "statement": "Tìm mọi vị trí bắt đầu của chuỗi con ghép bởi MỌI từ trong words (mỗi từ đúng một lần, thứ tự tự do), tất cả từ cùng độ dài.",
-      "examples": "s=\"barfoothefoobarman\", words=[\"foo\",\"bar\"] → [0,9] · s=\"wordgoodgoodgoodbestword\", words=[\"word\",\"good\",\"best\",\"word\"] → []",
-      "keyIdea": "Chia cửa sổ thành các khối độ dài L (độ dài từ); trượt cửa sổ theo bước L cho từng offset khởi điểm (0..L-1).",
-      "approaches": [
-        {
-          "name": "Cửa sổ trượt theo khối",
-          "time": "O(n·L)",
-          "space": "O(numWords)",
-          "idea": "Với mỗi offset trong [0, L): duyệt cửa sổ gồm numWords từ; dùng bộ đếm nhu cầu − có được; đủ thì ghi vị trí; trượt thêm 1 từ.",
-          "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words)\n    res = []\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(s) - L + 1, L):\n            if i >= off + m * L:\n                old = s[i - m * L:i - m * L + L]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = s[i:i + L]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append(i - (m - 1) * L)\n    return res",
-          "tcex": {
-            "input": {
-              "s": "barfoothefoobarman",
-              "words": [
-                "foo",
-                "bar"
-              ]
-            },
-            "kind": "array",
-            "display": "s",
-            "ptrs": [
-              "i"
-            ],
-            "expected": [
-              0,
-              9
-            ],
-            "anim": true
-          }
-        },
-        {
-          "name": "Vét từng cửa sổ (slow)",
-          "time": "O(n·numWords·L·log)",
-          "space": "O(numWords)",
-          "idea": "Mỗi vị trí bắt đầu, kiểm tra numWords từ có phải hoán vị của words không bằng Counter — chậm nhưng đúng tuyệt đối.",
-          "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); n = len(words); need = Counter(words)\n    res = []\n    for i in range(len(s) - n*L + 1):\n        cnt = Counter(s[i+j*L:i+(j+1)*L] for j in range(n))\n        if cnt == need: res.append(i)\n    return res",
-          "static": [
-            "Khởi tạo need = Counter(words), L = độ dài mỗi từ.",
-            "Với mỗi vị trí bắt đầu i từ 0 tới len(s) - n*L:",
-            "Cắt n từ liên tiếp có độ dài L bắt đầu tại i.",
-            "So sánh bộ đếm cnt của n từ đó với need (Counter bằng nhau).",
-            "Nếu bằng: đó là chuỗi con ghép đủ mọi từ — lưu i vào kết quả.",
-            "Kết thúc: trả lại danh sách vị trí, ví dụ ['barfoo','foobar'] cho [0, 9]."
-          ]
-        },
-        {
-          "name": "Đếm qua tiền tố word (bản minh hoạ)",
-          "time": "O(n·L)",
-          "space": "O(numWords)",
-          "idea": "Tiền xử lý danh sách các 'từ' tại mỗi vị trí có thể bắt đầu một từ, rồi chạy cửa sổ trên danh sách đó.",
-          "code": "def find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words); res = []\n    starts = [s[i:i+L] for i in range(len(s) - L + 1)]\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(starts), L):\n            if i >= off + m:\n                old = starts[i - m]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = starts[i]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append((i - m + 1) * L)\n    return sorted(set(res))",
-          "static": [
-            "Tiền xử lý: cắt danh sách starts chứa từng 'từ' độ dài L tại mọi vị trí.",
-            "Với mỗi offset off (0..L-1), duyệt danh sách starts theo bước L.",
-            "Thêm từ mới w vào cửa sổ: tăng have[w], nếu chưa vượt need thì used++.",
-            "Khi cửa sổ vượt quá m từ: loại bỏ từ cũ nhất, giảm used nếu cần.",
-            "Nếu used == len(need): cả m từ trong cửa sổ đều khớp nhu cầu — ghi vị trí bắt đầu.",
-            "Vị trí ghi = (i - m + 1) * L (đổi chỉ số từ sang chỉ số ký tự).",
-            "Kết thúc: trả danh sách đã sắp xếp, ví dụ [0, 9] cho s = 'barfoothefoobarman'."
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Đếm từ trong window đúng độ dài tổng; so khớp tần suất từng từ.",
-        "reverse": "Cần vị trí bắt đầu → với mỗi offset theo độ dài từ, trượt cửa sổ và đối chiếu bộ đếm."
-      },
-      "note": "Chia cửa sổ thành các khối độ dài L (độ dài từ); trượt cửa sổ theo bước L cho từng offset khởi điểm (0..L-1)."
-    },
-    {
-      "no": "76",
-      "title": "Minimum Window Substring",
-      "cat": "Sliding Window",
-      "diff": "Hard",
-      "statement": "Tìm cửa sổ con ngắn nhất của s chứa mọi ký tự của t (kể cả lặp).",
-      "examples": "s=\"ADOBECODEBANC\", t=\"ABC\" → \"BANC\" · s=\"a\", t=\"aa\" → \"\"",
-      "keyIdea": "Duy trì cửa sổ có 'đủ tần suất' với t; khi đủ, thu hẹp trái càng nhiều càng tốt để ngắn đi.",
-      "approaches": [
-        {
-          "name": "Cửa sổ trượt + đếm thiếu",
-          "time": "O(|s|+|t|)",
-          "space": "O(|t|)",
-          "idea": "need đếm số ký tự còn thiếu; mở rộng r tới khi đủ, rồi thu hẹp l; ghi lại cửa sổ ngắn nhất đạt đủ.",
-          "code": "from collections import Counter\ndef min_window(s, t):\n    if not t: return ''\n    need = Counter(t); missing = len(t)\n    best = (0, len(s) + 1); l = 0\n    for r, c in enumerate(s):\n        if need[c] > 0: missing -= 1\n        need[c] -= 1\n        while missing == 0:\n            if r - l < best[1] - best[0]: best = (l, r + 1)\n            need[s[l]] += 1\n            if need[s[l]] > 0: missing += 1\n            l += 1\n    return s[best[0]:best[1]] if best[1] <= len(s) else ''",
-          "static": [
-            "Khởi tạo need = Counter(t), missing = len(t), best = (0, len(s)+1), l = 0.",
-            "Với mỗi ký tự c tại vị trí r trong s:",
-            "Nếu need[c] > 0 thì missing giảm 1 (đã đủ một ký tự cần).",
-            "Trừ need[c], rồi khi missing == 0 (cửa sổ đủ tất cả): thu hẹp l.",
-            "Mỗi lần thu hẹp: cập nhật best nếu cửa sổ ngắn hơn, trả lại ký tự s[l] cho need.",
-            "Nếu need[s[l]] > 0 trở lại thì missing tăng — cửa sổ hết 'đủ' nữa.",
-            "Kết thúc: trả chuỗi s[best[0]:best[1]], ví dụ 'BANC' cho s='ADOBECODEBANC', t='ABC'."
-          ]
-        }
-      ],
-      "thinking": {
-        "forward": "Cửa sổ trượt + đếm tần suất: mở rộng phải tới khi đủ ký tự, thu trái để rút ngắn.",
-        "reverse": "Cần chuỗi con ngắn nhất chứa đủ các ký tự mục tiêu → chỉ cần đếm thiếu, khi thiếu=0 thì thử rút trái."
-      },
-      "note": "Duy trì cửa sổ có 'đủ tần suất' với t; khi đủ, thu hẹp trái càng nhiều càng tốt để ngắn đi."
+     "name": "Nhị phân độ dài (ít gặp)",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Kiểm tra tồn tại cửa sổ độ dài k không trùng bằng set — tham chiếu học thuật.",
+     "code": "def ok(s, k):\n    return max(len(set(s[i:i+k])) for i in range(len(s)-k+1) or [0]) == k\ndef length_of_longest_substring(s):\n    lo, hi = 0, len(s)\n    while lo < hi:\n        mid = (lo + hi + 1) // 2\n        if ok(s, mid): lo = mid\n        else: hi = mid - 1\n    return lo",
+     "static": [
+      "Nhị phân tìm kiếm độ dài k trong đoạn [0, len(s)].",
+      "Hàm ok(s, k): kiểm tra mọi cửa sổ con độ dài k có đủ k ký tự phân biệt (set).",
+      "Nếu tồn tại cửa sổ độ dài mid hợp lệ: lo = mid (thử dài hơn).",
+      "Ngược lại: hi = mid - 1 (cửa sổ dài hơn sẽ trùng).",
+      "Lặp cho tới khi lo == hi — đó là độ dài lớn nhất.",
+      "Kết thúc: trả lo = 3 cho ví dụ 'abcabcbb'."
+     ]
     }
-  ]
+   ],
+   "thinking": {
+    "forward": "Cửa sổ trượt với set: mở rộng phải, khi trùng thì bỏ ký tự trái tới khi hết trùng.",
+    "reverse": "Cần chuỗi con dài nhất không trùng → giữ cửa sổ duy nhất, đảm bảo mọi ký tự trong cửa sổ là phân biệt."
+   },
+   "note": "Giữ cửa sổ không trùng (dùng dict vị trí ký tự); khi gặp trùng, nhảy l ngay sau vị trí trùng."
+  },
+  {
+   "no": "30",
+   "title": "Substring with Concatenation of All Words",
+   "cat": "Sliding Window",
+   "diff": "Hard",
+   "statement": "Tìm mọi vị trí bắt đầu của chuỗi con ghép bởi MỌI từ trong words (mỗi từ đúng một lần, thứ tự tự do), tất cả từ cùng độ dài.",
+   "examples": "s=\"barfoothefoobarman\", words=[\"foo\",\"bar\"] → [0,9] · s=\"wordgoodgoodgoodbestword\", words=[\"word\",\"good\",\"best\",\"word\"] → []",
+   "keyIdea": "Chia cửa sổ thành các khối độ dài L (độ dài từ); trượt cửa sổ theo bước L cho từng offset khởi điểm (0..L-1).",
+   "approaches": [
+    {
+     "name": "Cửa sổ trượt theo khối",
+     "time": "O(n·L)",
+     "space": "O(numWords)",
+     "idea": "Với mỗi offset trong [0, L): duyệt cửa sổ gồm numWords từ; dùng bộ đếm nhu cầu − có được; đủ thì ghi vị trí; trượt thêm 1 từ.",
+     "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words)\n    res = []\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(s) - L + 1, L):\n            if i >= off + m * L:\n                old = s[i - m * L:i - m * L + L]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = s[i:i + L]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append(i - (m - 1) * L)\n    return res",
+     "tcex": {
+      "input": {
+       "s": "barfoothefoobarman",
+       "words": [
+        "foo",
+        "bar"
+       ]
+      },
+      "kind": "array",
+      "display": "s",
+      "ptrs": [
+       "i"
+      ],
+      "expected": [
+       0,
+       9
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Vét từng cửa sổ (slow)",
+     "time": "O(n·numWords·L·log)",
+     "space": "O(numWords)",
+     "idea": "Mỗi vị trí bắt đầu, kiểm tra numWords từ có phải hoán vị của words không bằng Counter — chậm nhưng đúng tuyệt đối.",
+     "code": "from collections import Counter\ndef find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); n = len(words); need = Counter(words)\n    res = []\n    for i in range(len(s) - n*L + 1):\n        cnt = Counter(s[i+j*L:i+(j+1)*L] for j in range(n))\n        if cnt == need: res.append(i)\n    return res",
+     "static": [
+      "Khởi tạo need = Counter(words), L = độ dài mỗi từ.",
+      "Với mỗi vị trí bắt đầu i từ 0 tới len(s) - n*L:",
+      "Cắt n từ liên tiếp có độ dài L bắt đầu tại i.",
+      "So sánh bộ đếm cnt của n từ đó với need (Counter bằng nhau).",
+      "Nếu bằng: đó là chuỗi con ghép đủ mọi từ — lưu i vào kết quả.",
+      "Kết thúc: trả lại danh sách vị trí, ví dụ ['barfoo','foobar'] cho [0, 9]."
+     ]
+    },
+    {
+     "name": "Đếm qua tiền tố word (bản minh hoạ)",
+     "time": "O(n·L)",
+     "space": "O(numWords)",
+     "idea": "Tiền xử lý danh sách các 'từ' tại mỗi vị trí có thể bắt đầu một từ, rồi chạy cửa sổ trên danh sách đó.",
+     "code": "def find_substring(s, words):\n    if not s or not words: return []\n    L = len(words[0]); m = len(words)\n    need = Counter(words); res = []\n    starts = [s[i:i+L] for i in range(len(s) - L + 1)]\n    for off in range(L):\n        have = Counter(); used = 0\n        for i in range(off, len(starts), L):\n            if i >= off + m:\n                old = starts[i - m]\n                have[old] -= 1\n                if have[old] < need[old]: used -= 1\n            w = starts[i]\n            have[w] += 1\n            if have[w] <= need[w]: used += 1\n            if used == len(need):\n                res.append((i - m + 1) * L)\n    return sorted(set(res))",
+     "static": [
+      "Tiền xử lý: cắt danh sách starts chứa từng 'từ' độ dài L tại mọi vị trí.",
+      "Với mỗi offset off (0..L-1), duyệt danh sách starts theo bước L.",
+      "Thêm từ mới w vào cửa sổ: tăng have[w], nếu chưa vượt need thì used++.",
+      "Khi cửa sổ vượt quá m từ: loại bỏ từ cũ nhất, giảm used nếu cần.",
+      "Nếu used == len(need): cả m từ trong cửa sổ đều khớp nhu cầu — ghi vị trí bắt đầu.",
+      "Vị trí ghi = (i - m + 1) * L (đổi chỉ số từ sang chỉ số ký tự).",
+      "Kết thúc: trả danh sách đã sắp xếp, ví dụ [0, 9] cho s = 'barfoothefoobarman'."
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Đếm từ trong window đúng độ dài tổng; so khớp tần suất từng từ.",
+    "reverse": "Cần vị trí bắt đầu → với mỗi offset theo độ dài từ, trượt cửa sổ và đối chiếu bộ đếm."
+   },
+   "note": "Chia cửa sổ thành các khối độ dài L (độ dài từ); trượt cửa sổ theo bước L cho từng offset khởi điểm (0..L-1)."
+  },
+  {
+   "no": "76",
+   "title": "Minimum Window Substring",
+   "cat": "Sliding Window",
+   "diff": "Hard",
+   "statement": "Tìm cửa sổ con ngắn nhất của s chứa mọi ký tự của t (kể cả lặp).",
+   "examples": "s=\"ADOBECODEBANC\", t=\"ABC\" → \"BANC\" · s=\"a\", t=\"aa\" → \"\"",
+   "keyIdea": "Duy trì cửa sổ có 'đủ tần suất' với t; khi đủ, thu hẹp trái càng nhiều càng tốt để ngắn đi.",
+   "approaches": [
+    {
+     "name": "Cửa sổ trượt + đếm thiếu",
+     "time": "O(|s|+|t|)",
+     "space": "O(|t|)",
+     "idea": "need đếm số ký tự còn thiếu; mở rộng r tới khi đủ, rồi thu hẹp l; ghi lại cửa sổ ngắn nhất đạt đủ.",
+     "code": "from collections import Counter\ndef min_window(s, t):\n    if not t: return ''\n    need = Counter(t); missing = len(t)\n    best = (0, len(s) + 1); l = 0\n    for r, c in enumerate(s):\n        if need[c] > 0: missing -= 1\n        need[c] -= 1\n        while missing == 0:\n            if r - l < best[1] - best[0]: best = (l, r + 1)\n            need[s[l]] += 1\n            if need[s[l]] > 0: missing += 1\n            l += 1\n    return s[best[0]:best[1]] if best[1] <= len(s) else ''",
+     "static": [
+      "Khởi tạo need = Counter(t), missing = len(t), best = (0, len(s)+1), l = 0.",
+      "Với mỗi ký tự c tại vị trí r trong s:",
+      "Nếu need[c] > 0 thì missing giảm 1 (đã đủ một ký tự cần).",
+      "Trừ need[c], rồi khi missing == 0 (cửa sổ đủ tất cả): thu hẹp l.",
+      "Mỗi lần thu hẹp: cập nhật best nếu cửa sổ ngắn hơn, trả lại ký tự s[l] cho need.",
+      "Nếu need[s[l]] > 0 trở lại thì missing tăng — cửa sổ hết 'đủ' nữa.",
+      "Kết thúc: trả chuỗi s[best[0]:best[1]], ví dụ 'BANC' cho s='ADOBECODEBANC', t='ABC'."
+     ]
+    }
+   ],
+   "thinking": {
+    "forward": "Cửa sổ trượt + đếm tần suất: mở rộng phải tới khi đủ ký tự, thu trái để rút ngắn.",
+    "reverse": "Cần chuỗi con ngắn nhất chứa đủ các ký tự mục tiêu → chỉ cần đếm thiếu, khi thiếu=0 thì thử rút trái."
+   },
+   "note": "Duy trì cửa sổ có 'đủ tần suất' với t; khi đủ, thu hẹp trái càng nhiều càng tốt để ngắn đi."
+  },
+  {
+   "no": "209",
+   "title": "Minimum Size Subarray Sum",
+   "cat": "Sliding Window",
+   "diff": "Medium",
+   "statement": "Tìm dãy con liên tiếp ngắn nhất có tổng ≥ target; trả độ dài, không có → 0.",
+   "examples": "target=7, nums=[2,3,1,2,4,3] → 2 ([4,3])",
+   "keyIdea": "Tất cả số dương → khi sum ≥ target, mở rộng phải; rồi thu hẹp trái để tìm ngắn nhất.",
+   "approaches": [
+    {
+     "name": "Cửa sổ trượt",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "sum += nums[r]; while sum ≥ target: cập nhật best, sum -= nums[l]; l++;",
+     "code": "def min_sub_array_len(target, nums):\n    l = 0; s = 0; best = len(nums) + 1\n    for r in range(len(nums)):\n        s += nums[r]\n        while s >= target:\n            best = min(best, r - l + 1)\n            s -= nums[l]; l += 1\n    return best if best <= len(nums) else 0",
+     "trace": "ref:209-minimum-size-subarray-sum",
+     "tcex": {
+      "input": {
+       "target": 7,
+       "nums": [
+        2,
+        3,
+        1,
+        2,
+        4,
+        3
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "l",
+       "r"
+      ],
+      "expected": 2,
+      "anim": true
+     }
+    },
+    {
+     "name": "Tiền tố + nhị phân",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Xây prefix sum; với mỗi điểm cuối tìm điểm đầu bé nhất bằng bisect sao cho đoạn ≥ target.",
+     "code": "from bisect import bisect_left\ndef min_sub_array_len(target, nums):\n    pref = [0]\n    for x in nums: pref.append(pref[-1] + x)\n    best = len(nums) + 1\n    for r in range(1, len(pref)):\n        need = pref[r] - target\n        k = bisect_left(pref, need, 0, r)\n        if k < r and pref[r] - pref[k] >= target:\n            best = min(best, r - k)\n    return best if best <= len(nums) else 0",
+     "tcex": {
+      "input": {
+       "target": 7,
+       "nums": [
+        2,
+        3,
+        1,
+        2,
+        4,
+        3
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "r",
+       "k"
+      ],
+      "expected": 2,
+      "anim": true
+     }
+    },
+    {
+     "name": "Hai con trỏ vét trường hợp âm",
+     "time": "O(n²)",
+     "space": "O(1)",
+     "idea": "Khi có số âm (biến thể) cửa sổ đơn điệu không còn đúng — cần vét tham chiếu, ở đây làm rõ giới hạn của kỹ thuật.",
+     "code": "def min_sub_array_len(target, nums):\n    best = len(nums) + 1\n    for i in range(len(nums)):\n        s = 0\n        for j in range(i, len(nums)):\n            s += nums[j]\n            if s >= target:\n                best = min(best, j - i + 1)\n                break\n    return best if best <= len(nums) else 0",
+     "tcex": {
+      "input": {
+       "target": 7,
+       "nums": [
+        2,
+        3,
+        1,
+        2,
+        4,
+        3
+       ]
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "i",
+       "j"
+      ],
+      "expected": 2,
+      "anim": true
+     }
+    }
+   ],
+   "thinking": {
+    "forward": "Cửa sổ trượt: khi tổng ≥ target thì thu hẹp trái để tìm đoạn ngắn nhất.",
+    "reverse": "Cần đoạn ngắn nhất có tổng ≥ target → cửa sổ càng hẹp càng tốt, thu trái khi thoả điều kiện."
+   },
+   "note": "Tất cả số dương → khi sum ≥ target, mở rộng phải; rồi thu hẹp trái để tìm ngắn nhất."
+  },
+  {
+   "no": "239",
+   "title": "Sliding Window Maximum",
+   "cat": "Sliding Window",
+   "diff": "Hard",
+   "statement": "Với mảng nums và cửa sổ kích thước k, trả mảng các giá trị lớn nhất của từng cửa sổ trượt.",
+   "examples": "nums=[1,3,-1,-3,5,3,6,7], k=3 → [3,3,5,5,6,7]",
+   "keyIdea": "Giữ deque các CHỈ SỐ với giá trị giảm dần: đầu deque luôn là max; bỏ phần tử nào nhỏ hơn x khi thêm x và bỏ chỉ số ra khỏi cửa sổ.",
+   "thinking": {
+    "forward": "Quy nạp tiến: cửa sổ chuyển sang phải 1 ô, đầu deque là max của cửa sổ trước khi thêm — chỉ cần cập nhật biên phải và loại biên trái hết hạn.",
+    "reverse": "Quy nạp ngược: muốn max cập nhật O(1) → duy trì cấu trúc giảm dần; phần tử nhỏ hơn phần tử mới không bao giờ là max tương lai nên loại ngay."
+   },
+   "note": "Chú giải: deque lưu chỉ số chứ không lưu giá trị để kiểm tra hết hạn dq[0] <= i-k; mỗi chỉ số vào deque đúng một lần và ra đúng một lần nên tổng O(n).",
+   "approaches": [
+    {
+     "name": "Deque giảm dần",
+     "time": "O(n)",
+     "space": "O(k)",
+     "idea": "Duyệt i: loại đuôi nhỏ hơn nums[i], append i, pop đầu hết hạn, khi i >= k−1 ghi nums[dq[0]] vào kết quả.",
+     "code": "from collections import deque\ndef max_sliding_window(nums, k):\n    dq = deque(); out = []\n    for i, x in enumerate(nums):\n        while dq and nums[dq[-1]] <= x: dq.pop()\n        dq.append(i)\n        if dq[0] <= i - k: dq.popleft()\n        if i >= k - 1: out.append(nums[dq[0]])\n    return out",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        3,
+        -1,
+        -3,
+        5,
+        3,
+        6,
+        7
+       ],
+       "k": 3
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "i"
+      ],
+      "expected": [
+       3,
+       3,
+       5,
+       5,
+       6,
+       7
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Max-heap (chỉ số)",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Đẩy (-nums[i], i) vào heap; pop các phần tử hết hạn khỏi đỉnh; max luôn ở đỉnh heap.",
+     "code": "import heapq\ndef max_sliding_window(nums, k):\n    h = [(-nums[i], i) for i in range(k)]\n    heapq.heapify(h)\n    out = [-h[0][0]]\n    for i in range(k, len(nums)):\n        heapq.heappush(h, (-nums[i], i))\n        while h[0][1] <= i - k: heapq.heappop(h)\n        out.append(-h[0][0])\n    return out",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        3,
+        -1,
+        -3,
+        5,
+        3,
+        6,
+        7
+       ],
+       "k": 3
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "i"
+      ],
+      "expected": [
+       3,
+       3,
+       5,
+       5,
+       6,
+       7
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Vét max từng cửa sổ",
+     "time": "O(n·k)",
+     "space": "O(1)",
+     "idea": "Với mỗi cửa sổ [i, i+k) gọi max(nums[i:i+k]) — chuẩn để đối chiếu kết quả.",
+     "code": "def max_sliding_window(nums, k):\n    return [max(nums[i:i+k]) for i in range(len(nums) - k + 1)]",
+     "static": [
+      "Với nums=[1,3,-1,-3,5,3,6,7], k=3: cửa sổ 0..2 → max(1,3,-1)=3",
+      "Cửa sổ 1..3 → max(3,-1,-3)=3; 2..4 → max(-1,-3,5)=5",
+      "3..5 → max(-3,5,3)=5; 4..6 → max(5,3,6)=6; 5..7 → max(3,6,7)=7",
+      "Kết quả [3,3,5,5,6,7] — khớp đáp án; O(n·k) chậm với k lớn"
+     ]
+    }
+   ]
+  },
+  {
+   "no": "438",
+   "title": "Find All Anagrams in a String",
+   "cat": "Sliding Window",
+   "diff": "Medium",
+   "statement": "Tìm vị trí bắt đầu mọi chuỗi con của s là hoán vị (anagram) của p.",
+   "examples": "s=\"cbaebabacd\", p=\"abc\" → [0,6] · s=\"abab\", p=\"ab\" → [0,1,2]",
+   "keyIdea": "Giữ cửa sổ đúng độ dài len(p); so bộ đếm tần suất của cửa sổ với bộ đếm của p — khớp thì ghi vị trí.",
+   "thinking": {
+    "forward": "Quy nạp tiến: di chuyển biên phải thêm 1 ký tự, nếu cửa sổ dài quá len(p) thì bỏ ký tự biên trái; so sánh Counter ở mỗi bước.",
+    "reverse": "Quy nạp ngược: anagram chỉ phụ thuộc tần suất → duy trì bộ đếm cửa sổ, cửa sổ luôn đúng kích thước nên mỗi ký tự đổi đúng một lần."
+   },
+   "note": "Chú giải: so Counter == Counter là O(alphabet) với alphabet hữu hạn (26); có thể dùng biến matches để so O(1) khi số ký tự phân biệt lớn.",
+   "approaches": [
+    {
+     "name": "Cửa sổ trượt + Counter",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "have đếm cửa sổ; mỗi bước thêm s[i], nếu i ≥ k thì xoá s[i−k]; have == need → ghi i−k+1.",
+     "code": "from collections import Counter\ndef find_anagrams(s, p):\n    need = Counter(p); have = Counter()\n    res = []; k = len(p)\n    for i, c in enumerate(s):\n        have[c] += 1\n        if i >= k:\n            old = s[i - k]\n            if have[old] == 1: del have[old]\n            else: have[old] -= 1\n        if have == need: res.append(i - k + 1)\n    return res",
+     "tcex": {
+      "input": {
+       "s": "cbaebabacd",
+       "p": "abc"
+      },
+      "kind": "hash",
+      "display": "have",
+      "ptrs": [
+       "i"
+      ],
+      "expected": [
+       0,
+       6
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "So chuỗi đã sắp xếp",
+     "time": "O(n·k·log k)",
+     "space": "O(k)",
+     "idea": "Với mỗi cửa sổ, sort chuỗi con rồi so với sorted(p) — chậm nhưng rõ ràng.",
+     "code": "def find_anagrams(s, p):\n    sp = ''.join(sorted(p)); k = len(p)\n    return [i for i in range(len(s) - k + 1) if ''.join(sorted(s[i:i+k])) == sp]",
+     "static": [
+      "s='cbaebabacd', p='abc': sorted(p)='abc', k=3",
+      "i=0: sorted('cba')='abc' → match, ghi 0",
+      "i=1: 'bae'→'abe' ≠ 'abc'; i=2: 'aeb'→'abe' ≠; i=3: 'eba'→'abe' ≠",
+      "i=4: 'bab'→'abb' ≠; i=5: 'aba'→'aab' ≠; i=6: 'bac'→'abc' → ghi 6",
+      "Kết quả [0,6] — khớp; tốn k·log k mỗi cửa sổ"
+     ]
+    },
+    {
+     "name": "Cửa sổ dict + biến matches",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Đếm số ký tự đang khớp nhu cầu; thêm/bớt cập nhật matches — so sánh O(1) thay vì Counter.",
+     "code": "def find_anagrams(s, p):\n    need = {}; k = len(p)\n    for ch in p: need[ch] = need.get(ch, 0) + 1\n    have = {}; matches = 0; res = []; l = 0\n    for r, c in enumerate(s):\n        have[c] = have.get(c, 0) + 1\n        if have[c] == need.get(c, -1): matches += 1\n        elif have[c] == need.get(c, -1) + 1: matches -= 1\n        if r - l + 1 > k:\n            have[s[l]] -= 1\n            if have[s[l]] == need.get(s[l], -1) - 1: matches -= 1\n            elif have[s[l]] == need.get(s[l], -1): matches += 1\n            if have[s[l]] == 0: del have[s[l]]\n            l += 1\n        if matches == len(need): res.append(l)\n    return res",
+     "tcex": {
+      "input": {
+       "s": "cbaebabacd",
+       "p": "abc"
+      },
+      "kind": "hash",
+      "display": "have",
+      "ptrs": [
+       "r",
+       "l"
+      ],
+      "expected": [
+       0,
+       6
+      ],
+      "anim": true
+     }
+    }
+   ]
+  },
+  {
+   "no": "643",
+   "title": "Maximum Average Subarray I",
+   "cat": "Sliding Window",
+   "diff": "Easy",
+   "statement": "Tìm tổng lớn nhất của cửa sổ liên tiếp kích thước k rồi chia cho k (giá trị trung bình lớn nhất).",
+   "examples": "nums=[1,12,-5,-6,50,3], k=4 → 12.75 ([12,-5,-6,50])",
+   "keyIdea": "Cửa sổ cố định độ dài k: trượt thêm nums[i] và bớt nums[i−k]; giữ tổng lớn nhất.",
+   "thinking": {
+    "forward": "Quy nạp tiến: tổng cửa sổ kế tiếp = tổng hiện tại + phần tử vào − phần tử ra; best cập nhật sau mỗi bước.",
+    "reverse": "Quy nạp ngược: trung bình max ⇔ tổng max (k cố định) → chỉ cần so sánh tổng, không phải tính trung bình từng bước."
+   },
+   "note": "Chú giải: k ≥ 1 theo đề nên không cần xử lý rỗng; kết quả float — phép chia / k (không dùng //).",
+   "approaches": [
+    {
+     "name": "Cửa sổ cố định",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "s = sum(nums[:k]); với i từ k: s += nums[i] − nums[i−k]; best = max(best, s); trả best/k.",
+     "code": "def find_max_average(nums, k):\n    s = sum(nums[:k]); best = s\n    for i in range(k, len(nums)):\n        s += nums[i] - nums[i - k]\n        best = max(best, s)\n    return best / k",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        12,
+        -5,
+        -6,
+        50,
+        3
+       ],
+       "k": 4
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "i"
+      ],
+      "expected": 12.75,
+      "anim": true
+     }
+    },
+    {
+     "name": "Prefix sum",
+     "time": "O(n)",
+     "space": "O(n)",
+     "idea": "Xây prefix; tổng cửa sổ [i, i+k) = pref[i+k] − pref[i]; lấy max rồi chia k.",
+     "code": "def find_max_average(nums, k):\n    pref = [0]\n    for x in nums: pref.append(pref[-1] + x)\n    best = max(pref[i+k] - pref[i] for i in range(len(nums) - k + 1))\n    return best / k",
+     "static": [
+      "nums=[1,12,-5,-6,50,3] → pref=[0,1,13,8,2,52,55]",
+      "Cửa sổ 0: pref[4]−pref[0]=2; 1: pref[5]−pref[1]=51; 2: pref[6]−pref[2]=42",
+      "best=51 → 51/4 = 12.75 — khớp đáp án ([12,-5,-6,50])",
+      "Tốn O(n) bộ nhớ; hữu ích khi cần nhiều truy vấn tổng đoạn"
+     ]
+    },
+    {
+     "name": "Vét cạn từng cửa sổ",
+     "time": "O(n·k)",
+     "space": "O(1)",
+     "idea": "sum(nums[i:i+k]) cho mọi i — trực tiếp nhất, dùng để đối chiếu.",
+     "code": "def find_max_average(nums, k):\n    return max(sum(nums[i:i+k]) for i in range(len(nums) - k + 1)) / k",
+     "static": [
+      "Với k=4: tổng các cửa sổ lần lượt 2, 51, 42",
+      "max = 51 → 51/4 = 12.75 — khớp đáp án",
+      "Mỗi cửa sổ cộng lại k phần tử → O(n·k), chậm khi k ≈ n"
+     ]
+    }
+   ]
+  },
+  {
+   "no": "933",
+   "title": "Number of Recent Calls",
+   "cat": "Sliding Window",
+   "diff": "Easy",
+   "statement": "Đếm số lần ping trong cửa sổ [t−3000, t] — các lời gọi ping đến với t tăng dần.",
+   "examples": "ping(1)→1; ping(100)→2; ping(3001)→3; ping(3002)→3",
+   "keyIdea": "Hàng đợi thời điểm ping; mỗi ping mới: thêm t, bỏ mọi đầu hàng đợi < t−3000, trả độ dài còn lại.",
+   "thinking": {
+    "forward": "Quy nạp tiến: vì t tăng dần, các lời gọi hết hạn luôn nằm ở ĐẦU hàng đợi → pop từ đầu tới khi trong cửa sổ.",
+    "reverse": "Quy nạp ngược: muốn đếm trong cửa sổ trượt → loại bỏ dữ liệu cũ không còn dùng; vì thứ tự tăng nên hàng đợi là đủ."
+   },
+   "note": "Chú giải: mỗi ping có thể pop nhiều phần tử nhưng mỗi phần tử bị pop đúng một lần → amortized O(1); cận dưới là t−3000 (≥), so sánh q[0] < t−3000.",
+   "approaches": [
+    {
+     "name": "Hàng đợi dạng list",
+     "time": "O(n) amortized",
+     "space": "O(n)",
+     "idea": "q chứa thời điểm; mỗi t: append, while q[0] < t−3000: pop(0); kết quả = len(q).",
+     "code": "def recent_calls(q, times):\n    out = []\n    for t in times:\n        q.append(t)\n        while q and q[0] < t - 3000:\n            q.pop(0)\n        out.append(len(q))\n    return out",
+     "tcex": {
+      "input": {
+       "q": [],
+       "times": [
+        1,
+        100,
+        3001,
+        3002
+       ]
+      },
+      "kind": "stack",
+      "display": "q",
+      "ptrs": [
+       "t"
+      ],
+      "expected": [
+       1,
+       2,
+       3,
+       3
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "deque + batch pop",
+     "time": "O(n) amortized",
+     "space": "O(n)",
+     "idea": "Dùng deque (pop đầu O(1)); tách hàm thành chuỗi ping trả về danh sách đếm.",
+     "code": "from collections import deque\ndef recent_calls(times):\n    q = deque()\n    out = []\n    for t in times:\n        q.append(t)\n        while q and q[0] < t - 3000:\n            q.popleft()\n        out.append(len(q))\n    return out",
+     "tcex": {
+      "input": {
+       "times": [
+        1,
+        100,
+        3001,
+        3002
+       ]
+      },
+      "kind": "none",
+      "ptrs": [
+       "t"
+      ],
+      "expected": [
+       1,
+       2,
+       3,
+       3
+      ],
+      "anim": true
+     }
+    },
+    {
+     "name": "Đếm bằng tìm nhị phân",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Lưu lịch sử pings; số ping trong [t−3000, t] = vị trí sàn của t − vị trí sàn của t−3000.",
+     "code": "from bisect import bisect_right\ndef recent_calls(times):\n    pings = []\n    out = []\n    for t in times:\n        pings.append(t)\n        out.append(len(pings) - bisect_right(pings, t - 3000 - 1))\n    return out",
+     "static": [
+      "pings=[1,100,3001,3002]; với t=1: bisect_right(pings, -3000)=0 → 1−0=1",
+      "t=100: bisect_right(pings, -2900... ) — vẫn 0 → 2−0=2 — chính xác hơn nói: đếm phần tử > t−3000−1",
+      "t=3001: phần tử > 0 là 3 → kết quả 3",
+      "t=3002: phần tử > 1 là 3 → 3 — khớp [1,2,3,3]",
+      "Không cần pop nhưng mảng pings lớn dần → bộ nhớ O(n) không xoá"
+     ]
+    }
+   ]
+  },
+  {
+   "no": "1004",
+   "title": "Max Consecutive Ones III",
+   "cat": "Sliding Window",
+   "diff": "Medium",
+   "statement": "Tìm dãy con dài nhất chỉ gồm 1 khi được phép đổi TỐI ĐA k số 0 thành 1.",
+   "examples": "nums=[1,1,1,0,0,0,1,1,1,1,0], k=2 → 6",
+   "keyIdea": "Tìm cửa sổ dài nhất chứa ≤ k số 0 — mở rộng phải, khi zeros > k thì thu trái cho tới khi về ≤ k.",
+   "thinking": {
+    "forward": "Quy nạp tiến: mỗi lần thêm nums[r], nếu zeros vượt k thì thu hẹp l; cửa sổ luôn hợp lệ nên chiều dài cập nhật liên tục.",
+    "reverse": "Quy nạp ngược: 'đổi 0 thành 1' ⇔ cho phép k số 0 trong cửa sổ → bài quy về tìm cửa sổ nhiều nhất k zeros."
+   },
+   "note": "Chú giải: thu hẹp khi zeros > k mỗi lần đúng 1 ô — vòng while không cần thiết phải chạy nhiều vì zeros giảm tối đa 1 mỗi lần; đáp án 6 từ cửa sổ [1,1,1,0,0,1,1,1,1] (vị trí 3..9? chính xác: [1,1,1,0,0,0,1,1,1] với 2 zeros → 6).",
+   "approaches": [
+    {
+     "name": "Cửa sổ trượt đếm zeros",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "l=0, zeros=0; r duyệt: nếu nums[r]==0 thì zeros++; while zeros>k: nếu nums[l]==0 thì zeros--, l++; best = max(best, r−l+1).",
+     "code": "def longest_ones(nums, k):\n    l = 0; zeros = 0; best = 0\n    for r, x in enumerate(nums):\n        if x == 0: zeros += 1\n        while zeros > k:\n            if nums[l] == 0: zeros -= 1\n            l += 1\n        best = max(best, r - l + 1)\n    return best",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        0
+       ],
+       "k": 2
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "l",
+       "r"
+      ],
+      "expected": 6,
+      "anim": true
+     }
+    },
+    {
+     "name": "Thu trái không while",
+     "time": "O(n)",
+     "space": "O(1)",
+     "idea": "Cùng ý tưởng nhưng viết gọn: nếu zeros > k thì chỉ dịch l một ô và giảm zeros khi mất đi số 0 — cửa sổ có thể giữ suboptimal tạm thời.",
+     "code": "def longest_ones(nums, k):\n    l = 0\n    for r in range(len(nums)):\n        if nums[r] == 0: k -= 1\n        if k < 0:\n            if nums[l] == 0: k += 1\n            l += 1\n    return len(nums) - l",
+     "tcex": {
+      "input": {
+       "nums": [
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        0
+       ],
+       "k": 2
+      },
+      "kind": "array",
+      "display": "nums",
+      "ptrs": [
+       "l",
+       "r"
+      ],
+      "expected": 6,
+      "anim": true
+     }
+    },
+    {
+     "name": "Nhị phân trên độ dài",
+     "time": "O(n·log n)",
+     "space": "O(n)",
+     "idea": "Kiểm tra hàm ok(w): có cửa sổ độ dài w nào chứa ≤ k zeros không; nhị phân tìm w lớn nhất.",
+     "code": "def longest_ones(nums, k):\n    def ok(w):\n        zeros = 0\n        for i, x in enumerate(nums):\n            if x == 0: zeros += 1\n            if i >= w and nums[i - w] == 0: zeros -= 1\n            if i >= w - 1 and zeros <= k: return True\n        return False\n    lo, hi = 0, len(nums)\n    while lo < hi:\n        mid = (lo + hi + 1) // 2\n        if ok(mid): lo = mid\n        else: hi = mid - 1\n    return lo",
+     "static": [
+      "Với nums=[1,1,1,0,0,0,1,1,1,1,0], k=2: ok(6)? có cửa sổ 6 chứa ≤2 zeros",
+      "Cửa sổ 3..8: [0,0,0,1,1,1] có 3 zeros → không; 4..9: [0,0,1,1,1,1] có 2 → ok",
+      "ok(7)? mọi cửa sổ 7 đều chứa ≥ 3 zeros → fail",
+      "Nhị phân tìm về lo=6 → đáp án 6",
+      "O(n·log n) — kém hơn trượt O(n) nhưng dễ suy luận đúng"
+     ]
+    }
+   ]
+  }
+ ]
 }
